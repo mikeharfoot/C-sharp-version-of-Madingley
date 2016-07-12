@@ -171,6 +171,39 @@ namespace Madingley
             get { return _LogOptimalPreyBodySizeRatio ; }
             set { _LogOptimalPreyBodySizeRatio = value; }
         }
+
+        private double _SaltConcentration;
+
+        public double SaltConcentration
+        {
+            get { return _SaltConcentration; }
+            set { _SaltConcentration = value; }
+        }
+
+
+        private double[] _GutMasses;
+        public double[] GutMasses
+        {
+            get { return _GutMasses; }
+            set { _GutMasses = value; }
+        }
+
+        private double _SaltDefecit;
+
+        public double SaltDefecit
+        {
+            get { return _SaltDefecit; }
+            set { _SaltDefecit = value; }
+        }
+        
+
+        private double _GutSaltConcentration;
+        public double GutSaltConcentration
+        {
+            get { return _GutSaltConcentration; }
+            set { _GutSaltConcentration = value; }
+        }
+        
         
 
         /// <summary>
@@ -189,7 +222,7 @@ namespace Madingley
         /// <param name="tracking">Whether the process tracker is enabled</param>
         public Cohort(byte functionalGroupIndex, double juvenileBodyMass, double adultBodyMass, double initialBodyMass, 
             double initialAbundance, double optimalPreyBodySizeRatio, ushort birthTimeStep, double proportionTimeActive, ref Int64 nextCohortID,
-            double trophicIndex, Boolean tracking)
+            double trophicIndex, Boolean tracking, double saltConcentration)
         {
             _FunctionalGroupIndex = functionalGroupIndex;
             _JuvenileMass = juvenileBodyMass;
@@ -205,11 +238,14 @@ namespace Madingley
             _ProportionTimeActive = proportionTimeActive;
             if(tracking)_CohortID.Add(Convert.ToUInt32(nextCohortID));
             nextCohortID++;
+            _SaltConcentration = saltConcentration;
+            _GutMasses = new double[]{0,0,0};
+            _GutSaltConcentration = 0;
         }
 
         public Cohort(byte functionalGroupIndex, double juvenileBodyMass, double adultBodyMass, double initialBodyMass,
             double initialAbundance, double logOptimalPreyBodySizeRatio, double maxAchievedBodyMass, ushort birthTimeStep, ushort maturityTimestep, double proportionTimeActive, ref Int64 nextCohortID,
-            double trophicIndex, Boolean tracking)
+            double trophicIndex, Boolean tracking, double saltConcentration)
         {
             _FunctionalGroupIndex = functionalGroupIndex;
             _JuvenileMass = juvenileBodyMass;
@@ -225,6 +261,9 @@ namespace Madingley
             _ProportionTimeActive = proportionTimeActive;
             if (tracking) _CohortID.Add(Convert.ToUInt32(nextCohortID));
             nextCohortID++;
+            _SaltConcentration = saltConcentration;
+            _GutMasses = new double[] { 0, 0, 0 };
+            _GutSaltConcentration = 0;
         }
 
 
@@ -245,6 +284,55 @@ namespace Madingley
             _TrophicIndex = c._TrophicIndex;
             _ProportionTimeActive = c._ProportionTimeActive;
             _CohortID = c.CohortID;
+            _SaltConcentration = c._SaltConcentration;
+            _GutMasses = new double[] { 0, 0,0};
+            _GutSaltConcentration = 0;
         }
+
+
+        public void UpdateGutContents(double bIngested, double saltConcentration, double bAssimilated)
+        {
+            double SaltRequired = (bAssimilated * _SaltConcentration);
+            double IngestedSaltAvailable = (bIngested * saltConcentration);
+            double TotalGutMass = _GutMasses.Sum();
+            double RSalts = SaltRequired/IngestedSaltAvailable;
+            //If there is not enough salt in the ingested matter try taking it from the gut contents
+            if(RSalts > 1.0)
+            {
+                double GutSaltRequired = SaltRequired - IngestedSaltAvailable;
+                double GutSaltAvailable = TotalGutMass * _GutSaltConcentration;
+                //Unmet salt needs are attempted to be met by consumption from soil salt
+                _SaltDefecit += Math.Max(0.0,SaltRequired-GutSaltAvailable);
+                _GutSaltConcentration = 1 - (Math.Min(1.0,_GutMasses.Sum() * _GutSaltConcentration/SaltRequired));
+            }
+            else
+            {
+                //If this cohort has a salt defecit try taking it from the ingested material
+                double ExcessSaltUsed = Math.Min(_SaltDefecit,IngestedSaltAvailable - SaltRequired);
+                _SaltDefecit -= ExcessSaltUsed;
+
+                _GutSaltConcentration = ((TotalGutMass * _GutSaltConcentration) + (1 - ((SaltRequired + ExcessSaltUsed)/ IngestedSaltAvailable)) * bIngested) / (TotalGutMass + bIngested - bAssimilated);
+            }
+
+            _GutMasses[0] += bIngested-bAssimilated;
+            
+
+        }
+
+        public double[] CalculateGutLoss()
+        {
+
+            double SaltToSoil;
+            double MassToSoil;
+
+            //Mass loss rate is equal to the mass intake over the current and previous two timesteps
+            MassToSoil = (_GutMasses.Sum()) / (_GutMasses.Length);
+            SaltToSoil = MassToSoil * _GutSaltConcentration;
+
+
+
+            return new double []{ SaltToSoil, MassToSoil };
+        }
+
     }
 }

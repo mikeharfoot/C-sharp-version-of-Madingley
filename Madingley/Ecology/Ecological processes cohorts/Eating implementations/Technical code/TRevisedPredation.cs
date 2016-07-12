@@ -613,6 +613,9 @@ namespace Madingley
 
             TempDouble = 0.0;
 
+            double TotalSaltConsumed = 0.0;
+            double TotalSaltNotConsumed = 0.0;
+
             // Temporary variable to hold the total time spent eating + 1. Saves an extra calculation in CalculateAbundanceEaten
             double TotalTimeUnitsToHandlePlusOne = TimeUnitsToHandlePotentialFoodItems + 1;
 
@@ -675,6 +678,8 @@ namespace Madingley
                     }
 
 
+
+
                     // Check that the abundance eaten from this cohort is not negative
                     // Commented out for the purposes of speed
                     //Debug.Assert( _AbundancesEaten[FunctionalGroup][i].CompareTo(0.0) >= 0,
@@ -685,17 +690,30 @@ namespace Madingley
                     // divided by the abundance of the predator
                     TempDouble += (_BodyMassPrey + gridCellCohorts[FunctionalGroup][i].IndividualReproductivePotentialMass) * _AbundancesEaten[FunctionalGroup][i] / _AbundancePredator;
 
-
+                    TotalSaltConsumed += gridCellCohorts[FunctionalGroup][i].SaltConcentration * 
+                        ((_BodyMassPrey + gridCellCohorts[FunctionalGroup][i].IndividualReproductivePotentialMass) * _AbundancesEaten[FunctionalGroup][i]) +
+                        (gridCellCohorts[FunctionalGroup][i].GutSaltConcentration * gridCellCohorts[FunctionalGroup][i].GutMasses.Sum() * _AbundancesEaten[FunctionalGroup][i]) -
+                        (_AbundancesEaten[FunctionalGroup][i] * gridCellCohorts[FunctionalGroup][i].SaltDefecit);
+                    
+                    
                 }
             }
 
-            
+            TotalSaltConsumed = TotalSaltConsumed / _AbundancePredator;
+
+            //If the cohort is in salt defecit then reduce its assimilation to meet this requirement.
+            if (gridCellCohorts[actingCohort].SaltDefecit > 0.0)
+                _PredatorAssimilationEfficiency -= Math.Min(_PredatorAssimilationEfficiency, gridCellCohorts[actingCohort].SaltDefecit / 
+                    (TotalSaltConsumed / gridCellCohorts[actingCohort].CohortAbundance));
+
+
+            if(TempDouble > 0.0) gridCellCohorts[actingCohort].UpdateGutContents(TempDouble, TotalSaltConsumed / TempDouble, TempDouble * _PredatorAssimilationEfficiency);
 
             // Add the biomass eaten and assimilated by an individual to the delta biomass for the acting (predator) cohort
             deltas["biomass"]["predation"] = TempDouble * _PredatorAssimilationEfficiency;
 
             // Move the biomass eaten but not assimilated by an individual into the organic matter pool
-            deltas["organicpool"]["predation"] = TempDouble * _PredatorNonAssimilation * _AbundancePredator;
+            //deltas["organicpool"]["predation"] = TempDouble * _PredatorNonAssimilation * _AbundancePredator;
 
             // Check that the delta biomass from eating for the acting cohort is not negative
             //Debug.Assert(deltas["biomass"]["predation"] >= 0, "Predation yields negative biomass");

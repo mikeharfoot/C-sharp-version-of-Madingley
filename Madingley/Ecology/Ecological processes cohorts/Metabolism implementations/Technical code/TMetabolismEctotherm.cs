@@ -91,6 +91,10 @@ namespace Madingley
             // If metabolic loss is greater than individual body mass after herbivory and predation, then set equal to individual body mass
             deltas["biomass"]["metabolism"] = Math.Max(deltas["biomass"]["metabolism"], -(gridCellCohorts[actingCohort].IndividualBodyMass + deltas["biomass"]["predation"] + deltas["biomass"]["herbivory"]));
 
+            //Move salt to the soil salt pool
+            cellEnvironment["SoilSaltConcentration"][0] = ((cellEnvironment["SoilSaltConcentration"][0] * cellEnvironment["Cell Area"][0]) - deltas["biomass"]["metabolism"] * gridCellCohorts[actingCohort].CohortAbundance * gridCellCohorts[actingCohort].SaltConcentration) /
+                cellEnvironment["Cell Area"][0];
+
             // Add total metabolic loss for all individuals in the cohort to delta biomass for metabolism in the respiratory CO2 pool
             deltas["respiratoryCO2pool"]["metabolism"] = -deltas["biomass"]["metabolism"] * gridCellCohorts[actingCohort].CohortAbundance;
 

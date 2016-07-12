@@ -1751,6 +1751,73 @@ namespace Madingley
                         }
                     }
                     break;
+                case "salt":
+                    for (int ii = 0; ii < cellIndices.Count; ii++)
+                    {
+                        // Check whether the state variable concerns cohorts or stocks
+                        if (stateVariableType.ToLower() == "cohort")
+                        {
+                            if (traitValue != "Zooplankton")
+                            {
+                                // Check to make sure that the cell has at least one cohort
+                                if (InternalGrid[cellIndices[ii][0], cellIndices[ii][1]].GridCellCohorts != null)
+                                {
+                                    for (int nn = 0; nn < functionalGroups.Length; nn++)
+                                    {
+                                        if (InternalGrid[cellIndices[ii][0], cellIndices[ii][1]].GridCellCohorts[functionalGroups[nn]] != null)
+                                        {
+                                            foreach (Cohort item in InternalGrid[cellIndices[ii][0], cellIndices[ii][1]].GridCellCohorts[functionalGroups[nn]].ToArray())
+                                            {
+                                                TempStateVariable[cellIndices[ii][0], cellIndices[ii][1]] += item.CohortAbundance*
+                                                    ((item.IndividualBodyMass*item.SaltConcentration) - 
+                                                        item.SaltDefecit + (item.GutMasses.Sum()*item.GutSaltConcentration));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // Check to make sure that the cell has at least one cohort
+                                if (InternalGrid[cellIndices[ii][0], cellIndices[ii][1]].GridCellCohorts != null)
+                                {
+                                    for (int nn = 0; nn < functionalGroups.Length; nn++)
+                                    {
+                                        if (InternalGrid[cellIndices[ii][0], cellIndices[ii][1]].GridCellCohorts[functionalGroups[nn]] != null)
+                                        {
+                                            foreach (Cohort item in InternalGrid[cellIndices[ii][0], cellIndices[ii][1]].GridCellCohorts[functionalGroups[nn]].ToArray())
+                                            {
+                                                if (item.IndividualBodyMass <= initialisation.PlanktonDispersalThreshold)
+                                                    TempStateVariable[cellIndices[ii][0], cellIndices[ii][1]] += item.CohortAbundance *
+                                                    ((item.IndividualBodyMass * item.SaltConcentration) -
+                                                        item.SaltDefecit + (item.GutMasses.Sum() * item.GutSaltConcentration));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else if (stateVariableType.ToLower() == "stock")
+                        {
+                            // Check to make sure that the cell has at least one stock
+                            if (InternalGrid[cellIndices[ii][0], cellIndices[ii][1]].GridCellStocks != null)
+                            {
+                                for (int nn = 0; nn < functionalGroups.Length; nn++)
+                                {
+                                    if (InternalGrid[cellIndices[ii][0], cellIndices[ii][1]].GridCellStocks[functionalGroups[nn]] != null)
+                                    {
+                                        foreach (Stock item in InternalGrid[cellIndices[ii][0], cellIndices[ii][1]].GridCellStocks[functionalGroups[nn]].ToArray())
+                                        {
+                                            TempStateVariable[cellIndices[ii][0], cellIndices[ii][1]] += (item.TotalBiomass*item.SaltConcentration);
+
+                                        }
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                    break;
                 default:
                     Debug.Fail("Invalid search string passed for cohort property");
                     break;
@@ -1984,6 +2051,40 @@ namespace Madingley
                 for (int jj = 0; jj < _NumLonCells; jj+=GridCellRarefaction)
                 {
                     outputData[ii, jj] = InternalGrid[ii, jj].CellEnvironment[enviroVariable][timeInterval];
+                }
+            }
+
+            return outputData;
+        }
+
+
+        public double[,] GetEnviroGrid(string[] enviroVariable, uint timeInterval)
+        {
+            // Check to see if environmental variable exists
+            for (int ii = 0; ii < _NumLatCells; ii++)
+            {
+                for (int jj = 0; jj < _NumLonCells; jj++)
+                {
+                    foreach (var s in enviroVariable)
+                    {
+                    
+                        if (InternalGrid[ii, jj] != null)
+                            Debug.Assert(InternalGrid[ii, jj].CellEnvironment.ContainsKey(s), "Environmental variable not found when running GetEnviroGrid");
+                    }
+                }
+            }
+
+            double[,] outputData = new double[_NumLatCells, _NumLonCells];
+
+            for (int ii = 0; ii < _NumLatCells; ii += GridCellRarefaction)
+            {
+                for (int jj = 0; jj < _NumLonCells; jj += GridCellRarefaction)
+                {
+                    foreach (var s in enviroVariable)
+                    {
+
+                        outputData[ii, jj] += InternalGrid[ii, jj].CellEnvironment[s][timeInterval];
+                    }
                 }
             }
 

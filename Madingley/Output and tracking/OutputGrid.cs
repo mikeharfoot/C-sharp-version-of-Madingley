@@ -118,6 +118,19 @@ namespace Madingley
 
         private double[,] FracEvergreen;
         
+        private double[,] SoilSaltConcentration;
+        private double[,] FecalSaltConcentration;
+        private double[,] CarcassSaltConcentration;
+        private double[,] DeadLeafSaltConcentration;
+        private double[,] LeafSaltConcentration;
+        private double[,] SaltDeposition;
+        private double[,] HerbivoreSaltMass;
+        private double[,] LargeHerbivoreSaltMass;
+        private double[,] CarnivoreSaltMass;
+        private double[,] OmnivoreSaltMass;
+
+        
+
         /// <summary>
         /// The time steps in this model simulation
         /// </summary>
@@ -263,11 +276,36 @@ namespace Madingley
             Realm = new double[ecosystemModelGrid.NumLatCells, ecosystemModelGrid.NumLonCells];
             HANPP = new double[ecosystemModelGrid.NumLatCells, ecosystemModelGrid.NumLonCells];
 
+
+            SoilSaltConcentration= new double[ecosystemModelGrid.NumLatCells, ecosystemModelGrid.NumLonCells];
+            FecalSaltConcentration= new double[ecosystemModelGrid.NumLatCells, ecosystemModelGrid.NumLonCells];
+            CarcassSaltConcentration= new double[ecosystemModelGrid.NumLatCells, ecosystemModelGrid.NumLonCells];
+            DeadLeafSaltConcentration= new double[ecosystemModelGrid.NumLatCells, ecosystemModelGrid.NumLonCells];
+            LeafSaltConcentration= new double[ecosystemModelGrid.NumLatCells, ecosystemModelGrid.NumLonCells];
+            SaltDeposition= new double[ecosystemModelGrid.NumLatCells, ecosystemModelGrid.NumLonCells];
+            HerbivoreSaltMass= new double[ecosystemModelGrid.NumLatCells, ecosystemModelGrid.NumLonCells];
+            LargeHerbivoreSaltMass= new double[ecosystemModelGrid.NumLatCells, ecosystemModelGrid.NumLonCells];
+            CarnivoreSaltMass= new double[ecosystemModelGrid.NumLatCells, ecosystemModelGrid.NumLonCells];
+            OmnivoreSaltMass= new double[ecosystemModelGrid.NumLatCells, ecosystemModelGrid.NumLonCells];
+
+
             // Temporary outputs for checking plant model
             DataConverter.AddVariable(GridOutput, "Fraction year frost", 3, GeographicalDimensions, ecosystemModelGrid.GlobalMissingValue, outLats, outLons, TimeSteps);
             DataConverter.AddVariable(GridOutput, "Fraction evergreen", 3, GeographicalDimensions, ecosystemModelGrid.GlobalMissingValue, outLats, outLons, TimeSteps);
             DataConverter.AddVariable(GridOutput, "Realm", 3, GeographicalDimensions, ecosystemModelGrid.GlobalMissingValue, outLats, outLons, TimeSteps);
             DataConverter.AddVariable(GridOutput, "HANPP", 3, GeographicalDimensions, ecosystemModelGrid.GlobalMissingValue, outLats, outLons, TimeSteps);
+
+            //Variables to track salt concentrations
+            DataConverter.AddVariable(GridOutput, "SoilSaltConcentration", 3, GeographicalDimensions, ecosystemModelGrid.GlobalMissingValue, outLats, outLons, TimeSteps);
+            DataConverter.AddVariable(GridOutput, "FecalSaltConcentration", 3, GeographicalDimensions, ecosystemModelGrid.GlobalMissingValue, outLats, outLons, TimeSteps);
+            DataConverter.AddVariable(GridOutput, "CarcassSaltConcentration", 3, GeographicalDimensions, ecosystemModelGrid.GlobalMissingValue, outLats, outLons, TimeSteps);
+            DataConverter.AddVariable(GridOutput, "DeadLeafSaltConcentration", 3, GeographicalDimensions, ecosystemModelGrid.GlobalMissingValue, outLats, outLons, TimeSteps);
+            DataConverter.AddVariable(GridOutput, "LeafSaltConcentration", 3, GeographicalDimensions, ecosystemModelGrid.GlobalMissingValue, outLats, outLons, TimeSteps);
+            DataConverter.AddVariable(GridOutput, "SaltDeposition", 3, GeographicalDimensions, ecosystemModelGrid.GlobalMissingValue, outLats, outLons, TimeSteps);
+            DataConverter.AddVariable(GridOutput, "HerbivoreSaltMass", 3, GeographicalDimensions, ecosystemModelGrid.GlobalMissingValue, outLats, outLons, TimeSteps);
+            //DataConverter.AddVariable(GridOutput, "LargeHerbivoreSaltMass", 3, GeographicalDimensions, ecosystemModelGrid.GlobalMissingValue, outLats, outLons, TimeSteps);
+            DataConverter.AddVariable(GridOutput, "CarnivoreSaltMass", 3, GeographicalDimensions, ecosystemModelGrid.GlobalMissingValue, outLats, outLons, TimeSteps);
+            DataConverter.AddVariable(GridOutput, "OmnivoreSaltMass", 3, GeographicalDimensions, ecosystemModelGrid.GlobalMissingValue, outLats, outLons, TimeSteps);
 
             // Set up outputs for medium or high output levels
             if ((ModelOutputDetail == OutputDetailLevel.Medium) || (ModelOutputDetail == OutputDetailLevel.High))
@@ -451,6 +489,27 @@ namespace Madingley
 
             HANPP = ecosystemModelGrid.GetEnviroGrid("HANPP", 0);
 
+
+
+            SoilSaltConcentration = ecosystemModelGrid.GetEnviroGrid("SoilSaltConcentration", 0);
+            FecalSaltConcentration = ecosystemModelGrid.GetEnviroGrid("FecalSaltConcentration", 0);
+            CarcassSaltConcentration = ecosystemModelGrid.GetEnviroGrid(
+                new string[] {"D1CarcassSaltConcentration","D2CarcassSaltConcentration","D3CarcassSaltConcentration","D4CarcassSaltConcentration","D5CarcassSaltConcentration"}, 0);
+            DeadLeafSaltConcentration = ecosystemModelGrid.GetEnviroGrid("DeadLeafSaltConcentration", 0);
+            LeafSaltConcentration = ecosystemModelGrid.GetStateVariableGridDensityPerSqKm("Salt", "NA", stockFunctionalGroupDefinitions.
+                AllFunctionalGroupsIndex, cellIndices, "stock", initialisation);
+            SaltDeposition = ecosystemModelGrid.GetEnviroGrid("SaltDeposition", 0);
+            HerbivoreSaltMass = ecosystemModelGrid.GetStateVariableGridDensityPerSqKm("Salt", "NA",
+                cohortFunctionalGroupDefinitions.GetFunctionalGroupIndex("Nutrition source", "Herbivore", false),
+                cellIndices, "cohort", initialisation);
+            CarnivoreSaltMass = ecosystemModelGrid.GetStateVariableGridDensityPerSqKm("Salt", "NA",
+                cohortFunctionalGroupDefinitions.GetFunctionalGroupIndex("Nutrition source", "Carnivore", false),
+                cellIndices, "cohort", initialisation);
+            OmnivoreSaltMass = ecosystemModelGrid.GetStateVariableGridDensityPerSqKm("Salt", "NA",
+                cohortFunctionalGroupDefinitions.GetFunctionalGroupIndex("Nutrition source", "Omnivore", false),
+                cellIndices, "cohort", initialisation);
+
+
             if (OutputMetrics)
             {
                 //Calculate the values for the ecosystem metrics for each of the grid cells
@@ -510,6 +569,27 @@ namespace Madingley
 
             DataConverter.Array2DToSDS3D(HANPP, "HANPP", new string[] { "Latitude", "Longitude", "Time step" },
                 0, ecosystemModelGrid.GlobalMissingValue, GridOutput);
+
+            DataConverter.Array2DToSDS3D(SoilSaltConcentration, "SoilSaltConcentration", new string[] { "Latitude", "Longitude", "Time step" },
+                0, ecosystemModelGrid.GlobalMissingValue, GridOutput);
+            DataConverter.Array2DToSDS3D(FecalSaltConcentration, "FecalSaltConcentration", new string[] { "Latitude", "Longitude", "Time step" },
+                0, ecosystemModelGrid.GlobalMissingValue, GridOutput);
+            DataConverter.Array2DToSDS3D(CarcassSaltConcentration, "CarcassSaltConcentration", new string[] { "Latitude", "Longitude", "Time step" },
+                            0, ecosystemModelGrid.GlobalMissingValue, GridOutput);
+            DataConverter.Array2DToSDS3D(LeafSaltConcentration, "LeafSaltConcentration", new string[] { "Latitude", "Longitude", "Time step" },
+                            0, ecosystemModelGrid.GlobalMissingValue, GridOutput);
+            DataConverter.Array2DToSDS3D(SaltDeposition, "SaltDeposition", new string[] { "Latitude", "Longitude", "Time step" },
+                             0, ecosystemModelGrid.GlobalMissingValue, GridOutput);
+            DataConverter.Array2DToSDS3D(HerbivoreSaltMass, "HerbivoreSaltMass", new string[] { "Latitude", "Longitude", "Time step" },
+                             0, ecosystemModelGrid.GlobalMissingValue, GridOutput);
+            DataConverter.Array2DToSDS3D(CarnivoreSaltMass, "CarnivoreSaltMass", new string[] { "Latitude", "Longitude", "Time step" },
+                              0, ecosystemModelGrid.GlobalMissingValue, GridOutput);
+            DataConverter.Array2DToSDS3D(OmnivoreSaltMass, "OmnivoreSaltMass", new string[] { "Latitude", "Longitude", "Time step" },
+                               0, ecosystemModelGrid.GlobalMissingValue, GridOutput);
+            
+            
+            
+            
 
             // File outputs for medium and high detail levels
             if ((ModelOutputDetail == OutputDetailLevel.Medium) || (ModelOutputDetail == OutputDetailLevel.High))
@@ -585,7 +665,23 @@ namespace Madingley
             DataConverter.Array2DToSDS3D(HANPP, "HANPP", new string[] { "Latitude", "Longitude", "Time step" },
                 (int)currentTimeStep + 1, ecosystemModelGrid.GlobalMissingValue, GridOutput);
 
-
+            DataConverter.Array2DToSDS3D(SoilSaltConcentration, "SoilSaltConcentration", new string[] { "Latitude", "Longitude", "Time step" },
+                (int)currentTimeStep + 1, ecosystemModelGrid.GlobalMissingValue, GridOutput);
+            DataConverter.Array2DToSDS3D(FecalSaltConcentration, "FecalSaltConcentration", new string[] { "Latitude", "Longitude", "Time step" },
+                (int)currentTimeStep + 1, ecosystemModelGrid.GlobalMissingValue, GridOutput);
+            DataConverter.Array2DToSDS3D(CarcassSaltConcentration, "CarcassSaltConcentration", new string[] { "Latitude", "Longitude", "Time step" },
+                            (int)currentTimeStep + 1, ecosystemModelGrid.GlobalMissingValue, GridOutput);
+            DataConverter.Array2DToSDS3D(LeafSaltConcentration, "LeafSaltConcentration", new string[] { "Latitude", "Longitude", "Time step" },
+                            (int)currentTimeStep + 1, ecosystemModelGrid.GlobalMissingValue, GridOutput);
+            DataConverter.Array2DToSDS3D(SaltDeposition, "SaltDeposition", new string[] { "Latitude", "Longitude", "Time step" },
+                             (int)currentTimeStep + 1, ecosystemModelGrid.GlobalMissingValue, GridOutput);
+            DataConverter.Array2DToSDS3D(HerbivoreSaltMass, "HerbivoreSaltMass", new string[] { "Latitude", "Longitude", "Time step" },
+                             (int)currentTimeStep + 1, ecosystemModelGrid.GlobalMissingValue, GridOutput);
+            DataConverter.Array2DToSDS3D(CarnivoreSaltMass, "CarnivoreSaltMass", new string[] { "Latitude", "Longitude", "Time step" },
+                              (int)currentTimeStep + 1, ecosystemModelGrid.GlobalMissingValue, GridOutput);
+            DataConverter.Array2DToSDS3D(OmnivoreSaltMass, "OmnivoreSaltMass", new string[] { "Latitude", "Longitude", "Time step" },
+                               (int)currentTimeStep + 1, ecosystemModelGrid.GlobalMissingValue, GridOutput);
+            
 
             if ((ModelOutputDetail == OutputDetailLevel.Medium) || (ModelOutputDetail == OutputDetailLevel.High))
             {

@@ -509,6 +509,8 @@ namespace Madingley
             // Calculate fractional leaf mortality
             double LeafMortFrac = 1 - Math.Exp(-TimeStepLeafMortRate);
 
+            cellEnvironment["DeadLeafSaltConcentration"][0] += LeafMortFrac * gridCellStocks[actingStock].TotalBiomass * gridCellStocks[actingStock].SaltConcentration / cellEnvironment["Cell Area"][0];
+
             // Update the leaf stock biomass owing to the leaf mortality
             gridCellStocks[actingStock].TotalBiomass *= (1 - LeafMortFrac);
             NPPWetMatter *= (1 - LeafMortFrac);

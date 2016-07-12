@@ -101,7 +101,9 @@ namespace Madingley
 
             // Get the nutrition source (herbivory, carnivory or omnivory) of the acting cohort
             string NutritionSource = madingleyCohortDefinitions.GetTraitNames("Nutrition source", gridCellCohorts[actingCohort].FunctionalGroupIndex);
-            
+
+            double[] ToSoil;
+
             // Switch to the appropriate eating process(es) given the cohort's nutrition source
             switch (NutritionSource)
             {
@@ -133,6 +135,17 @@ namespace Madingley
                         madingleyStockDefinitions, trackProcesses, 
                         currentTimestep, specificLocations,outputDetail, initialisation);
 
+                    ToSoil = gridCellCohorts[actingCohort].CalculateGutLoss();
+
+                    cellEnvironment["FecalSaltConcentration"][0] = ((ToSoil[0] * gridCellCohorts[actingCohort].CohortAbundance) +
+                        (cellEnvironment["FecalSaltConcentration"][0] * cellEnvironment["Cell Area"][0])) /
+                            cellEnvironment["Cell Area"][0];
+
+                    Debug.Assert(!double.IsNaN(ToSoil[0]),"ToSoil NaN");
+
+                    // Move the biomass eaten but not assimilated by an individual into the organic matter pool
+                    deltas["organicpool"]["herbivory"] += ToSoil[1] * gridCellCohorts[actingCohort].CohortAbundance;
+
                     break;
 
                 case "carnivore":
@@ -158,6 +171,16 @@ namespace Madingley
                         (gridCellCohorts, gridCellStocks, actingCohort, cellEnvironment, deltas, 
                         madingleyCohortDefinitions, madingleyStockDefinitions, trackProcesses, 
                         currentTimestep, specificLocations,outputDetail, initialisation);
+
+                    ToSoil = gridCellCohorts[actingCohort].CalculateGutLoss();
+
+                    Debug.Assert(!double.IsNaN(ToSoil[0]), "ToSoil NaN");
+                    cellEnvironment["FecalSaltConcentration"][0] = ((ToSoil[0] * gridCellCohorts[actingCohort].CohortAbundance) + 
+                        (cellEnvironment["FecalSaltConcentration"][0]*cellEnvironment["Cell Area"][0]))/
+                            cellEnvironment["Cell Area"][0];
+
+                    // Move the biomass eaten but not assimilated by an individual into the organic matter pool
+                    deltas["organicpool"]["predation"] += ToSoil[1] * gridCellCohorts[actingCohort].CohortAbundance;
 
 
                     break;
@@ -226,6 +249,15 @@ namespace Madingley
                         madingleyStockDefinitions, trackProcesses, 
                         currentTimestep, specificLocations,outputDetail, initialisation);
 
+                    ToSoil = gridCellCohorts[actingCohort].CalculateGutLoss();
+                    Debug.Assert(!double.IsNaN(ToSoil[0]),"ToSoil NaN");
+                    cellEnvironment["FecalSaltConcentration"][0] = ((ToSoil[0] * gridCellCohorts[actingCohort].CohortAbundance) +
+                        (cellEnvironment["FecalSaltConcentration"][0] * cellEnvironment["Cell Area"][0])) /
+                            cellEnvironment["Cell Area"][0];
+
+                    // Move the biomass eaten but not assimilated by an individual into the organic matter pool
+                    deltas["organicpool"]["omnivory"] += ToSoil[1] * gridCellCohorts[actingCohort].CohortAbundance;
+
                     break;
 
                 default:
@@ -234,6 +266,19 @@ namespace Madingley
                     Debug.Fail("The model currently does not contain an eating model for nutrition source:" + NutritionSource);
 
                     break;
+
+            }
+
+
+            //Check for salt defecit
+            if(gridCellCohorts[actingCohort].SaltDefecit > 0.0)
+            {
+                //if present the attempt to meet this demand from the soil salt pool
+                double SoilSaltUsed = Math.Min(gridCellCohorts[actingCohort].SaltDefecit * gridCellCohorts[actingCohort].CohortAbundance,
+                    cellEnvironment["SoilSaltConcentration"][0]*cellEnvironment["Cell Area"][0]);
+
+                cellEnvironment["SoilSaltConcentration"][0] = (cellEnvironment["SoilSaltConcentration"][0] * cellEnvironment["Cell Area"][0] - SoilSaltUsed) /
+                    cellEnvironment["Cell Area"][0]; 
 
             }
 

@@ -348,12 +348,25 @@ namespace Madingley
                     // Commented out for purposes of speed
                     //Debug.Assert(_BiomassesEaten[FunctionalGroup][i] >= 0,
                     //    "Herbivory negative for this herbivore cohort" + actingCohort);
-                    
+
+                    //If the cohort is in salt defecit then reduce its assimilation to meet this requirement.
+                    if (gridCellCohorts[actingCohort].SaltDefecit > 0.0)
+                        AssimilationEfficiency -= Math.Min(AssimilationEfficiency, gridCellCohorts[actingCohort].SaltDefecit / (_BiomassesEaten[FunctionalGroup][i] * gridCellStocks[FunctionalGroup][i].SaltConcentration/ gridCellCohorts[actingCohort].CohortAbundance));
+
                     // Add the biomass eaten and assimilated by an individual to the delta biomass for the acting cohort
                     deltas["biomass"]["herbivory"] += _BiomassesEaten[FunctionalGroup][i] * AssimilationEfficiency / gridCellCohorts[actingCohort].CohortAbundance;
 
+                    //Assume that the salt can be removed without the assimilation of biomass
+                    if(_BiomassesEaten[FunctionalGroup][i] * AssimilationEfficiency / gridCellCohorts[actingCohort].CohortAbundance > 0.0)
+                        gridCellCohorts[actingCohort].UpdateGutContents(_BiomassesEaten[FunctionalGroup][i]/ gridCellCohorts[actingCohort].CohortAbundance,
+                                gridCellStocks[FunctionalGroup][i].SaltConcentration,
+                                _BiomassesEaten[FunctionalGroup][i] * AssimilationEfficiency / gridCellCohorts[actingCohort].CohortAbundance);
+                        
+
+                    //cellEnvironment["FecalSaltConcentration"][currentTimestep % 30] = ToSoil[0];
+
                     // Move the biomass eaten but not assimilated by an individual into the organic matter pool
-                    deltas["organicpool"]["herbivory"] += _BiomassesEaten[FunctionalGroup][i] * (1 - AssimilationEfficiency);
+                    //deltas["organicpool"]["herbivory"] += ToSoil[1];
                 
                 }
                 

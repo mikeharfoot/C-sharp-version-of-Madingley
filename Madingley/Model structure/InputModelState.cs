@@ -99,6 +99,7 @@ namespace Madingley
             List<double[,,]> CohortBirthTimeStep = new List<double[,,]>();
             List<double[,,]> CohortProportionTimeActive = new List<double[,,]>();
             List<double[,,]> CohortTrophicIndex = new List<double[,,]>();
+            List<double[, ,]> CohortSaltConcentration = new List<double[, ,]>();
 
             float[,,,] tempData = new float[Latitude.Length, Longitude.Length,
                 CohortFunctionalGroup.Length, Cohort.Length];
@@ -257,6 +258,26 @@ namespace Madingley
                 }
             }
 
+            tempData = StateDataSet.GetData<float[, , ,]>("CohortSaltConcentration");
+
+            for (int la = 0; la < Latitude.Length; la++)
+            {
+                CohortSaltConcentration.Add(new double[Longitude.Length, CohortFunctionalGroup.Length, Cohort.Length]);
+            }
+
+            foreach (uint[] cell in cellList)
+            {
+                for (int fg = 0; fg < CohortFunctionalGroup.Length; fg++)
+                {
+                    for (int c = 0; c < Cohort.Length; c++)
+                    {
+                        CohortSaltConcentration[(int)cell[0]][cell[1], fg, c] = tempData[
+                            cell[0], cell[1], fg, c];
+                    }
+                }
+            }
+            
+
             _GridCellCohorts = new GridCellCohortHandler[Latitude.Length, Longitude.Length];
 
             long temp = 0;
@@ -282,7 +303,8 @@ namespace Madingley
                                 Convert.ToUInt16(CohortBirthTimeStep[(int)cellList[cell][0]][cellList[cell][1], fg, c]),
                                 CohortProportionTimeActive[(int)cellList[cell][0]][cellList[cell][1], fg, c], ref temp,
                                 CohortTrophicIndex[(int)cellList[cell][0]][cellList[cell][1], fg, c],
-                                tracking);
+                                tracking,
+                                CohortSaltConcentration[(int)cellList[cell][0]][cellList[cell][1], fg, c]);
 
                             _GridCellCohorts[cellList[cell][0], cellList[cell][1]][fg].Add(TempCohort);
                         }
@@ -302,6 +324,7 @@ namespace Madingley
 
             List<double[,,]> StockIndividualBodyMass = new List<double[,,]>();
             List<double[,,]> StockTotalBiomass = new List<double[,,]>();
+            List<double[, ,]> StockSaltConcentration = new List<double[, ,]>();
 
             float[,,,] tempData2 = new float[Latitude.Length, Longitude.Length,
                 StockFunctionalGroup.Length,Stock.Length];
@@ -344,6 +367,25 @@ namespace Madingley
                 }
             }
 
+            tempData2 = StateDataSet.GetData<float[, , ,]>("StockSaltConcentration");
+
+            for (int la = 0; la < Latitude.Length; la++)
+            {
+                StockSaltConcentration.Add(new double[Longitude.Length, StockFunctionalGroup.Length, Stock.Length]);
+            }
+
+            foreach (uint[] cell in cellList)
+            {
+                for (int fg = 0; fg < StockFunctionalGroup.Length; fg++)
+                {
+                    for (int c = 0; c < Stock.Length; c++)
+                    {
+                        StockSaltConcentration[(int)cell[0]][cell[1], fg, c] = tempData2[
+                            cell[0], cell[1], fg, c];
+                    }
+                }
+            }
+
             _GridCellStocks = new GridCellStockHandler[Latitude.Length, Longitude.Length];
             
             for (int cell = 0; cell < cellList.Count; cell++)
@@ -360,7 +402,8 @@ namespace Madingley
                             Stock TempStock = new Stock(
                                 (byte)fg, 
                                 StockIndividualBodyMass[(int)cellList[cell][0]][cellList[cell][1], fg, c],
-                                StockTotalBiomass[(int)cellList[cell][0]][cellList[cell][1], fg, c]);
+                                StockTotalBiomass[(int)cellList[cell][0]][cellList[cell][1], fg, c],
+                                StockSaltConcentration[(int)cellList[cell][0]][cellList[cell][1], fg, c]);
 
                             _GridCellStocks[cellList[cell][0], cellList[cell][1]][fg].Add(TempStock);
                         }
@@ -403,10 +446,12 @@ namespace Madingley
             double PropTimeActive;
             uint MaturityTimestep;
             double MaxBm;
+            double SaltConcentration;
 
             int SFG;
             double SIM;
             double STM;
+            double SSC;
 
             uint lat_ind;
             uint lon_ind;
@@ -439,8 +484,9 @@ namespace Madingley
                     i = 7;
                     SIM = Convert.ToDouble(vals[i++]);
                     STM = Convert.ToDouble(vals[i++]);
+                    SSC = Convert.ToDouble(vals[i++]);
                     
-                    Stock NewStock = new Stock((byte)SFG, SIM, STM);
+                    Stock NewStock = new Stock((byte)SFG, SIM, STM,SSC);
 
                     if (_GridCellStocks[lat_ind, lon_ind][SFG] == null) _GridCellStocks[lat_ind, lon_ind][SFG] = new List<Stock>();
                     _GridCellStocks[lat_ind, lon_ind].Add(SFG, NewStock);
@@ -460,12 +506,13 @@ namespace Madingley
                     MaxBm = Convert.ToDouble(vals[i++]);
                     TI = Convert.ToDouble(vals[i++]);
                     PropTimeActive = Convert.ToDouble(vals[i++]);
+                    SaltConcentration = Convert.ToDouble(vals[i++]);
 
                     //Instantiate the list for this functional group
 
                     if(_GridCellCohorts[lat_ind, lon_ind][Fg] == null) _GridCellCohorts[lat_ind, lon_ind][Fg] = new List<Cohort>();
 
-                    Cohort NewCohort = new Cohort((byte) Fg, J_bm, A_bm, Bm, N, LogOptPreySize,MaxBm, (ushort)BirthTimestep, (ushort)MaturityTimestep, PropTimeActive, ref cid, TI, tracking);
+                    Cohort NewCohort = new Cohort((byte) Fg, J_bm, A_bm, Bm, N, LogOptPreySize,MaxBm, (ushort)BirthTimestep, (ushort)MaturityTimestep, PropTimeActive, ref cid, TI, tracking,SaltConcentration);
                     _GridCellCohorts[lat_ind, lon_ind].Add(Fg, NewCohort);
 
                 }

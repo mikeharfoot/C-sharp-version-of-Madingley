@@ -591,6 +591,7 @@ namespace Madingley
             }
 
             
+            
         }
 
         /// <summary>
@@ -605,6 +606,9 @@ namespace Madingley
         public void RunCell(int cellIndex, ThreadLockedParallelVariables partial, Boolean dispersalOnly, 
             MadingleyModelInitialisation initialisation)
         {
+
+            SaltDeposition(EcosystemModelGrid.GetCellEnvironment(_CellList[cellIndex][0], _CellList[cellIndex][1]));
+
             // Apply any climate change impacts
             ClimateChangeSimulator.ApplyTemperatureScenario(
                 EcosystemModelGrid.GetCellEnvironment(_CellList[cellIndex][0], _CellList[cellIndex][1]),
@@ -647,6 +651,10 @@ namespace Madingley
                 ProcessTrackers[cellIndex].EndTimeStepHerbvioryTracking(CurrentTimeStep);
             }
 
+            UpdateSoilCarcassPools(EcosystemModelGrid.GetCellEnvironment(_CellList[cellIndex][0], _CellList[cellIndex][1]));
+            UpdateSoilFecalPools(EcosystemModelGrid.GetCellEnvironment(_CellList[cellIndex][0], _CellList[cellIndex][1]));
+            SoilSaltLeaching(EcosystemModelGrid.GetCellEnvironment(_CellList[cellIndex][0], _CellList[cellIndex][1]));
+            
         }
 
 
@@ -1138,6 +1146,9 @@ namespace Madingley
                 }
             }
 
+            UpdateLeafDecomposition(EcosystemModelGrid.GetCellEnvironment(latCellIndex, lonCellIndex));
+            
+
         }
 
         private void RunWithinCellCohortEcology(uint latCellIndex, uint lonCellIndex, ThreadLockedParallelVariables partial, 
@@ -1283,6 +1294,53 @@ namespace Madingley
             
             // Write out the updated cohort numbers after all ecological processes have occured
             EcosystemModelGrid.SetGridCellCohorts(workingGridCellCohorts, latCellIndex, lonCellIndex);
+
+        }
+
+        /// <summary>
+        /// Updates the carcass pool by advancing them in time by one timestep
+        /// </summary>
+        /// <param name="?"></param>
+        private void UpdateSoilCarcassPools(SortedList<string,double[]> cellEnvironment)
+        {
+            //Add the most decayed pool to the soil
+            cellEnvironment["SoilSaltConcentration"][0] += cellEnvironment["D5CarcassSaltConcentration"][0];
+
+            //Advance the decay of the other carcass pools
+            cellEnvironment["D5CarcassSaltConcentration"][0] = cellEnvironment["D4CarcassSaltConcentration"][0];
+            cellEnvironment["D4CarcassSaltConcentration"][0] = cellEnvironment["D3CarcassSaltConcentration"][0];
+            cellEnvironment["D3CarcassSaltConcentration"][0] = cellEnvironment["D2CarcassSaltConcentration"][0];
+            cellEnvironment["D2CarcassSaltConcentration"][0] = cellEnvironment["D1CarcassSaltConcentration"][0];
+            cellEnvironment["D1CarcassSaltConcentration"][0] = 0.0;
+        }
+
+
+        private void UpdateSoilFecalPools(SortedList<string,double[]> cellEnvironment)
+        {
+            double FecalSaltLoss = 0.1 * cellEnvironment["FecalSaltConcentration"][0] * cellEnvironment["Cell Area"][0];
+            cellEnvironment["FecalSaltConcentration"][0] = (-FecalSaltLoss + (cellEnvironment["FecalSaltConcentration"][0] * cellEnvironment["Cell Area"][0]))/
+                cellEnvironment["Cell Area"][0];
+            cellEnvironment["SoilSaltConcentration"][0] = (FecalSaltLoss + (cellEnvironment["SoilSaltConcentration"][0] * cellEnvironment["Cell Area"][0])) /
+                cellEnvironment["Cell Area"][0];
+        }
+
+        private void UpdateLeafDecomposition(SortedList<string,double[]> cellEnvironment)
+        {
+            double SaltLoss = 0.05 * cellEnvironment["DeadLeafSaltConcentration"][0] * cellEnvironment["Cell Area"][0];
+            cellEnvironment["DeadLeafSaltConcentration"][0] = (-SaltLoss +(cellEnvironment["DeadLeafSaltConcentration"][0] * cellEnvironment["Cell Area"][0]))/
+                cellEnvironment["Cell Area"][0];
+            cellEnvironment["SoilSaltConcentration"][0] = (SaltLoss + (cellEnvironment["SoilSaltConcentration"][0]*cellEnvironment["Cell Area"][0]))/
+                cellEnvironment["Cell Area"][0];
+        }
+
+        private void SoilSaltLeaching(SortedList<string,double[]> cellEnvironment)
+        {
+            cellEnvironment["SoilSaltConcentration"][0] -= 0.01*cellEnvironment["SoilSaltConcentration"][0];
+        }
+
+        private void SaltDeposition(SortedList<string,double[]> cellEnvironment)
+        {
+            cellEnvironment["SoilSaltConcentration"][0] += cellEnvironment["SaltDeposition"][0];
         }
 
         /// <summary>

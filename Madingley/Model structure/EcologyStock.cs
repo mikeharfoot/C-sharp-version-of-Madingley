@@ -89,8 +89,16 @@ namespace Madingley
                 double fhanpp = HANPP.RemoveHumanAppropriatedMatter(WetMatterNPP, cellEnvironment, humanNPPScenario, gridCellStocks, actingStock, 
                     currentTimeStep,burninSteps,impactSteps,recoverySteps,instantStep, numInstantSteps,impactCell, globalModelTimeStepUnit);
 
+                double saltNewLeafBiomass = (30*cellEnvironment["SoilSaltConcentration"][0]* WetMatterNPP * (1.0 - fhanpp));
+
+                //Alter the leaf salt concentration:
+                gridCellStocks[actingStock].SaltConcentration = 
+                    (gridCellStocks[actingStock].SaltConcentration*gridCellStocks[actingStock].TotalBiomass + saltNewLeafBiomass)/
+                        (gridCellStocks[actingStock].TotalBiomass + (WetMatterNPP * (1.0 - fhanpp)));
+
                 // Apply human appropriation of NPP
                 gridCellStocks[actingStock].TotalBiomass += WetMatterNPP * (1.0 - fhanpp);
+                
                 if (globalTracker.TrackProcesses)
                 {
                     globalTracker.RecordHANPP((uint)cellEnvironment["LatIndex"][0], (uint)cellEnvironment["LonIndex"][0], (uint)actingStock[0],

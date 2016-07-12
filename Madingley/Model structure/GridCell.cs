@@ -171,6 +171,7 @@ namespace Madingley
             Dictionary<string, double> DeltaOrganicPool = new Dictionary<string, double>();
             DeltaOrganicPool.Add("herbivory", 0.0);
             DeltaOrganicPool.Add("predation", 0.0);
+            DeltaOrganicPool.Add("omnivory", 0.0);
             DeltaOrganicPool.Add("mortality", 0.0);
 
             // Add delta organic pool sorted list to deltas sorted list
@@ -182,6 +183,8 @@ namespace Madingley
 
             // Add delta respiratory CO2 pool to deltas sorted list
             _Deltas.Add("respiratoryCO2pool", DeltaRespiratoryCO2Pool);
+
+            
 
             // Set the grid cell values of latitude, longitude and missing value as specified
             _Latitude = latitude;
@@ -230,6 +233,66 @@ namespace Madingley
             tempVector = new double[1];
             tempVector[0] = missingValue;
             _CellEnvironment.Add("Missing Value", tempVector);
+
+            //Add an environmental field for soil salt
+            tempVector = new double[1];
+            for (int i = 0; i < tempVector.Length; i++)
+            {
+                tempVector[i] = 1000;  
+            } 
+            _CellEnvironment.Add("SoilSaltConcentration", tempVector);
+
+
+            //Add an environmental field for excretal salt
+            tempVector = new double[1];
+            for (int i = 0; i < tempVector.Length; i++)
+            {
+                tempVector[i] = 0;
+            } 
+            _CellEnvironment.Add("FecalSaltConcentration", tempVector);
+
+            //Add an environmental field for carcass salt
+            tempVector = new double[1];
+            for (int i = 0; i < tempVector.Length; i++)
+            {
+                tempVector[i] = 0;
+            }
+            _CellEnvironment.Add("D1CarcassSaltConcentration", tempVector);
+            tempVector = new double[1];
+            for (int i = 0; i < tempVector.Length; i++)
+            {
+                tempVector[i] = 0;
+            }
+            _CellEnvironment.Add("D2CarcassSaltConcentration", tempVector);
+            tempVector = new double[1];
+            for (int i = 0; i < tempVector.Length; i++)
+            {
+                tempVector[i] = 0;
+            }
+            _CellEnvironment.Add("D3CarcassSaltConcentration", tempVector);
+            tempVector = new double[1];
+            for (int i = 0; i < tempVector.Length; i++)
+            {
+                tempVector[i] = 0;
+            }
+            _CellEnvironment.Add("D4CarcassSaltConcentration", tempVector);
+            tempVector = new double[1];
+            for (int i = 0; i < tempVector.Length; i++)
+            {
+                tempVector[i] = 0;
+            }
+            _CellEnvironment.Add("D5CarcassSaltConcentration", tempVector);
+
+
+            //Add an environmental field for carcass salt
+            tempVector = new double[1];
+            for (int i = 0; i < tempVector.Length; i++)
+            {
+                tempVector[i] = 0;
+            }
+            _CellEnvironment.Add("DeadLeafSaltConcentration", tempVector);
+
+
 
             // Loop through environmental data layers and extract values for this grid cell
             // Also standardise missing values
@@ -624,6 +687,7 @@ namespace Madingley
             int[] FunctionalGroupsToUse;
             double NumCohortsThisCell;
             double TotalNewBiomass =0.0;
+            double SaltConcentration;
 
             // Get the minimum and maximum possible body masses for organisms in each functional group
             double[] MassMinima = functionalGroups.GetBiologicalPropertyAllFunctionalGroups("minimum mass");
@@ -734,6 +798,8 @@ namespace Madingley
                                         }
                                     } while (CohortAdultMass <= CohortJuvenileMass || CohortJuvenileMass < MassMinima[FunctionalGroup]);
                                 }
+
+                                SaltConcentration = RandomNumberGenerator.GetNormal(0.002, 0.0005);
                             }
                             else
                             {
@@ -769,6 +835,8 @@ namespace Madingley
                                         CohortJuvenileMass = CohortAdultMass * 1.0 / CohortAdultMassRatio;
                                     } while (CohortAdultMass <= CohortJuvenileMass || CohortJuvenileMass < MassMinima[FunctionalGroup]);
                                 }
+
+                                SaltConcentration = RandomNumberGenerator.GetNormal(0.002, 0.0005);
                             }
 
                             // An instance of Cohort to hold the new cohort
@@ -814,7 +882,7 @@ namespace Madingley
                             
                             // Initialise the new cohort with the relevant properties
                             NewCohort = new Cohort((byte)FunctionalGroup, CohortJuvenileMass, CohortAdultMass, CohortJuvenileMass, NewAbund,
-                            OptimalPreyBodySizeRatio, (ushort)0, ProportionTimeActive[FunctionalGroup], ref CohortIDIncrementer,TrophicIndex, tracking);
+                            OptimalPreyBodySizeRatio, (ushort)0, ProportionTimeActive[FunctionalGroup], ref CohortIDIncrementer,TrophicIndex, tracking,SaltConcentration);
 
                             // Add the new cohort to the list of grid cell cohorts
                             _GridCellCohorts[FunctionalGroup].Add(NewCohort);
@@ -933,7 +1001,7 @@ namespace Madingley
                         double LeafMass = PlantModel.CalculateEquilibriumLeafMass(_CellEnvironment, functionalGroups.GetTraitNames("leaf strategy", FunctionalGroup) == "deciduous");
 
                         // Initialise the new stock with the relevant properties
-                        NewStock = new Stock((byte)FunctionalGroup, IndividualMass[FunctionalGroup], LeafMass);
+                        NewStock = new Stock((byte)FunctionalGroup, IndividualMass[FunctionalGroup], LeafMass,10);
 
                         // Add the new stock to the list of grid cell stocks
                         _GridCellStocks[FunctionalGroup].Add(NewStock);
@@ -946,7 +1014,7 @@ namespace Madingley
                     else if (FunctionalGroupsToUse.Contains(FunctionalGroup))
                     {
                         // Initialise the new stock with the relevant properties
-                        NewStock = new Stock((byte)FunctionalGroup, IndividualMass[FunctionalGroup], 1e12);
+                        NewStock = new Stock((byte)FunctionalGroup, IndividualMass[FunctionalGroup], 1e12,10);
 
                         // Add the new stock to the list of grid cell stocks
                         _GridCellStocks[FunctionalGroup].Add(NewStock);
