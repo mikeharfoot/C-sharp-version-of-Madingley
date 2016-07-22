@@ -258,7 +258,7 @@ namespace Madingley
         public ModelGrid(float minLat, float minLon,float maxLat,float maxLon,float latCellSize,float lonCellSize, 
             SortedList<string,EnviroData> enviroStack, FunctionalGroupDefinitions cohortFunctionalGroups, FunctionalGroupDefinitions
             stockFunctionalGroups, SortedList<string, double> globalDiagnostics, Boolean tracking, Boolean DrawRandomly, 
-            Boolean specificLocations)
+            Boolean specificLocations, string globalModelTimeStepUnit)
         {
             // Add one to the counter of the number of grids. If there is more than one model grid, exit the program with a debug crash.
             NumGrids = NumGrids + 1;
@@ -337,7 +337,7 @@ namespace Madingley
                 for (int jj = 0; jj < _NumLonCells; jj+=GridCellRarefaction)
                 {
                     InternalGrid[ii, jj] = new GridCell(_Lats[ii],(uint)ii, _Lons[jj],(uint)jj, LatCellSize, LonCellSize, enviroStack,
-                        GlobalMissingValue, cohortFunctionalGroups, stockFunctionalGroups, globalDiagnostics, tracking, specificLocations);
+                        GlobalMissingValue, cohortFunctionalGroups, stockFunctionalGroups, globalDiagnostics, tracking, specificLocations,globalModelTimeStepUnit);
                     CellsForDispersal[ii,jj] = new List<uint[]>();
                     CellsForDispersalDirection[ii, jj] = new List<uint>();
                     Console.Write("\rRow {0} of {1}", ii+1, NumLatCells/GridCellRarefaction);
@@ -347,7 +347,7 @@ namespace Madingley
             Console.WriteLine("");
 
 
-            InterpolateMissingValues();
+            InterpolateMissingValues(globalModelTimeStepUnit);
 
 
             // Fill in the array of dispersable perimeter lengths for each grid cell
@@ -384,8 +384,8 @@ namespace Madingley
         /// <param name="runInParallel">Whether model grid cells will be run in parallel</param>
         public ModelGrid(float minLat, float minLon, float maxLat, float maxLon, float latCellSize, float lonCellSize, List<uint[]> cellList, 
             SortedList<string, EnviroData> enviroStack, FunctionalGroupDefinitions cohortFunctionalGroups,
-            FunctionalGroupDefinitions stockFunctionalGroups, SortedList<string, double> globalDiagnostics, Boolean tracking, 
-            Boolean specificLocations, Boolean runInParallel)
+            FunctionalGroupDefinitions stockFunctionalGroups, SortedList<string, double> globalDiagnostics, Boolean tracking,
+            Boolean specificLocations, Boolean runInParallel, string globalModelTimeStepUnit)
         { 
             // Add one to the counter of the number of grids. If there is more than one model grid, exit the program with a debug crash.
             NumGrids = NumGrids + 1;
@@ -459,7 +459,7 @@ namespace Madingley
                     // Create the grid cell at the specified position
                     InternalGrid[cellList[ii][0], cellList[ii][1]] = new GridCell(_Lats[cellList[ii][0]], cellList[ii][0],
                         _Lons[cellList[ii][1]], cellList[ii][1], latCellSize, lonCellSize, enviroStack, _GlobalMissingValue,
-                        cohortFunctionalGroups, stockFunctionalGroups, globalDiagnostics, tracking, specificLocations);
+                        cohortFunctionalGroups, stockFunctionalGroups, globalDiagnostics, tracking, specificLocations, globalModelTimeStepUnit);
                     if (!specificLocations)
                     {
                         CellsForDispersal[cellList[ii][0], cellList[ii][1]] = new List<uint[]>();
@@ -485,7 +485,7 @@ namespace Madingley
                     // Create the grid cell at the specified position
                     InternalGrid[cellList[ii][0], cellList[ii][1]] = new GridCell(_Lats[cellList[ii][0]], cellList[ii][0],
                         _Lons[cellList[ii][1]], cellList[ii][1], latCellSize, lonCellSize, enviroStack, _GlobalMissingValue,
-                        cohortFunctionalGroups, stockFunctionalGroups, globalDiagnostics, tracking, specificLocations);
+                        cohortFunctionalGroups, stockFunctionalGroups, globalDiagnostics, tracking, specificLocations, globalModelTimeStepUnit);
                     if (!specificLocations)
                     {
                         CellsForDispersal[cellList[ii][0], cellList[ii][1]] = new List<uint[]>();
@@ -502,7 +502,7 @@ namespace Madingley
 
             if (!specificLocations)
             {
-                InterpolateMissingValues();
+                InterpolateMissingValues(globalModelTimeStepUnit);
 
 
                 // Fill in the array of dispersable perimeter lengths for each grid cell
@@ -527,7 +527,7 @@ namespace Madingley
         /// <summary>
         /// Estimates missing environmental data for grid cells by interpolation
         /// </summary>
-        public void InterpolateMissingValues()
+        public void InterpolateMissingValues(string globalModelTimeStepUnit)
         {
             SortedList<string, double[]> WorkingCellEnvironment = new SortedList<string, double[]>();
             Boolean Changed = false;
@@ -545,7 +545,7 @@ namespace Madingley
                         WorkingCellEnvironment["NPP"] = GetInterpolatedValues(ii, jj, GetCellLatitude(ii), GetCellLongitude(jj), "NPP", WorkingCellEnvironment["Realm"][0]);
                         
                         //Calculate NPP seasonality - for use in converting annual NPP estimates to monthly
-                        WorkingCellEnvironment["Seasonality"] = InternalGrid[ii, jj].CalculateNPPSeasonality(WorkingCellEnvironment["NPP"], WorkingCellEnvironment["Missing Value"][0]);
+                        WorkingCellEnvironment["Seasonality"] = InternalGrid[ii, jj].CalculateNPPSeasonality(WorkingCellEnvironment["NPP"], WorkingCellEnvironment["Missing Value"][0], globalModelTimeStepUnit);
                         Changed = true;
                     }
                     // Otherwise convert the missing data values to zeroes where they exist amongst valid data eg in polar regions.

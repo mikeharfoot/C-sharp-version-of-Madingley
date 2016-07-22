@@ -536,7 +536,7 @@ namespace Madingley
 
                      //Writing to text based output
                      WriteModelState.OutputCurrentModelState( EcosystemModelGrid, _CellList, hh);
-                     WriteModelState.OutputCurrentModelState(EcosystemModelGrid,CohortFunctionalGroupDefinitions, _CellList, CurrentTimeStep, initialisation.MaxNumberOfCohorts,"ModelState");
+                     //WriteModelState.OutputCurrentModelState(EcosystemModelGrid,CohortFunctionalGroupDefinitions, _CellList, CurrentTimeStep, initialisation.MaxNumberOfCohorts,"ModelState");
                      
 
                      OutputTimer.Stop();
@@ -763,8 +763,7 @@ namespace Madingley
                 // Set up the model grid using these locations
                 EcosystemModelGrid = new ModelGrid(BottomLatitude, LeftmostLongitude, TopLatitude, RightmostLongitude,
                     CellSize, CellSize, _CellList, EnviroStack, CohortFunctionalGroupDefinitions, StockFunctionalGroupDefinitions,
-                    GlobalDiagnosticVariables, initialisation.TrackProcesses, SpecificLocations,RunGridCellsInParallel);
-
+                    GlobalDiagnosticVariables, initialisation.TrackProcesses, SpecificLocations, RunGridCellsInParallel,GlobalModelTimeStepUnit);
             }
             else
             {
@@ -799,7 +798,7 @@ namespace Madingley
                 // Set up the model grid using these locations
                 EcosystemModelGrid = new ModelGrid(BottomLatitude, LeftmostLongitude, TopLatitude, RightmostLongitude,
                     CellSize, CellSize, _CellList, EnviroStack, CohortFunctionalGroupDefinitions, StockFunctionalGroupDefinitions,
-                    GlobalDiagnosticVariables, initialisation.TrackProcesses, SpecificLocations, RunGridCellsInParallel);
+                    GlobalDiagnosticVariables, initialisation.TrackProcesses, SpecificLocations, RunGridCellsInParallel, GlobalModelTimeStepUnit);
 
                 List<int> cellsToRemove = new List<int>();
                 if (initialisation.RunRealm == "terrestrial")

@@ -219,6 +219,10 @@ namespace Madingley
         /// </summary>
         private NonStaticSimpleRNG RandomNumberGenerator = new NonStaticSimpleRNG();
 
+        private double MaxdistanceOptimalPreyPredRatio = 1.5;
+        /// <summary>
+        /// Hard-coded (for now) distance in log-space from optimal ratio of prey/pred that a given predator can feed upon
+        /// </summary>
 
         /// <summary>
         /// Constructor for predation: assigns all parameter values
@@ -339,7 +343,11 @@ namespace Madingley
                 _PredatorLogOptimalPreyBodySizeRatio = Math.Log(
                     Math.Exp(gridCellCohorts[actingCohort[0]][actingCohort[1]].LogOptimalPreyBodySizeRatio) / gridCellCohorts[actingCohort[0]][actingCohort[1]].IndividualBodyMass);
             }
-            
+
+            double optimalPreyBodySizeRatio = Math.Exp(_PredatorLogOptimalPreyBodySizeRatio);
+            double CriticalPreyBodySizeUp = (_BodyMassPredator * optimalPreyBodySizeRatio) * Math.Exp(MaxdistanceOptimalPreyPredRatio);
+            double CriticalPreyBodySizeDown = (_BodyMassPredator * optimalPreyBodySizeRatio) * Math.Exp(-MaxdistanceOptimalPreyPredRatio);
+
 
             // Calculate the reference mass scaling ratio
             _ReferenceMassRatioScalingMarine = HandlingTimeScalarMarine * Math.Pow(_ReferenceMass / _BodyMassPredator, _HandlingTimeExponentMarine);
@@ -365,16 +373,22 @@ namespace Madingley
                         _BodyMassPrey = gridCellCohorts[FunctionalGroup][i].IndividualBodyMass;
  
                         // Get the bin number of this prey cohort
-                        PreyMassBinNumber = GetBinNumber(_BodyMassPrey, LogPredatorMassPlusPredatorLogOptimalPreyBodySizeRatio);
+                        //PreyMassBinNumber = GetBinNumber(_BodyMassPrey, LogPredatorMassPlusPredatorLogOptimalPreyBodySizeRatio);
 
 
                         // Check whether 
                         // The prey cohort is within the feeding range of the predator
                         // the prey cohort still exists in the model (i.e. body mass > 0)   
                         // Currently having whales etc eat everything, but preferentially feed on very small things (i.e. filter feeders)
-                    if ((_PlanktonFunctionalGroups[FunctionalGroup]) && (0 < PreyMassBinNumber) &&
-                        (PreyMassBinNumber < NumberOfBins) && (_BodyMassPrey > 0))
+                    //if ((_PlanktonFunctionalGroups[FunctionalGroup]) && (0 < PreyMassBinNumber) &&
+                    //    (PreyMassBinNumber < NumberOfBins) && (_BodyMassPrey > 0))
+                    //    {
+                        // 1.5 for 1 in 100 chances of being predated 1.611 for 1 chance in 500   1.8405 for 1 change in 1000
+                        // if (Math.Abs(Math.Log(_BodyMassPrey / _BodyMassPredator) - _PredatorLogOptimalPreyBodySizeRatio) < 1.5 && _BodyMassPrey > 0)
+                        if ((_PlanktonFunctionalGroups[FunctionalGroup]) && _BodyMassPrey > CriticalPreyBodySizeDown && _BodyMassPrey < CriticalPreyBodySizeUp)
                         {
+
+                            PreyMassBinNumber = GetBinNumber(_BodyMassPrey, LogPredatorMassPlusPredatorLogOptimalPreyBodySizeRatio); // this stays here in the edited formulation of predation
                             // Calculate the potential abundance from this cohort eaten by the acting cohort
                             _PotentialAbundanceEaten[FunctionalGroup][i] = CalculateExpectedNumberKilledMarine(
                                 gridCellCohorts[FunctionalGroup][i].CohortAbundance, _BodyMassPrey, PreyMassBinNumber, FunctionalGroup,
@@ -402,13 +416,19 @@ namespace Madingley
                         _BodyMassPrey = gridCellCohorts[FunctionalGroup][i].IndividualBodyMass;
 
                         // Get the bin number of this prey cohort
-                        PreyMassBinNumber = GetBinNumber(_BodyMassPrey, LogPredatorMassPlusPredatorLogOptimalPreyBodySizeRatio);
+                        //PreyMassBinNumber = GetBinNumber(_BodyMassPrey, LogPredatorMassPlusPredatorLogOptimalPreyBodySizeRatio);
 
                         // Check whether 
                         // The prey cohort is within the feeding range of the predator
                         // the prey cohort still exists in the model (i.e. body mass > 0)   
-                        if ((0 < PreyMassBinNumber) && (PreyMassBinNumber < NumberOfBins) && (_BodyMassPrey > 0))
+                        //if ((0 < PreyMassBinNumber) && (PreyMassBinNumber < NumberOfBins) && (_BodyMassPrey > 0))
+                        //{
+                        // 1.5 for 1 in 100 chances of being predated 1.611 for 1 chance in 500   1.8405 for 1 change in 1000
+                        // if (Math.Abs(Math.Log(_BodyMassPrey / _BodyMassPredator) - _PredatorLogOptimalPreyBodySizeRatio) < 1.5 && _BodyMassPrey > 0)
+                        if (_BodyMassPrey > CriticalPreyBodySizeDown && _BodyMassPrey < CriticalPreyBodySizeUp)
                         {
+
+                            PreyMassBinNumber = GetBinNumber(_BodyMassPrey, LogPredatorMassPlusPredatorLogOptimalPreyBodySizeRatio); // this stays here in the edited formulation of predation
                             // Calculate the potential abundance from this cohort eaten by the acting cohort
                             _PotentialAbundanceEaten[FunctionalGroup][i] = CalculateExpectedNumberKilledMarine(
                                gridCellCohorts[FunctionalGroup][i].CohortAbundance, _BodyMassPrey, PreyMassBinNumber, FunctionalGroup,
@@ -538,6 +558,11 @@ namespace Madingley
 
                 _PredatorLogOptimalPreyBodySizeRatio = gridCellCohorts[actingCohort[0]][actingCohort[1]].LogOptimalPreyBodySizeRatio;
 
+                double optimalPreyBodySizeRatio = Math.Exp(gridCellCohorts[actingCohort[0]][actingCohort[1]].LogOptimalPreyBodySizeRatio);
+
+                double CriticalPreyBodySizeUp = (_BodyMassPredator * optimalPreyBodySizeRatio) * Math.Exp(MaxdistanceOptimalPreyPredRatio);
+                double CriticalPreyBodySizeDown = (_BodyMassPredator * optimalPreyBodySizeRatio) * Math.Exp(-MaxdistanceOptimalPreyPredRatio);
+
             
             LogPredatorMassPlusPredatorLogOptimalPreyBodySizeRatio = Math.Log(_BodyMassPredator) + _PredatorLogOptimalPreyBodySizeRatio;
 
@@ -555,11 +580,16 @@ namespace Madingley
                     _BodyMassPrey = gridCellCohorts[FunctionalGroup][i].IndividualBodyMass;
 
                     // Get the bin number of this prey cohort
-                    PreyMassBinNumber = GetBinNumber(_BodyMassPrey, LogPredatorMassPlusPredatorLogOptimalPreyBodySizeRatio);
+                    //PreyMassBinNumber = GetBinNumber(_BodyMassPrey, LogPredatorMassPlusPredatorLogOptimalPreyBodySizeRatio);
 
                     // Check whether the prey cohort still exists in the model (i.e. body mass > 0)            
-                    if ((0 < PreyMassBinNumber) && (PreyMassBinNumber < NumberOfBins) && (_BodyMassPrey > 0))
+                    //if ((0 < PreyMassBinNumber) && (PreyMassBinNumber < NumberOfBins) && (_BodyMassPrey > 0))
+                    //{
+                    //1.5 for 1 in 100 chances of being predated 1.611 for 1 chance in 500 to be predated, 1.8405 for 1 chance in 1000
+                    // if (Math.Abs(Math.Log(_BodyMassPrey / _BodyMassPredator) - _PredatorLogOptimalPreyBodySizeRatio) < 1.5 && _BodyMassPrey > 0)
+                    if (_BodyMassPrey > CriticalPreyBodySizeDown && _BodyMassPrey < CriticalPreyBodySizeUp)
                     {
+                        PreyMassBinNumber = GetBinNumber(_BodyMassPrey, LogPredatorMassPlusPredatorLogOptimalPreyBodySizeRatio); // this stays here in the edited code 
                         // Calculate the potential abundance from this cohort eaten by the acting cohort
                         _PotentialAbundanceEaten[FunctionalGroup][i] = CalculateExpectedNumberKilledTerrestrial(
                             gridCellCohorts[FunctionalGroup][i].CohortAbundance, _BodyMassPrey, PreyMassBinNumber, FunctionalGroup,
