@@ -238,7 +238,7 @@ namespace Madingley
             tempVector = new double[1];
             for (int i = 0; i < tempVector.Length; i++)
             {
-                tempVector[i] = 1000;  
+                tempVector[i] = 50000;  
             } 
             _CellEnvironment.Add("SoilSaltConcentration", tempVector);
 
@@ -1001,7 +1001,7 @@ namespace Madingley
                         double LeafMass = PlantModel.CalculateEquilibriumLeafMass(_CellEnvironment, functionalGroups.GetTraitNames("leaf strategy", FunctionalGroup) == "deciduous");
 
                         // Initialise the new stock with the relevant properties
-                        NewStock = new Stock((byte)FunctionalGroup, IndividualMass[FunctionalGroup], LeafMass,10);
+                        NewStock = new Stock((byte)FunctionalGroup, IndividualMass[FunctionalGroup], LeafMass,500/LeafMass);
 
                         // Add the new stock to the list of grid cell stocks
                         _GridCellStocks[FunctionalGroup].Add(NewStock);
@@ -1014,7 +1014,7 @@ namespace Madingley
                     else if (FunctionalGroupsToUse.Contains(FunctionalGroup))
                     {
                         // Initialise the new stock with the relevant properties
-                        NewStock = new Stock((byte)FunctionalGroup, IndividualMass[FunctionalGroup], 1e12,10);
+                        NewStock = new Stock((byte)FunctionalGroup, IndividualMass[FunctionalGroup], 1e12,500/1e12);
 
                         // Add the new stock to the list of grid cell stocks
                         _GridCellStocks[FunctionalGroup].Add(NewStock);
