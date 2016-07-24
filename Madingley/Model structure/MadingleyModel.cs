@@ -1304,7 +1304,7 @@ namespace Madingley
         private void UpdateSoilCarcassPools(SortedList<string,double[]> cellEnvironment)
         {
             //Add the most decayed pool to the soil
-            cellEnvironment["SoilSaltConcentration"][0] += cellEnvironment["D5CarcassSaltConcentration"][0];
+            cellEnvironment["SoilSaltConcentration"][0] += cellEnvironment["D5CarcassSaltConcentration"][0]/1000;
 
             //Advance the decay of the other carcass pools
             cellEnvironment["D5CarcassSaltConcentration"][0] = cellEnvironment["D4CarcassSaltConcentration"][0];
@@ -1317,7 +1317,7 @@ namespace Madingley
 
         private void UpdateSoilFecalPools(SortedList<string,double[]> cellEnvironment)
         {
-            double FecalSaltLoss = 0.1 * cellEnvironment["FecalSaltConcentration"][0] * cellEnvironment["Cell Area"][0];
+            double FecalSaltLoss = 0.1 * cellEnvironment["FecalSaltConcentration"][0] * cellEnvironment["Cell Area"][0]/1000;
             cellEnvironment["FecalSaltConcentration"][0] = (-FecalSaltLoss + (cellEnvironment["FecalSaltConcentration"][0] * cellEnvironment["Cell Area"][0]))/
                 cellEnvironment["Cell Area"][0];
             cellEnvironment["SoilSaltConcentration"][0] = (FecalSaltLoss + (cellEnvironment["SoilSaltConcentration"][0] * cellEnvironment["Cell Area"][0])) /
@@ -1326,7 +1326,7 @@ namespace Madingley
 
         private void UpdateLeafDecomposition(SortedList<string,double[]> cellEnvironment)
         {
-            double SaltLoss = 0.05 * cellEnvironment["DeadLeafSaltConcentration"][0] * cellEnvironment["Cell Area"][0];
+            double SaltLoss = 0.05 * cellEnvironment["DeadLeafSaltConcentration"][0] * cellEnvironment["Cell Area"][0]/1000;
             cellEnvironment["DeadLeafSaltConcentration"][0] = (-SaltLoss +(cellEnvironment["DeadLeafSaltConcentration"][0] * cellEnvironment["Cell Area"][0]))/
                 cellEnvironment["Cell Area"][0];
             cellEnvironment["SoilSaltConcentration"][0] = (SaltLoss + (cellEnvironment["SoilSaltConcentration"][0]*cellEnvironment["Cell Area"][0]))/

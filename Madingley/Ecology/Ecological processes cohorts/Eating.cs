@@ -136,13 +136,13 @@ namespace Madingley
                         currentTimestep, specificLocations,outputDetail, initialisation);
 
                     ToSoil = gridCellCohorts[actingCohort].CalculateGutLoss();
-
-                    cellEnvironment["FecalSaltConcentration"][0] = ((ToSoil[0] * gridCellCohorts[actingCohort].CohortAbundance) +
+                    Debug.Assert(!double.IsNaN(ToSoil[0]), "ToSoil NaN");
+                    //Divide by 1000 to convert to kg
+                    cellEnvironment["FecalSaltConcentration"][0] = ((ToSoil[0] * gridCellCohorts[actingCohort].CohortAbundance/1000) + 
                         (cellEnvironment["FecalSaltConcentration"][0] * cellEnvironment["Cell Area"][0])) /
                             cellEnvironment["Cell Area"][0];
 
-                    Debug.Assert(!double.IsNaN(ToSoil[0]),"ToSoil NaN");
-
+                    
                     // Move the biomass eaten but not assimilated by an individual into the organic matter pool
                     deltas["organicpool"]["herbivory"] += ToSoil[1] * gridCellCohorts[actingCohort].CohortAbundance;
 
@@ -175,7 +175,8 @@ namespace Madingley
                     ToSoil = gridCellCohorts[actingCohort].CalculateGutLoss();
 
                     Debug.Assert(!double.IsNaN(ToSoil[0]), "ToSoil NaN");
-                    cellEnvironment["FecalSaltConcentration"][0] = ((ToSoil[0] * gridCellCohorts[actingCohort].CohortAbundance) + 
+                    //Divide by 1000 to convert to kg
+                    cellEnvironment["FecalSaltConcentration"][0] = ((ToSoil[0] * gridCellCohorts[actingCohort].CohortAbundance/1000) + 
                         (cellEnvironment["FecalSaltConcentration"][0]*cellEnvironment["Cell Area"][0]))/
                             cellEnvironment["Cell Area"][0];
 
@@ -251,7 +252,8 @@ namespace Madingley
 
                     ToSoil = gridCellCohorts[actingCohort].CalculateGutLoss();
                     Debug.Assert(!double.IsNaN(ToSoil[0]),"ToSoil NaN");
-                    cellEnvironment["FecalSaltConcentration"][0] = ((ToSoil[0] * gridCellCohorts[actingCohort].CohortAbundance) +
+                    // Divide by 1000 to convert to kg
+                    cellEnvironment["FecalSaltConcentration"][0] = ((ToSoil[0] * gridCellCohorts[actingCohort].CohortAbundance/1000) +
                         (cellEnvironment["FecalSaltConcentration"][0] * cellEnvironment["Cell Area"][0])) /
                             cellEnvironment["Cell Area"][0];
 
@@ -275,9 +277,9 @@ namespace Madingley
             {
                 //if present the attempt to meet this demand from the soil salt pool
                 double SoilSaltUsed = Math.Min(gridCellCohorts[actingCohort].SaltDefecit * gridCellCohorts[actingCohort].CohortAbundance,
-                    cellEnvironment["SoilSaltConcentration"][0]*cellEnvironment["Cell Area"][0]);
+                    cellEnvironment["SoilSaltConcentration"][0]*cellEnvironment["Cell Area"][0]*1000);
 
-                cellEnvironment["SoilSaltConcentration"][0] = (cellEnvironment["SoilSaltConcentration"][0] * cellEnvironment["Cell Area"][0] - SoilSaltUsed) /
+                cellEnvironment["SoilSaltConcentration"][0] = (cellEnvironment["SoilSaltConcentration"][0] * cellEnvironment["Cell Area"][0] - (SoilSaltUsed/1000)) /
                     cellEnvironment["Cell Area"][0]; 
 
             }
