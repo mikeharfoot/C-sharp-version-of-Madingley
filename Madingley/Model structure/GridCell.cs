@@ -1001,7 +1001,7 @@ namespace Madingley
                         double LeafMass = PlantModel.CalculateEquilibriumLeafMass(_CellEnvironment, functionalGroups.GetTraitNames("leaf strategy", FunctionalGroup) == "deciduous");
 
                         // Initialise the new stock with the relevant properties
-                        NewStock = new Stock((byte)FunctionalGroup, IndividualMass[FunctionalGroup], LeafMass,500/LeafMass);
+                        NewStock = new Stock((byte)FunctionalGroup, IndividualMass[FunctionalGroup], LeafMass,0.07/100);
 
                         // Add the new stock to the list of grid cell stocks
                         _GridCellStocks[FunctionalGroup].Add(NewStock);
@@ -1014,7 +1014,7 @@ namespace Madingley
                     else if (FunctionalGroupsToUse.Contains(FunctionalGroup))
                     {
                         // Initialise the new stock with the relevant properties
-                        NewStock = new Stock((byte)FunctionalGroup, IndividualMass[FunctionalGroup], 1e12,500/1e12);
+                        NewStock = new Stock((byte)FunctionalGroup, IndividualMass[FunctionalGroup], 1e12,0.07/100);
 
                         // Add the new stock to the list of grid cell stocks
                         _GridCellStocks[FunctionalGroup].Add(NewStock);

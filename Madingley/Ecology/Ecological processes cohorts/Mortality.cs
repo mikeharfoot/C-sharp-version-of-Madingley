@@ -168,7 +168,7 @@ namespace Madingley
 
             cellEnvironment["D1CarcassSaltConcentration"][0] += 
                 (MortalityTotal * (BodyMassIncludingChangeThisTimeStep + ReproductiveMassIncludingChangeThisTimeStep) * gridCellCohorts[actingCohort].SaltConcentration)/
-                cellEnvironment["Cell Area"][0];
+                (cellEnvironment["Cell Area"][0]*1000);
 
             // Add the biomass of individuals that have died to the delta biomass in the organic pool (including reproductive 
             // potential mass, and mass gained through eating, and excluding mass lost through metabolism)

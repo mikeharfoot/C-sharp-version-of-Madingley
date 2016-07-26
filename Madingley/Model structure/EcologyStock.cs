@@ -98,7 +98,7 @@ namespace Madingley
                         (gridCellStocks[actingStock].TotalBiomass + (WetMatterNPP * (1.0 - fhanpp)));
 
                 //Reduce the salt concentration of the environment
-                cellEnvironment["SoilSaltConcentration"][0] = cellEnvironment["SoilSaltConcentration"][0] - (saltNewLeafBiomass / cellEnvironment["Cell Area"][0]);
+                cellEnvironment["SoilSaltConcentration"][0] = cellEnvironment["SoilSaltConcentration"][0] - (saltNewLeafBiomass / (cellEnvironment["Cell Area"][0] * 1000));
 
 
                 // Apply human appropriation of NPP
