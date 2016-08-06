@@ -222,8 +222,13 @@ namespace Madingley
                         //    (Math.Min(1.0, (((burninSteps + impactSteps + recoverySteps - currentTimestep) / 12.0) * humanNPPScenario.Item2)));
 
                         //RemovalRate = (Math.Min(1.0, (((burninSteps + impactSteps + recoverySteps - currentTimestep) / 12.0) * humanNPPScenario.Item2)));
-                        RemovalRate = Math.Max(0.0, Math.Min(1.0, ((int)((impactSteps) - (currentTimestep - (burninSteps + impactSteps))) / 12.0) * humanNPPScenario.Item2));
+                        RemovalRate = Math.Max(0.0, Math.Min(1.0, (((impactSteps) - (currentTimestep - (burninSteps + impactSteps))) / 12.0) * humanNPPScenario.Item2));
                     }
+                    else if (currentTimestep > (burninSteps + impactSteps + recoverySteps))
+                    {
+                        RemovalRate = Math.Max(0.0, Math.Min(1.0, ((impactSteps - recoverySteps) / 12.0) * humanNPPScenario.Item2));
+                    }
+
 
                 }
                 else

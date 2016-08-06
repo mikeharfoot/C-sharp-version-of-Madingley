@@ -1,13 +1,13 @@
 Parameter,Value
 Timestep Units,Month
-Length of simulation (years),40
-Burn-in (years),5
-Impact duration (years),25
-Recovery duration (years),10
-Top Latitude,40
-Bottom Latitude,39
-Leftmost Longitude,-21
-Rightmost Longitude,-20
+Length of simulation (years),10
+Burn-in (years),1
+Impact duration (years),5
+Recovery duration (years),5
+Top Latitude,1
+Bottom Latitude,-1
+Leftmost Longitude,32
+Rightmost Longitude,-33
 Grid Cell Size,0.5
 Read State,
 Specific Location File,
