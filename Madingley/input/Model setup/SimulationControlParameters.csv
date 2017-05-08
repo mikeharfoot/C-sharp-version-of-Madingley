@@ -1,13 +1,13 @@
 Parameter,Value
 Timestep Units,month
-Length of simulation (years),100
+Length of simulation (years),290
 Burn-in (years),100
-Impact duration (years),0
-Recovery duration (years),0
-Bottom Latitude,-35
-Top Latitude,12
-Leftmost Longitude,-20
-Rightmost Longitude,55
+Impact duration (years),90
+Recovery duration (years),100
+Bottom Latitude,-3
+Top Latitude,-2
+Leftmost Longitude,34.5
+Rightmost Longitude,35.5
 Grid Cell Size,0.5
 Read State,
 Specific Location File,
@@ -16,7 +16,7 @@ Draw Randomly,yes
 Extinction Threshold,1
 Maximum Number Of Cohorts,1000
 Run Cells In Parallel,no
-Run Simulations In Parallel,no
+Run Simulations In Parallel,yes
 Run Single Realm,terrestrial
 Impact Cell Index,all
 Dispersal only,no

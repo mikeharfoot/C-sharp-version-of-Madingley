@@ -536,7 +536,7 @@ namespace Madingley
 
                      //Writing to text based output
                      WriteModelState.OutputCurrentModelState( EcosystemModelGrid, _CellList, hh);
-                     //WriteModelState.OutputCurrentModelState(EcosystemModelGrid,CohortFunctionalGroupDefinitions, _CellList, CurrentTimeStep, initialisation.MaxNumberOfCohorts,"ModelState");
+                     WriteModelState.OutputCurrentModelState(EcosystemModelGrid,CohortFunctionalGroupDefinitions, _CellList, CurrentTimeStep, initialisation.MaxNumberOfCohorts,"ModelState");
                      
 
                      OutputTimer.Stop();
@@ -1179,15 +1179,17 @@ namespace Madingley
 
             }
 
-            if (DrawRandomly)
-            {
-                // Randomly order the cohort indices
-                RandomCohortOrder = Utilities.RandomlyOrderedIndices(TotalCohortNumber);
-            }
-            else
-            {
-                RandomCohortOrder = Utilities.NonRandomlyOrderedCohorts(TotalCohortNumber, CurrentTimeStep);
-            }
+            RandomCohortOrder = Utilities.MassOrderedIndices(workingGridCellCohorts, CohortIndices, TotalCohortNumber);
+
+            //if (DrawRandomly)
+            //{
+            //    // Randomly order the cohort indices
+            //    RandomCohortOrder = Utilities.RandomlyOrderedIndices(TotalCohortNumber);
+            //}
+            //else
+            //{
+            //    RandomCohortOrder = Utilities.NonRandomlyOrderedCohorts(TotalCohortNumber, CurrentTimeStep);
+            //}
 
             // Diagnostic biological variables don't need to be reset every cohort, but rather every grid cell
             EcosystemModelParallelTempval2 = 0;

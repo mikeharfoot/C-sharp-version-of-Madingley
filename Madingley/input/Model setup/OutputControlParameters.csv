@@ -6,7 +6,7 @@ Track Global Processes,yes
 Track marine specifics,no
 Output Detail,medium
 Output metrics,no
-Output Model State Timesteps,1175-1139
+Output Model State Timesteps,1189-1199;1548-1559;1908-1919;2268-2279;2628-2639;2988-2999;3348-3359
 New Cohorts Filename,NewCohorts
 Maturity Filename,Maturity
 Predation Flows Filename,PredationFlows
