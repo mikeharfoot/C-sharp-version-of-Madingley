@@ -109,6 +109,8 @@ namespace Madingley
         // Optimal prey body size, as a ratio of predator body size
         private double OptimalPreyBodySizeRatio;
 
+        
+
         /// <summary>
         /// Constructor for a grid cell; creates cell and reads in environmental data
         /// </summary>
@@ -231,6 +233,12 @@ namespace Madingley
             tempVector[0] = missingValue;
             _CellEnvironment.Add("Missing Value", tempVector);
 
+
+            //Add an environmental value for HANPP
+            tempVector = new double[1];
+            tempVector[0] = missingValue;
+            _CellEnvironment.Add("RelativeHANPP", tempVector);
+
             // Loop through environmental data layers and extract values for this grid cell
             // Also standardise missing values
 
@@ -251,6 +259,7 @@ namespace Madingley
                 // Add the values of the environmental variables to the cell environment, with the name of the variable as the key
                 _CellEnvironment.Add(LayerName, tempVector);
             }
+
 
 
             if (_CellEnvironment.ContainsKey("LandSeaMask"))
@@ -575,11 +584,11 @@ namespace Madingley
         /// <param name="DrawRandomly">Whether the model is set to use random draws</param>
         /// <param name="ZeroAbundance">Set this parameter to 'true' if you want to seed the cohorts with zero abundance</param>
         public void SeedGridCellCohortsAndStocks(FunctionalGroupDefinitions cohortFunctionalGroups, FunctionalGroupDefinitions stockFunctionalGroups,
-            SortedList<string, double> globalDiagnostics, Int64 nextCohortID, Boolean tracking, double totalCellTerrestrialCohorts, 
-            double totalCellMarineCohorts, Boolean DrawRandomly, Boolean ZeroAbundance)
+            SortedList<string, double> globalDiagnostics, Int64 nextCohortID, Boolean tracking, double totalCellTerrestrialCohorts,
+            double totalCellMarineCohorts, Boolean DrawRandomly, Boolean ZeroAbundance, SortedList<string, EnviroData> dataLayers, float latCellSize, float lonCellSize)
         {
             SeedGridCellCohorts(ref cohortFunctionalGroups, ref _CellEnvironment, globalDiagnostics, nextCohortID, tracking, 
-                totalCellTerrestrialCohorts, totalCellMarineCohorts, DrawRandomly, ZeroAbundance);
+                totalCellTerrestrialCohorts, totalCellMarineCohorts, DrawRandomly, ZeroAbundance,dataLayers,latCellSize,lonCellSize);
             SeedGridCellStocks(ref stockFunctionalGroups, ref _CellEnvironment, globalDiagnostics);
         }
 
@@ -675,7 +684,7 @@ namespace Madingley
         /// <param name="ZeroAbundance">Set this parameter to 'true' if you want to seed the cohorts with zero abundance</param>
         private void SeedGridCellCohorts(ref FunctionalGroupDefinitions functionalGroups, ref SortedList<string, double[]>
             cellEnvironment, SortedList<string, double> globalDiagnostics, Int64 nextCohortID, Boolean tracking, double totalCellTerrestrialCohorts, 
-            double totalCellMarineCohorts, Boolean DrawRandomly, Boolean ZeroAbundance)
+            double totalCellMarineCohorts, Boolean DrawRandomly, Boolean ZeroAbundance,SortedList<string, EnviroData> dataLayers, float latCellSize,float lonCellSize)
         {
             // Set the seed for the random number generator from the system time
             RandomNumberGenerator.SetSeedFromSystemTime();
@@ -696,6 +705,21 @@ namespace Madingley
             double[] MassMinima = functionalGroups.GetBiologicalPropertyAllFunctionalGroups("minimum mass");
             double[] MassMaxima = functionalGroups.GetBiologicalPropertyAllFunctionalGroups("maximum mass");
             string[] NutritionSource = functionalGroups.GetTraitValuesAllFunctionalGroups("nutrition source");
+
+            // Boolean to track when environmental data are missing
+            Boolean EnviroMissingValue;
+            double M;
+            //Look to see if spatially explicit maximum body sizes have been provided for any functional groups
+            for (int FunctionalGroup = 0; FunctionalGroup < functionalGroups.GetNumberOfFunctionalGroups(); FunctionalGroup++)
+            {
+                string LayerName = "Max_Size_"+Convert.ToString(FunctionalGroup);
+                if(dataLayers.Keys.Contains(LayerName))
+                {
+                    M = dataLayers[LayerName].GetMaxValue(_Latitude, _Longitude, (uint)0, out EnviroMissingValue, latCellSize, lonCellSize);
+                    if (!EnviroMissingValue) MassMaxima[FunctionalGroup] = M;
+                }
+            }
+
 
             double[] ProportionTimeActive = functionalGroups.GetBiologicalPropertyAllFunctionalGroups("proportion suitable time active");
 

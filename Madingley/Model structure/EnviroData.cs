@@ -1201,6 +1201,199 @@ namespace Madingley
             return WeightedValue;
         }
 
+        /// <summary>
+        /// A method to extract the area weighted value of an environmental variable from the envirodata cells overlapped by the cell specified by lat and lon
+        /// </summary>
+        /// <param name="lat">Bottom latitude of cell to get value from</param>
+        /// <param name="lon">Leftmost longitude of cell to get value from</param>
+        /// <param name="timeInterval">The time interval to get the value from (i.e. the month, or 0 for yearly variables)</param>
+        /// <param name="missingValue">Boolean to indicate whether the returned value is a missing value</param>
+        /// <param name="latCellSize">The latitudinal size of cells in the model grid</param>
+        /// <param name="lonCellSize">The longitudinal size of cells in the model grid</param>
+        /// <returns>The area weighted value of an environmental variable from the envirodata cells overlapped by the cell specified by lat and lon</returns>
+        public double GetMaxValue(double lat, double lon, uint timeInterval, out Boolean missingValue, double latCellSize, double lonCellSize)
+        {
+            // Check that the requested latitude and longitude are within the scope of the environmental variable
+            Debug.Assert(lat >= LatMin && lat < LatMin + (NumLats * LatStep), "Requested latitude is outside dataset latitude range: " + _ReadFileString);
+            Debug.Assert(lon >= LonMin && lon < LonMin + (NumLons * LonStep), "Requested longitude is outside dataset longitude range: " + _ReadFileString);
+
+            // TEMPP DT
+            Boolean invertedLat = false;
+
+            // Temporary variable for finding the shortest distance between the bottom latitude of the requested model grid cell and the latitude of cells in the environmental variable
+            double ShortestLowerLatDistance = double.MinValue;
+            // Variable to store the latitude index of the cell in the environmental variable that is the closest to the bottom latitude of the requested model grid cell
+            int ClosestLowerLatIndex = -1;
+            // Temporary variable for finding the shortest distance between the top latitude of the requested model grid cell and the latitude of cells in the environmental variable
+            double ShortestUpperLatDistance = double.MinValue;
+            // Variable to store the latitude index of the cell in the environmental variable that is the closest to the top latitude of the requested model grid cell
+            int ClosestUpperLatIndex = -1;
+            // A temporary variable for storing latitudinal distances between the requested latitude and grid cell latitudes
+            double tempVal;
+
+            if (_Lats[0] < _Lats[_Lats.Count() - 1]) invertedLat = true;
+
+            if (invertedLat)
+            {
+                // Loop over latitude values of the environmental variable
+                for (int ii = 0; ii != _Lats.Length; ++ii)
+                {
+                    // Get the distance between the latitude of this cell and the requested latitude
+                    tempVal = lat - _Lats[ii];
+                    // If this is shorter than the shortest distance that has been found so far, then store this cell as the closest to the requested latitude
+                    if ((tempVal > ShortestLowerLatDistance) && (tempVal < 0.0))
+                    {
+                        // Update the shortest distance
+                        ShortestLowerLatDistance = (lat - _Lats[ii]);
+                        // Store this latitude index as being the closest to the latitude requested
+                        ClosestLowerLatIndex = ii - 1;
+                    }
+                    //Get the distance between the top latitude of the requested model grid cell latitude and this EnviroData layer grid cell
+                    tempVal = lat + latCellSize - _Lats[ii];
+                    if ((tempVal > ShortestUpperLatDistance) && (tempVal < 0.0))
+                    {
+                        //Update the shortest upper distance
+                        ShortestUpperLatDistance = (lat + latCellSize - _Lats[ii]);
+                        //store this latitude index
+                        ClosestUpperLatIndex = ii - 1;
+                    }
+                }
+
+
+                //If haven't found the ClosestLowerLatIndex then this is because the grid cell starts at or beyond the lower limit of the highest enviro grid
+                //So set the ClosestLowerLatIndex equal to the last index
+                if (ClosestLowerLatIndex == -1)
+                {
+                    // and set the ClosestUpperLatIndex equal to the the last index (the highest latitude cell)
+                    ClosestLowerLatIndex = _Lats.Length - 1;
+                }
+
+                //If haven't found the ClosestUpperLatIndex then this is because the grid cell extends to or beyond the upper limit of the enviro grid
+                //So set the ClosestUpperLatIndex equal to the last index
+                if (ClosestUpperLatIndex == -1)
+                {
+                    // and set the ClosestUpperLatIndex equal to the the last index (the highest latitude cell)
+                    ClosestUpperLatIndex = _Lats.Length - 1;
+                }
+
+
+            }
+            else
+            {
+                // Loop over latitude values of the environmental variable
+                for (int ii = 0; ii != _Lats.Length; ++ii)
+                {
+                    // Get the distance between the latitude of this cell and the requested latitude
+                    tempVal = lat - _Lats[ii];
+                    // If this is shorter than the shortest distance that has been found so far, then store this cell as the closest to the requested latitude
+                    if ((tempVal < ShortestLowerLatDistance) && (tempVal > 0.0))
+                    {
+                        // Update the shortest distance
+                        ShortestLowerLatDistance = (lat - _Lats[ii]);
+                        // Store this latitude index as being the closest to the latitude requested
+                        ClosestLowerLatIndex = ii - 1;
+                    }
+                    //Get the distance between the top latitude of the requested model grid cell latitude and this EnviroData layer grid cell
+                    tempVal = lat + latCellSize - _Lats[ii];
+                    if ((tempVal < ShortestUpperLatDistance) && (tempVal > 0.0))
+                    {
+                        //Update the shortest upper distance
+                        ShortestUpperLatDistance = (lat + latCellSize - _Lats[ii]);
+                        //store this latitude index
+                        ClosestUpperLatIndex = ii - 1;
+                    }
+                }
+
+
+                //If haven't found the ClosestLowerLatIndex then this is because the grid cell extends to or beyond the lower limit of the enviro grid
+                //So set the ClosestUpperLatIndex equal to the index of the highest latitude
+                if (ClosestLowerLatIndex == -1)
+                {
+                    // So take the ShortestUpperLatDistance as 0 
+                    ShortestLowerLatDistance = 0.0;
+                    // and set the ClosestLowerLatIndex equal to the last index value (the lowest latitude cell)
+                    ClosestLowerLatIndex = _Lats.Length - 1;
+                }
+
+                //If haven't found the ClosestUpperLatIndex then this is because the grid cell extends to or beyond the upper limit of the enviro grid
+                //So set the ClosestUpperLatIndex equal to the last index
+                if (ClosestUpperLatIndex == -1)
+                {
+                    // and set the ClosestUpperLatIndex equal to the the last index (the highest latitude cell)
+                    ClosestUpperLatIndex = _Lats.Length - 1;
+                }
+
+            }
+
+
+            // Adjust to correct for potential problems with ESRI ASCII grids starting latitudes at -90 and going upwards,
+            // instead of netCDFs, which do the inverse
+            //if (closestUpperLatIndex < closestLowerLatIndex)
+            //{
+            //    invertedLat = 1;
+            //}
+
+            //Calculate the number of EnviroData cells that are overlapped by the requested model grid cell
+            int NumOverlappedLatCells = Math.Abs(ClosestUpperLatIndex - ClosestLowerLatIndex) + 1;
+
+
+            // Temporary variable for finding the shortest distance between the leftmost longitude of requested model grid cell and the longitude of cells in the environmental variable
+            double shortestLeftmostLonDistance = double.MaxValue;
+            // Variable to store the longitude index of the cell in the environmental variable that is the closest to the leftmost longitude of the requested model grid cell
+            int closestLeftmostLonIndex = 0;
+            // Temporary variable for finding the shortest distance between the rightmost longitude of requested model grid cell and the longitude of cells in the environmental variable
+            double shortestRightmostLonDistance = double.MaxValue;
+            // Variable to store the longitude index of the cell in the environmental variable that is the closest to the rightmost longitude of the requested model grid cell
+            int closestRightmostLonIndex = 0;
+            // Loop over longitude values of the environmental variable
+            for (int ii = 0; ii != _Lons.Length; ++ii)
+            {
+                // Get the distance between the longitude of this cell and the requested longitude
+                tempVal = lon - _Lons[ii];
+                // If this is shorter than the shortest distance that has been found so far, then store this cell as the closest to the requested longitude
+                if ((tempVal < shortestLeftmostLonDistance) && (tempVal >= 0.0))
+                {
+                    // Update the shortest distance
+                    shortestLeftmostLonDistance = (lon - _Lons[ii]);
+                    // Store this latitude index as being the closest to the latitude requested
+                    closestLeftmostLonIndex = ii;
+                }
+                //Get the distance between the leftmost longitude of the model grid cell requested and this envirodata cell leftmost longitude
+                tempVal = lon + lonCellSize - _Lons[ii];
+                if ((tempVal < shortestRightmostLonDistance) && (tempVal >= 0.0))
+                {
+                    shortestRightmostLonDistance = (lon + lonCellSize - _Lons[ii]);
+                    closestRightmostLonIndex = ii;
+                }
+            }
+
+
+
+            double MaxNonMissingValue = 0.0;
+
+           
+            for (int ii = ClosestLowerLatIndex; ii <= ClosestUpperLatIndex; ii++)
+            {
+                    
+                for (int jj = closestLeftmostLonIndex; jj <= closestRightmostLonIndex; jj++)
+                {
+
+                    if (_DataArray[(int)timeInterval][ii, jj].CompareTo(_MissingValue) != 0.0 && _DataArray[(int)timeInterval][ii, jj].CompareTo(MaxNonMissingValue) > 0)
+                        MaxNonMissingValue = _DataArray[(int)timeInterval][ii, jj];
+                }
+            }
+
+            missingValue = false;
+            if (MaxNonMissingValue.CompareTo(0.0) == 0)
+            {
+                missingValue = true;
+                MaxNonMissingValue = this.MissingValue;
+            }
+            
+
+            //Return the maximum value
+            return MaxNonMissingValue;
+        }
 
 
         /// <summary>

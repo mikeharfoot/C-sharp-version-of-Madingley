@@ -12,3 +12,6 @@ Local,input/Data/Original/Land,cru20,.nc,tmp,nc,Temperature,Y,month,degC
 Local,input/Data/Original/Land,cru20,.nc,dtr,nc,LandDTR,Y,month,degC
 Local,input/Data/Original/Land,cru20,.nc,pre,nc,Precipitation,Y,month,mm
 Local,input/Data/Original/Land,cru20,.nc,frs,nc,FrostDays,Y,month,
+Local,input/Data/New/Land,H_max,.nc,H_max,nc,Max_Size_10,Y,year,n/a
+Local,input/Data/New/Land,C_max,.nc,C_max,nc,Max_Size_11,Y,year,n/a
+Local,input/Data/New/Land,O_max,.nc,O_max,nc,Max_Size_12,Y,year,n/a

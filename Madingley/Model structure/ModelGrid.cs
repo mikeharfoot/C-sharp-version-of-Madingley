@@ -864,7 +864,8 @@ namespace Madingley
         /// <param name="dispersalOnlyType">For dispersal only runs, the type of dispersal to apply</param>
         public void SeedGridCellStocksAndCohorts(List<uint[]> cellIndices, FunctionalGroupDefinitions cohortFunctionalGroupDefinitions,
             FunctionalGroupDefinitions stockFunctionalGroupDefinitions, SortedList<string, double> globalDiagnostics, ref Int64 nextCohortID,
-            Boolean tracking, Boolean DrawRandomly, Boolean dispersalOnly, string dispersalOnlyType, Boolean runCellsInParallel)
+            Boolean tracking, Boolean DrawRandomly, Boolean dispersalOnly, string dispersalOnlyType, Boolean runCellsInParallel, 
+            SortedList<string, EnviroData> dataLayers, float latCellSize, float lonCellSize)
         {
             Console.WriteLine("Seeding grid cell stocks and cohorts:");
 
@@ -931,19 +932,19 @@ namespace Madingley
                             {
                                 InternalGrid[cellIndices[ii][0], cellIndices[ii][1]].SeedGridCellCohortsAndStocks(cohortFunctionalGroupDefinitions,
                                 stockFunctionalGroupDefinitions, globalDiagnostics, StartingCohortsID[ii], tracking, TotalTerrestrialCellCohorts, TotalMarineCellCohorts,
-                                DrawRandomly, false);
+                                DrawRandomly, false, dataLayers, latCellSize, lonCellSize);
                             }
                             else if ((cellIndices[ii][0] == 95) && (cellIndices[ii][1] == 110))
                             {
                                 InternalGrid[cellIndices[ii][0], cellIndices[ii][1]].SeedGridCellCohortsAndStocks(cohortFunctionalGroupDefinitions,
                                 stockFunctionalGroupDefinitions, globalDiagnostics, StartingCohortsID[ii], tracking, TotalTerrestrialCellCohorts, TotalMarineCellCohorts,
-                                DrawRandomly, false);
+                                DrawRandomly, false, dataLayers, latCellSize, lonCellSize);
                             }
                             else
                             {
                                 InternalGrid[cellIndices[ii][0], cellIndices[ii][1]].SeedGridCellCohortsAndStocks(cohortFunctionalGroupDefinitions,
                                 stockFunctionalGroupDefinitions, globalDiagnostics, StartingCohortsID[ii], tracking, TotalTerrestrialCellCohorts, TotalMarineCellCohorts,
-                                DrawRandomly, true);
+                                DrawRandomly, true, dataLayers, latCellSize, lonCellSize);
                             }
                             Console.Write("\rGrid Cell: {0} of {1}", ii++, cellIndices.Count);
                         }
@@ -975,14 +976,14 @@ namespace Madingley
                                 InternalGrid[cellIndices[ii][0], cellIndices[ii][1]].SeedGridCellCohortsAndStocks(
                                     cohortFunctionalGroupDefinitions, stockFunctionalGroupDefinitions, globalDiagnostics,
                                     StartingCohortsID[ii], tracking, TotalTerrestrialCellCohorts, TotalMarineCellCohorts,
-                                    DrawRandomly, true);
+                                    DrawRandomly, true, dataLayers, latCellSize, lonCellSize);
                             }
                             else
                             {
                                 InternalGrid[cellIndices[ii][0], cellIndices[ii][1]].SeedGridCellCohortsAndStocks(
                                     cohortFunctionalGroupDefinitions, stockFunctionalGroupDefinitions, globalDiagnostics,
                                     StartingCohortsID[ii], tracking, TotalTerrestrialCellCohorts, TotalMarineCellCohorts,
-                                    DrawRandomly, false);
+                                    DrawRandomly, false, dataLayers, latCellSize, lonCellSize);
                             }
                             Console.Write("\rGrid Cell: {0} of {1}", ii++, cellIndices.Count);
                         }
@@ -992,7 +993,7 @@ namespace Madingley
 
                             InternalGrid[cellIndices[ii][0], cellIndices[ii][1]].SeedGridCellCohortsAndStocks(cohortFunctionalGroupDefinitions,
                             stockFunctionalGroupDefinitions, globalDiagnostics, StartingCohortsID[ii], tracking, TotalTerrestrialCellCohorts, TotalMarineCellCohorts,
-                            DrawRandomly, true);
+                            DrawRandomly, true, dataLayers, latCellSize, lonCellSize);
 
                         }
                         else
@@ -1007,7 +1008,7 @@ namespace Madingley
                         InternalGrid[cellIndices[ii][0], cellIndices[ii][1]].SeedGridCellCohortsAndStocks(
                             cohortFunctionalGroupDefinitions, stockFunctionalGroupDefinitions, globalDiagnostics,
                             StartingCohortsID[ii], tracking, TotalTerrestrialCellCohorts, TotalMarineCellCohorts,
-                            DrawRandomly, false);
+                            DrawRandomly, false, dataLayers, latCellSize, lonCellSize);
                         Count++;
                     }
                     Console.Write("\rGrid Cell: {0} of {1}", Count, cellIndices.Count);
@@ -1029,19 +1030,19 @@ namespace Madingley
                             {
                                 InternalGrid[cellIndices[ii][0], cellIndices[ii][1]].SeedGridCellCohortsAndStocks(cohortFunctionalGroupDefinitions,
                                 stockFunctionalGroupDefinitions, globalDiagnostics, StartingCohortsID[ii], tracking, TotalTerrestrialCellCohorts, TotalMarineCellCohorts,
-                                DrawRandomly, false);
+                                DrawRandomly, false, dataLayers, latCellSize, lonCellSize);
                             }
                             else if ((cellIndices[ii][0] == 95) && (cellIndices[ii][1] == 110))
                             {
                                 InternalGrid[cellIndices[ii][0], cellIndices[ii][1]].SeedGridCellCohortsAndStocks(cohortFunctionalGroupDefinitions,
                                 stockFunctionalGroupDefinitions, globalDiagnostics, StartingCohortsID[ii], tracking, TotalTerrestrialCellCohorts, TotalMarineCellCohorts,
-                                DrawRandomly, false);
+                                DrawRandomly, false, dataLayers, latCellSize, lonCellSize);
                             }
                             else
                             {
                                 InternalGrid[cellIndices[ii][0], cellIndices[ii][1]].SeedGridCellCohortsAndStocks(cohortFunctionalGroupDefinitions,
                                 stockFunctionalGroupDefinitions, globalDiagnostics, StartingCohortsID[ii], tracking, TotalTerrestrialCellCohorts, TotalMarineCellCohorts,
-                                DrawRandomly, true);
+                                DrawRandomly, true, dataLayers, latCellSize, lonCellSize);
                             }
                             Console.Write("\rGrid Cell: {0} of {1}", ii++, cellIndices.Count);
                         }
@@ -1073,14 +1074,14 @@ namespace Madingley
                                 InternalGrid[cellIndices[ii][0], cellIndices[ii][1]].SeedGridCellCohortsAndStocks(
                                     cohortFunctionalGroupDefinitions, stockFunctionalGroupDefinitions, globalDiagnostics,
                                     StartingCohortsID[ii], tracking, TotalTerrestrialCellCohorts, TotalMarineCellCohorts,
-                                    DrawRandomly, true);
+                                    DrawRandomly, true, dataLayers, latCellSize, lonCellSize);
                             }
                             else
                             {
                                 InternalGrid[cellIndices[ii][0], cellIndices[ii][1]].SeedGridCellCohortsAndStocks(
                                     cohortFunctionalGroupDefinitions, stockFunctionalGroupDefinitions, globalDiagnostics,
                                     StartingCohortsID[ii], tracking, TotalTerrestrialCellCohorts, TotalMarineCellCohorts,
-                                    DrawRandomly, false);
+                                    DrawRandomly, false, dataLayers, latCellSize, lonCellSize);
                             }
                             Console.Write("\rGrid Cell: {0} of {1}", ii++, cellIndices.Count);
                         }
@@ -1090,7 +1091,7 @@ namespace Madingley
 
                             InternalGrid[cellIndices[ii][0], cellIndices[ii][1]].SeedGridCellCohortsAndStocks(cohortFunctionalGroupDefinitions,
                             stockFunctionalGroupDefinitions, globalDiagnostics, StartingCohortsID[ii], tracking, TotalTerrestrialCellCohorts, TotalMarineCellCohorts,
-                            DrawRandomly, true);
+                            DrawRandomly, true, dataLayers, latCellSize, lonCellSize);
 
                         }
                         else
@@ -1105,7 +1106,7 @@ namespace Madingley
                         InternalGrid[cellIndices[ii][0], cellIndices[ii][1]].SeedGridCellCohortsAndStocks(
                             cohortFunctionalGroupDefinitions, stockFunctionalGroupDefinitions, globalDiagnostics,
                             StartingCohortsID[ii], tracking, TotalTerrestrialCellCohorts, TotalMarineCellCohorts,
-                            DrawRandomly, false);
+                            DrawRandomly, false, dataLayers, latCellSize, lonCellSize);
                         Count++;
                     }
                     Console.Write("\rGrid Cell: {0} of {1}", Count, cellIndices.Count);

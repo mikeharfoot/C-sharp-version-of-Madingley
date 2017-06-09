@@ -89,6 +89,7 @@ namespace Madingley
                 double fhanpp = HANPP.RemoveHumanAppropriatedMatter(WetMatterNPP, cellEnvironment, humanNPPScenario, gridCellStocks, actingStock, 
                     currentTimeStep,burninSteps,impactSteps,recoverySteps,instantStep, numInstantSteps,impactCell, globalModelTimeStepUnit);
 
+
                 // Apply human appropriation of NPP
                 gridCellStocks[actingStock].TotalBiomass += WetMatterNPP * (1.0 - fhanpp);
                 if (globalTracker.TrackProcesses)

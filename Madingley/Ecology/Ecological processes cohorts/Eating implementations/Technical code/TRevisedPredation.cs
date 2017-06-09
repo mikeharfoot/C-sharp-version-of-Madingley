@@ -523,6 +523,9 @@ namespace Madingley
             madingleyStockDefinitions)
         {
 
+            double DensityScaling = Math.Max(0.01,1.0 - cellEnvironment["RelativeHANPP"][0]);
+            //double DensityScaling =1.0;
+
             BinnedPreyDensities = new double[gridCellCohorts.Count, NumberOfBins];
 
             // Set the total eaten by the acting cohort to zero
@@ -591,11 +594,19 @@ namespace Madingley
                     {
                         PreyMassBinNumber = GetBinNumber(_BodyMassPrey, LogPredatorMassPlusPredatorLogOptimalPreyBodySizeRatio); // this stays here in the edited code 
                         // Calculate the potential abundance from this cohort eaten by the acting cohort
+                        //_PotentialAbundanceEaten[FunctionalGroup][i] = CalculateExpectedNumberKilledTerrestrial(
+                        //    gridCellCohorts[FunctionalGroup][i].CohortAbundance,
+                        //    _BodyMassPrey, PreyMassBinNumber, FunctionalGroup,
+                        //    _BodyMassPredator, _CarnivoreFunctionalGroups[FunctionalGroup], _OmnivoreFunctionalGroups[FunctionalGroup],
+                        //    _OmnivoreFunctionalGroups[actingCohort[0]], _PredatorLogOptimalPreyBodySizeRatio);
+
+                        //Scaling by the relative HANPP
                         _PotentialAbundanceEaten[FunctionalGroup][i] = CalculateExpectedNumberKilledTerrestrial(
-                            gridCellCohorts[FunctionalGroup][i].CohortAbundance, _BodyMassPrey, PreyMassBinNumber, FunctionalGroup,
+                            gridCellCohorts[FunctionalGroup][i].CohortAbundance / DensityScaling,
+                            _BodyMassPrey, PreyMassBinNumber, FunctionalGroup,
                             _BodyMassPredator, _CarnivoreFunctionalGroups[FunctionalGroup], _OmnivoreFunctionalGroups[FunctionalGroup],
                             _OmnivoreFunctionalGroups[actingCohort[0]], _PredatorLogOptimalPreyBodySizeRatio);
-                        
+
                         // Add the time required to handle the potential abundance eaten from this cohort to the cumulative total for all cohorts
                         _TimeUnitsToHandlePotentialFoodItems += _PotentialAbundanceEaten[FunctionalGroup][i] *
                             CalculateHandlingTimeTerrestrial(_BodyMassPrey);

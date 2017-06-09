@@ -880,7 +880,7 @@ namespace Madingley
             {
                 EcosystemModelGrid.SeedGridCellStocksAndCohorts(_CellList, CohortFunctionalGroupDefinitions, StockFunctionalGroupDefinitions,
                     GlobalDiagnosticVariables, ref NextCohortID, InitialisationFileStrings["OutputDetail"] == "high", DrawRandomly,
-                    initialisation.DispersalOnly, InitialisationFileStrings["DispersalOnlyType"], RunGridCellsInParallel);
+                    initialisation.DispersalOnly, InitialisationFileStrings["DispersalOnlyType"], RunGridCellsInParallel, EnviroStack,CellSize,CellSize);
             }
 
             Console.ForegroundColor = ConsoleColor.Red;
@@ -1179,17 +1179,17 @@ namespace Madingley
 
             }
 
-            RandomCohortOrder = Utilities.MassOrderedIndices(workingGridCellCohorts, CohortIndices, TotalCohortNumber);
+            //RandomCohortOrder = Utilities.MassOrderedIndices(workingGridCellCohorts, CohortIndices, TotalCohortNumber);
 
-            //if (DrawRandomly)
-            //{
-            //    // Randomly order the cohort indices
-            //    RandomCohortOrder = Utilities.RandomlyOrderedIndices(TotalCohortNumber);
-            //}
-            //else
-            //{
-            //    RandomCohortOrder = Utilities.NonRandomlyOrderedCohorts(TotalCohortNumber, CurrentTimeStep);
-            //}
+            if (DrawRandomly)
+            {
+                // Randomly order the cohort indices
+                RandomCohortOrder = Utilities.RandomlyOrderedIndices(TotalCohortNumber);
+            }
+            else
+            {
+                RandomCohortOrder = Utilities.NonRandomlyOrderedCohorts(TotalCohortNumber, CurrentTimeStep);
+            }
 
             // Diagnostic biological variables don't need to be reset every cohort, but rather every grid cell
             EcosystemModelParallelTempval2 = 0;
@@ -1251,8 +1251,11 @@ namespace Madingley
             // Merge cohorts, if necessary
             if (workingGridCellCohorts.GetNumberOfCohorts() > initialisation.MaxNumberOfCohorts)
             {
-                partial.Combinations = CohortMerger.MergeToReachThresholdFast(workingGridCellCohorts, workingGridCellCohorts.GetNumberOfCohorts(), initialisation.MaxNumberOfCohorts);
-
+                // FG target specific merger
+                //partial.Combinations = CohortMerger.MergeToReachThresholdFast(workingGridCellCohorts, workingGridCellCohorts.GetNumberOfCohortsPerFG(), initialisation.MaxNumberOfCohortsPerFG);
+                
+                partial.Combinations = CohortMerger.MergeToReachThresholdFast( workingGridCellCohorts, workingGridCellCohorts.GetNumberOfCohorts(), initialisation.MaxNumberOfCohorts);
+                
                 //Run extinction a second time to remove those cohorts that have been set to zero abundance when merging
                 RunExtinction(latCellIndex, lonCellIndex, partial, workingGridCellCohorts, cellIndex);
             }

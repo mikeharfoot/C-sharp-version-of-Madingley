@@ -89,7 +89,7 @@ namespace Madingley
                         // Convert gC/m2/month to gC/km2/month
                         HANPP *= m2Tokm2Conversion;
 
-                        // Multiply by cell area (in km2) to get g/cell/day
+                        // Multiply by cell area (in km2) to get g/cell/month
                         HANPP *= cellEnvironment["Cell Area"][0];
 
 
@@ -233,6 +233,7 @@ namespace Madingley
 
             }
 
+            cellEnvironment["RelativeHANPP"][0] = RemovalRate;
             return(RemovalRate);
         }
         

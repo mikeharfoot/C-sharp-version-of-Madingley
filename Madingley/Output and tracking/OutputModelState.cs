@@ -97,7 +97,7 @@ namespace Madingley
                     {
                         organism = "-999\tS" + Convert.ToString(S.FunctionalGroupIndex) + "\t" +
                                     "-999\t-999\t" + Convert.ToString(S.IndividualBodyMass) + "\t" +
-                                    Convert.ToString(S.TotalBiomass / S.IndividualBodyMass) + "\t" +
+                                    Convert.ToString(S.TotalBiomass) + "\t" +
                                     "-999\t-999\t-999\t-999\t-999\t-999";
                         SyncStateWriter.WriteLine(context + organism);
                     }
