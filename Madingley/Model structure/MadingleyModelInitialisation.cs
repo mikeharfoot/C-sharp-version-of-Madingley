@@ -1200,8 +1200,8 @@ namespace Madingley
                 // If the layers are not static, then suffix the file name with '1' - not currently implemented
                 if (StaticLayer[ii].ToLower().Equals("n"))
                 {
-                    Debug.Fail("This option is currently not supported");
-                    Filenames[ii] = Filenames[ii] + "1";
+                    //Debug.Fail("This option is currently not supported");
+                    //Filenames[ii] = Filenames[ii] + "1";
                 }
                 if (Sources[ii].ToLower().Equals("local"))
                 {

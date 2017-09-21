@@ -291,7 +291,8 @@ namespace Madingley
             CohortTrophicIndex.RemoveRange(0, CohortTrophicIndex.Count);
 
             List<double[,,]> StockIndividualBodyMass = new List<double[,,]>();
-            List<double[,,]> StockTotalBiomass = new List<double[,,]>();
+            List<double[, ,]> StockTotalBiomass = new List<double[, ,]>();
+            List<double[, ,]> StockFractionalArea = new List<double[, ,]>();
 
             double[,,,] tempData2 = new double[Latitude.Length, Longitude.Length,
                 StockFunctionalGroup.Length,Stock.Length];
@@ -334,6 +335,26 @@ namespace Madingley
                 }
             }
 
+
+            tempData2 = StateDataSet.GetData<double[, , ,]>("StockFractionalArea");
+
+            for (int la = 0; la < Latitude.Length; la++)
+            {
+                StockFractionalArea.Add(new double[Longitude.Length, StockFunctionalGroup.Length, Stock.Length]);
+            }
+
+            foreach (uint[] cell in cellList)
+            {
+                for (int fg = 0; fg < StockFunctionalGroup.Length; fg++)
+                {
+                    for (int c = 0; c < Stock.Length; c++)
+                    {
+                        StockFractionalArea[(int)cell[0]][cell[1], fg, c] = tempData2[
+                            cell[0], cell[1], fg, c];
+                    }
+                }
+            }
+
             _GridCellStocks = new GridCellStockHandler[Latitude.Length, Longitude.Length];
             
             for (int cell = 0; cell < cellList.Count; cell++)
@@ -350,7 +371,8 @@ namespace Madingley
                             Stock TempStock = new Stock(
                                 (byte)fg, 
                                 StockIndividualBodyMass[(int)cellList[cell][0]][cellList[cell][1], fg, c],
-                                StockTotalBiomass[(int)cellList[cell][0]][cellList[cell][1], fg, c]);
+                                StockTotalBiomass[(int)cellList[cell][0]][cellList[cell][1], fg, c],
+                                StockFractionalArea[(int)cellList[cell][0]][cellList[cell][1], fg, c]);
 
                             _GridCellStocks[cellList[cell][0], cellList[cell][1]][fg].Add(TempStock);
                         }

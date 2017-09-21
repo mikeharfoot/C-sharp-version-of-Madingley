@@ -1,6 +1,5 @@
 Source,Folder,Filename,Extension,Dataset Name,Filetype,Internal Layer Name,Static,Resolution,Units
 Local,input/Data/Original,LandSeaMask,.nc,land_sea_mask,nc,LandSeaMask,Y,year,
-Local,input/Data/Original/Land,hanpp_2005,.nc,HANPP,nc,HANPP,Y,year,gC/m2/year
 Local,input/Data/Original/Land,AvailableWaterCapacity,.nc,AWC,nc,AWC,Y,year,mm
 Local,input/Data/Original/Land,NPP,.nc,NPP,nc,LandNPP,Y,month,gC/m2/day
 Local,input/Data/Original/Ocean,OceanNPP,.nc,NPP,nc,OceanNPP,Y,month,gC/m2/day
@@ -15,3 +14,10 @@ Local,input/Data/Original/Land,cru20,.nc,frs,nc,FrostDays,Y,month,
 Local,input/Data/New/Land,H_max,.nc,H_max,nc,Max_Size_10,Y,year,n/a
 Local,input/Data/New/Land,C_max,.nc,C_max,nc,Max_Size_11,Y,year,n/a
 Local,input/Data/New/Land,O_max,.nc,O_max,nc,Max_Size_12,Y,year,n/a
+Local,input/Data/SSPs/HANPP/SSP2/,HANPPprojection,.nc,HANPPharvest,nc,HANPPharvest,N,multi-year,gC/m2/day
+Local,input/Data/SSPs/HANPP/SSP2/,HANPPprojection,.nc,HANPPluc,nc,HANPPlc,N,multi-year,gC/m2/day
+Local,input/Data/SSPs/beta_LUHv2/SSP2,FractionalLandUse,.nc,Furban,nc,Furban,N,multi-year,gC/m2/day
+Local,input/Data/SSPs/beta_LUHv2/SSP2,FractionalLandUse,.nc,Fcropland,nc,Fcropland,N,multi-year,gC/m2/day
+Local,input/Data/SSPs/beta_LUHv2/SSP2,FractionalLandUse,.nc,Fgrazing,nc,Fgrazing,N,multi-year,gC/m2/day
+Local,input/Data/SSPs/beta_LUHv2/SSP2,FractionalLandUse,.nc,Fforest,nc,Fforest,N,multi-year,gC/m2/day
+Local,input/Data/SSPs/beta_LUHv2/SSP2,FractionalLandUse,.nc,Fnatural,nc,Fnatural,N,multi-year,gC/m2/day

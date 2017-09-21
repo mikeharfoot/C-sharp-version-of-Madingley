@@ -81,13 +81,31 @@ namespace Madingley
             else if (madingleyStockDefinitions.GetTraitNames("Realm", actingStock[0]) == "terrestrial")
             {
 
+                if(madingleyStockDefinitions.GetTraitNames("impact state",actingStock[0]) == "Natural")
+                {
+                    //calculate the change in total biomass as a result of coverage changes
+                    // assumes that the biomass density stays the same as coverage goes down (ie if chopping down some forest - the density of the remaining stays the same)
+                    // However if coverage increases, the density declines, as biomass is only added by NPP..
+                    if (cellEnvironment["Fraction natural"][0] < gridCellStocks[actingStock].FractionalArea)
+                        gridCellStocks[actingStock].TotalBiomass *= 1 - (gridCellStocks[actingStock].FractionalArea - cellEnvironment["Fraction natural"][0]);
+                    gridCellStocks[actingStock].FractionalArea = cellEnvironment["Fraction natural"][0];
+                }
+                else
+                {
+                    if (cellEnvironment["Fraction natural"][0] < gridCellStocks[actingStock].FractionalArea)
+                        gridCellStocks[actingStock].TotalBiomass *= 1 - (gridCellStocks[actingStock].FractionalArea - cellEnvironment["Fraction natural"][0]);
+                    gridCellStocks[actingStock].FractionalArea = 1 - cellEnvironment["Fraction natural"][0];
+                }
+
                 // Run the dynamic plant model to update the leaf stock for this time step
                 double WetMatterNPP = DynamicPlantModel.UpdateLeafStock(cellEnvironment, gridCellStocks, actingStock, currentTimeStep, madingleyStockDefinitions.
                     GetTraitNames("leaf strategy", actingStock[0]).Equals("deciduous"), globalModelTimeStepUnit, tracker, globalTracker, currentMonth,
                     outputDetail, specificLocations);
                         
-                double fhanpp = HANPP.RemoveHumanAppropriatedMatter(WetMatterNPP, cellEnvironment, humanNPPScenario, gridCellStocks, actingStock, 
-                    currentTimeStep,burninSteps,impactSteps,recoverySteps,instantStep, numInstantSteps,impactCell, globalModelTimeStepUnit);
+                double fhanpp = HANPP.RemoveHumanAppropriatedMatter(WetMatterNPP, cellEnvironment, humanNPPScenario, gridCellStocks, actingStock,
+                    currentTimeStep, burninSteps, impactSteps, recoverySteps, instantStep, numInstantSteps, impactCell, globalModelTimeStepUnit, madingleyStockDefinitions,
+                    DynamicPlantModel.CalculateFracEvergreen(cellEnvironment["Fraction Year Frost"][0]));
+
 
 
                 // Apply human appropriation of NPP

@@ -486,7 +486,7 @@ namespace Madingley
             double LeafCFixation = NPP * FracLeaves;
 
             // Convert from carbon to leaf wet matter
-            double WetMatterIncrement = this.ConvertToLeafWetMass(LeafCFixation, cellEnvironment["Cell Area"][0]);
+            double WetMatterIncrement = this.ConvertToLeafWetMass(LeafCFixation, gridCellStocks[actingStock].FractionalArea * cellEnvironment["Cell Area"][0]);
 
             // Convert from the monthly time step used for this process to the global model time step unit
             WetMatterIncrement *= Utilities.ConvertTimeUnits(GlobalModelTimeStepUnit, "month");
@@ -510,8 +510,8 @@ namespace Madingley
             if (globalTracker.TrackProcesses)
             {
                 globalTracker.RecordNPP((uint)cellEnvironment["LatIndex"][0], (uint)cellEnvironment["LonIndex"][0],(uint)actingStock[0],
-                    this.ConvertToLeafWetMass(NPP, cellEnvironment["Cell Area"][0]) * 
-                    Utilities.ConvertTimeUnits(GlobalModelTimeStepUnit, "month")/cellEnvironment["Cell Area"][0]);
+                    this.ConvertToLeafWetMass(NPP, gridCellStocks[actingStock].FractionalArea* cellEnvironment["Cell Area"][0]) *
+                    Utilities.ConvertTimeUnits(GlobalModelTimeStepUnit, "month") / gridCellStocks[actingStock].FractionalArea * cellEnvironment["Cell Area"][0]);
             }
             // Calculate fractional leaf mortality
             double LeafMortFrac = 1 - Math.Exp(-TimeStepLeafMortRate);

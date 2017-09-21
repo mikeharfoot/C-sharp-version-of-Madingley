@@ -164,6 +164,13 @@ namespace Madingley
         /// </summary>
         private UtilityFunctions Utilities;
 
+
+        // Vectors of possible names of the dimension variables to search in the files for
+        string[] LonSearchStrings = new string[] { "lon", "Lon", "longitude", "Longitude", "lons", "Lons", "long", "Long", "longs", "Longs", "longitudes", "Longitudes", "x", "X" };
+        string[] LatSearchStrings = new string[] { "lat", "Lat", "latitude", "Latitude", "lats", "Lats", "latitudes", "Latitudes", "y", "Y" };
+        string[] MonthSearchStrings = new string[] { "month", "Month", "months", "Months", "Time", "time" };
+        string[] YearSearchStrings = new string[] { "year", "Year", "years", "Years", "Time", "time" };
+
         /// <summary>
         /// Overloaded constructor to fetch climate information from the cloud using FetchClimate
         /// </summary>
@@ -457,10 +464,7 @@ namespace Madingley
             Int32[] tempInt32Vector;
             Int16[] tempInt16Vector;
 
-            // Vectors of possible names of the dimension variables to search in the files for
-            string[] LonSearchStrings = new string[] { "lon", "Lon", "longitude", "Longitude", "lons", "Lons", "long", "Long", "longs", "Longs", "longitudes", "Longitudes", "x", "X" };
-            string[] LatSearchStrings = new string[] { "lat", "Lat", "latitude", "Latitude", "lats", "Lats", "latitudes", "Latitudes", "y", "Y" };
-            string[] MonthSearchStrings = new string[] { "month", "Month", "months", "Months", "Time", "time" };
+            
 
             //Integer counter for iterating through search strings
             int kk = 0;
@@ -621,6 +625,195 @@ namespace Madingley
                             bool LongInverted = (_Lons[1] < _Lons[0]);
                             // Run method to read in the environmental data and the dimension data from the NetCDF
                             EnvironmentListFromNetCDF(internalData, dataName, LatInverted, LongInverted);
+                            // Get longitudinal 'x' and latitudinal 'y' corners of the bottom left of the data grid
+                            _LatMin = _Lats[0];
+                            _LonMin = _Lons[0];
+                            break;
+                        default:
+                            // Data type not recognized, so throw an error
+                            Debug.Fail("Data type not supported");
+                            break;
+                    }
+                    break;
+                case "multi-year":
+                    switch (dataType)
+                    {
+                        case "esriasciigrid":
+                            // This combination does not work in the model, so throw an error
+                            Debug.Fail("Variables at monthly temporal resolution must be stored as three-dimensional NetCDFs");
+                            break;
+                        case "nc":
+                            // Loop over possible names for the latitude dimension until a match in the data file is found
+                            kk = 0;
+                            while ((kk < LatSearchStrings.Length) && (!internalData.Variables.Contains(LatSearchStrings[kk]))) kk++;
+
+                            // If a match for the latitude dimension has been found then read in the data, otherwise throw an error
+                            if (kk < LatSearchStrings.Length)
+                            {
+                                // Get number of latitudinal cells in the file
+                                _NumLats = (uint)internalData.Dimensions[LatSearchStrings[kk]].Length;
+                                // Read in the values of the latitude dimension from the file
+                                // Check which format the latitude dimension data are in; if unrecognized, then throw an error
+                                if (internalData.Variables[LatSearchStrings[kk]].TypeOfData.Name.ToString().ToLower() == "single")
+                                {
+                                    // Read the latitude dimension data to a temporary vector
+                                    tempSingleVector = internalData.GetData<Single[]>(LatSearchStrings[kk]);
+                                    // Convert the dimension data to double format and add to the vector of dimension values
+                                    _Lats = new double[tempSingleVector.Length];
+                                    for (int jj = 0; jj < tempSingleVector.Length; jj++)
+                                    {
+                                        _Lats[jj] = (double)tempSingleVector[jj];
+                                    }
+                                }
+                                else if (internalData.Variables[LatSearchStrings[kk]].TypeOfData.Name.ToString().ToLower() == "double")
+                                {
+                                    // Read the dimension data directly into the vector of dimension values
+                                    _Lats = internalData.GetData<double[]>(LatSearchStrings[kk]);
+                                }
+                                else
+                                {
+                                    // Data format unrecognized, so throw an error
+                                    Debug.Fail("Unrecognized data format for latitude dimension");
+                                }
+                            }
+                            else
+                            {
+                                // Didn't find a plausible match for latitude dimension data, so throw an error
+                                Debug.Fail("Cannot find any variables that look like latitude dimensions");
+                            }
+
+                            // Loop over possible names for the latitude dimension until a match in the data file is found
+                            kk = 0;
+                            while ((kk < LonSearchStrings.Length) && (!internalData.Variables.Contains(LonSearchStrings[kk]))) kk++;
+
+                            // If a match for the longitude dimension has been found then read in the data, otherwise throw an error
+                            if (kk < LonSearchStrings.Length)
+                            {
+                                // Get number of longitudinal cells in the file
+                                _NumLons = (uint)internalData.Dimensions[LonSearchStrings[kk]].Length;
+                                // Read in the values of the longitude dimension from the file
+                                // Check which format the longitude dimension data are in; if unrecognized, then throw an error
+                                if (internalData.Variables[LonSearchStrings[kk]].TypeOfData.Name.ToString().ToLower() == "single")
+                                {
+                                    // Read the longitude dimension data to a temporary vector
+                                    tempSingleVector = internalData.GetData<Single[]>(LonSearchStrings[kk]);
+                                    // Convert the dimension data to double format and add to the vector of dimension values
+                                    _Lons = new double[tempSingleVector.Length];
+                                    for (int jj = 0; jj < tempSingleVector.Length; jj++)
+                                    {
+                                        _Lons[jj] = (double)tempSingleVector[jj];
+                                    }
+                                }
+                                else if (internalData.Variables[LonSearchStrings[kk]].TypeOfData.Name.ToString().ToLower() == "double")
+                                {
+                                    // Read the dimension data directly into the vector of dimension values
+                                    _Lons = internalData.GetData<double[]>(LonSearchStrings[kk]);
+                                }
+                                else
+                                {
+                                    // Data format unrecognized, so throw an error
+                                    Debug.Fail("Unrecognized data format for longitude dimension");
+                                }
+                            }
+                            else
+                            {
+                                // Didn't find a plausible match for longitude dimension data, so throw an error
+                                Debug.Fail("Cannot find any variables that look like longitude dimensions");
+                            }
+
+                            // Loop over possible names for the monthly temporal dimension until a match in the data file is found
+                            kk = 0;
+                            while ((kk < MonthSearchStrings.Length) && (!internalData.Variables.Contains(MonthSearchStrings[kk]))) kk++;
+
+                            // Of a match for the monthly temporal dimension has been found then read in the data, otherwise thrown an error
+                            if (internalData.Variables.Contains(MonthSearchStrings[kk]))
+                            {
+                                // Get the number of months in the temporal dimension
+                                _NumTimes = (uint)internalData.Dimensions[MonthSearchStrings[kk]].Length;
+                                
+                                // Read in the values of the temporal dimension from the file
+                                // Check which format the temporal dimension data are in; if unrecognized, then throw an error
+                                if (internalData.Variables[YearSearchStrings[kk]].TypeOfData.Name.ToString().ToLower() == "single")
+                                {
+                                    // Read the temporal dimension data to a temporary vector
+                                    tempSingleVector = internalData.GetData<Single[]>(YearSearchStrings[kk]);
+                                    // Convert the dimension data to double format and add to the vector of dimension values
+                                    _Times = new double[_NumTimes];
+                                    for (int hh = 0; hh < tempSingleVector.Length; hh++)
+                                    {
+                                        _Times[hh] = (double)tempSingleVector[hh];
+                                    }
+                                }
+                                else if (internalData.Variables[YearSearchStrings[kk]].TypeOfData.Name.ToString().ToLower() == "double")
+                                {
+                                    // Read the dimension data directly into the vector of dimension values
+                                    _Times = internalData.GetData<double[]>(YearSearchStrings[kk]);
+                                }
+                                else if (internalData.Variables[YearSearchStrings[kk]].TypeOfData.Name.ToString().ToLower() == "int32")
+                                {
+                                    // Read the temporal dimension data to a temporary vector
+                                    tempInt32Vector = internalData.GetData<Int32[]>(YearSearchStrings[kk]);
+                                    // Convert the dimension data to double format and add to the vector of dimension values
+                                    _Times = new double[_NumTimes];
+                                    for (int hh = 0; hh < tempInt32Vector.Length; hh++)
+                                    {
+                                        _Times[hh] = (double)tempInt32Vector[hh];
+                                    }
+                                }
+                                else if (internalData.Variables[YearSearchStrings[kk]].TypeOfData.Name.ToString().ToLower() == "int16")
+                                {
+                                    // Read the temporal dimension data to a temporary vector
+                                    tempInt16Vector = internalData.GetData<Int16[]>(YearSearchStrings[kk]);
+                                    // Convert the dimension data to double format and add to the vector of dimension values
+                                    _Times = new double[_NumTimes];
+                                    for (int hh = 0; hh < tempInt16Vector.Length; hh++)
+                                    {
+                                        _Times[hh] = (double)tempInt16Vector[hh];
+                                    }
+                                }
+                                else if (internalData.Variables[YearSearchStrings[kk]].TypeOfData.Name.ToString().ToLower() == "string")
+                                {
+                                    // Convert the dimension data to double format and add to the vector of dimension values
+                                    _Times = new double[_NumTimes];
+                                    for (int hh = 0; hh < _NumTimes; hh++)
+                                    {
+                                        _Times[hh] = (double)hh;
+                                    }
+                                }
+                                else
+                                {
+                                    // Data format unrecognized, so throw an error
+                                    Debug.Fail("Unrecognized data format for time dimension");
+                                }
+                            }
+                            else
+                            {
+                                // Didn't find a plausible match for temporal dimension data, so throw an error
+                                Debug.Fail("Cannot find any variables that look like a yearly temporal dimension");
+                            }
+
+                            // Convert the values of the time dimension to equal integers between 1 and 12 (the format currently recognized by the model)
+                            for (int hh = 0; hh < _NumTimes; hh++)
+                            {
+                                if (_Times[hh] != hh + 1) _Times[hh] = hh + 1;
+                            }
+                            // Get the latitudinal and longitudinal sizes of grid cells
+                            _LatStep = (_Lats[1] - _Lats[0]);
+                            _LonStep = (_Lons[1] - _Lons[0]);
+                            // Convert vectors of latitude and longutiude dimension data from cell-centre references to bottom-left references
+                            for (int ii = 0; ii < _Lats.Length; ii++)
+                            {
+                                _Lats[ii] = _Lats[ii] - (_LatStep / 2);
+                            }
+                            for (int jj = 0; jj < _Lons.Length; jj++)
+                            {
+                                _Lons[jj] = _Lons[jj] - (_LonStep / 2);
+                            }
+                            // Check whether latitudes and longitudes are inverted in the NetCDF file
+                            bool LatInverted = (_Lats[1] < _Lats[0]);
+                            bool LongInverted = (_Lons[1] < _Lons[0]);
+                            // Run method to read in the environmental data and the dimension data from the NetCDF
+                            EnvironmentListFromNetCDF3D(internalData, dataName, LatInverted, LongInverted);
                             // Get longitudinal 'x' and latitudinal 'y' corners of the bottom left of the data grid
                             _LatMin = _Lats[0];
                             _LonMin = _Lons[0];
@@ -1613,7 +1806,8 @@ namespace Madingley
             }
 
             // Possible names for the latitude dimension in the NetCDF file
-            SearchStrings = new string[] { "lat", "Lat", "latitude", "Latitude", "lats", "Lats", "latitudes", "Latitudes", "y" };
+            //SearchStrings = new string[] { "lat", "Lat", "latitude", "Latitude", "lats", "Lats", "latitudes", "Latitudes", "y" };
+            SearchStrings = LatSearchStrings;
             // Check which position the latitude dimension is in in the NetCDF file and add this to the vector of positions. If the latitude dimension cannot be
             // found then throw an error
             if (SearchStrings.Contains(internalData.Dimensions[0].Name.ToString()))
@@ -1634,7 +1828,8 @@ namespace Madingley
             }
 
             // Possible names for the longitude dimension in the netCDF file
-            SearchStrings = new string[] { "lon", "Lon", "longitude", "Longitude", "lons", "Lons", "long", "Long", "longs", "Longs", "longitudes", "Longitudes", "x" };
+            //SearchStrings = new string[] { "lon", "Lon", "longitude", "Longitude", "lons", "Lons", "long", "Long", "longs", "Longs", "longitudes", "Longitudes", "x" };
+            SearchStrings = LonSearchStrings;
             // Check which position the latitude dimension is in in the NetCDF file and add this to the vector of positions. If the latitude dimension cannot be
             // found then throw an error
             if (SearchStrings.Contains(internalData.Dimensions[0].Name.ToString()))
@@ -1655,7 +1850,7 @@ namespace Madingley
             }
 
             // Possible names for the monthly temporal dimension in the netCDF file
-            SearchStrings = new string[] { "time", "month", "Month", "months", "Months" };
+            SearchStrings = MonthSearchStrings.Union(YearSearchStrings).ToArray();
             // Check which position the temporal dimension is in in the NetCDF file and add this to the vector of positions. If the temporal dimension cannot be
             // found then throw an error
             if (SearchStrings.Contains(internalData.Dimensions[0].Name.ToString()))
