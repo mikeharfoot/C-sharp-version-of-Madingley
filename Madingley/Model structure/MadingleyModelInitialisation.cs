@@ -625,6 +625,7 @@ namespace Madingley
             // Initialize the lists for storing information about model states
             _ModelStatePath = new List<string>();
             _ModelStateFilename = new List<string>();
+            _ModelStateType = new List<string>();
 
             // Read the intialisation files and copy them to the output directory
             ReadAndCopyInitialisationFiles(simulationInitialisationFilename, definitionsFilename, outputsFilename, outputPath);
