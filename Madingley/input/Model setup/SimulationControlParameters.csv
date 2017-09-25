@@ -9,7 +9,7 @@ Top Latitude,56
 Leftmost Longitude,-10
 Rightmost Longitude,6
 Grid Cell Size,2
-Read State,
+Read State,ReadModelState.csv
 Specific Location File,
 Plankton size threshold,0.01
 Draw Randomly,yes
