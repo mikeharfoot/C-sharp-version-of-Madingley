@@ -127,8 +127,8 @@ namespace Madingley
         /// <param name="globalDiagnostics">A list of global diagnostic variables for the model grid</param>
         /// <param name="tracking">Whether process-tracking is enabled</param>
         /// <param name="specificLocations">Whether the model is being run for specific locations</param>
-        public GridCell(float latitude, uint latIndex, float longitude, uint lonIndex, float latCellSize, float lonCellSize, 
-            SortedList<string, EnviroData> dataLayers, double missingValue, FunctionalGroupDefinitions cohortFunctionalGroups, 
+        public GridCell(float latitude, uint latIndex, float longitude, uint lonIndex, float latCellSize, float lonCellSize,
+            SortedList<string, EnviroData> dataLayers, SortedList<string, EnviroData> dataLayersT, double missingValue, FunctionalGroupDefinitions cohortFunctionalGroups, 
             FunctionalGroupDefinitions stockFunctionalGroups, SortedList<string, double> globalDiagnostics,Boolean tracking,
             bool specificLocations, string globalModelTimeStepUnit)
         {
@@ -260,7 +260,23 @@ namespace Madingley
                 _CellEnvironment.Add(LayerName, tempVector);
             }
 
-
+            // Loop over variables in the list of non-static environmental data
+            foreach (string LayerName in dataLayersT.Keys)
+            {
+                // Initiliase the temporary vector of values to be equal to the number of time intervals in the environmental variable
+                tempVector = new double[dataLayersT[LayerName].NumTimes];
+                // Loop over the time intervals in the environmental variable
+                for (int hh = 0; hh < dataLayersT[LayerName].NumTimes; hh++)
+                {
+                    // Add the value of the environmental variable at this time interval to the temporary vector
+                    tempVector[hh] = dataLayersT[LayerName].GetValue(_Latitude, _Longitude, (uint)hh, out EnviroMissingValue, latCellSize, lonCellSize);
+                    // If the environmental variable is a missing value, then change the value to equal the standard missing value for this cell
+                    if (EnviroMissingValue)
+                        tempVector[hh] = missingValue;
+                }
+                // Add the values of the environmental variables to the cell environment, with the name of the variable as the key
+                _CellEnvironment.Add(LayerName, tempVector);
+            }
 
             if (_CellEnvironment.ContainsKey("LandSeaMask"))
             {

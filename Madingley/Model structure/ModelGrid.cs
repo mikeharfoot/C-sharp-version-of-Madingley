@@ -255,8 +255,8 @@ namespace Madingley
         /// <param name="tracking">Whether process-tracking is enabled</param>
         /// <param name="DrawRandomly">Whether the model is set to use a random draw</param>
         /// <param name="specificLocations">Whether the model is to be run for specific locations</param>
-        public ModelGrid(float minLat, float minLon,float maxLat,float maxLon,float latCellSize,float lonCellSize, 
-            SortedList<string,EnviroData> enviroStack, FunctionalGroupDefinitions cohortFunctionalGroups, FunctionalGroupDefinitions
+        public ModelGrid(float minLat, float minLon,float maxLat,float maxLon,float latCellSize,float lonCellSize,
+            SortedList<string, EnviroData> enviroStack, SortedList<string, EnviroData> enviroStackTemporal, FunctionalGroupDefinitions cohortFunctionalGroups, FunctionalGroupDefinitions
             stockFunctionalGroups, SortedList<string, double> globalDiagnostics, Boolean tracking, Boolean DrawRandomly, 
             Boolean specificLocations, string globalModelTimeStepUnit)
         {
@@ -336,7 +336,7 @@ namespace Madingley
             {
                 for (int jj = 0; jj < _NumLonCells; jj+=GridCellRarefaction)
                 {
-                    InternalGrid[ii, jj] = new GridCell(_Lats[ii],(uint)ii, _Lons[jj],(uint)jj, LatCellSize, LonCellSize, enviroStack,
+                    InternalGrid[ii, jj] = new GridCell(_Lats[ii],(uint)ii, _Lons[jj],(uint)jj, LatCellSize, LonCellSize, enviroStack,enviroStackTemporal,
                         GlobalMissingValue, cohortFunctionalGroups, stockFunctionalGroups, globalDiagnostics, tracking, specificLocations,globalModelTimeStepUnit);
                     CellsForDispersal[ii,jj] = new List<uint[]>();
                     CellsForDispersalDirection[ii, jj] = new List<uint>();
@@ -383,7 +383,7 @@ namespace Madingley
         /// <param name="specificLocations">Whether the model is to be run for specific locations</param>
         /// <param name="runInParallel">Whether model grid cells will be run in parallel</param>
         public ModelGrid(float minLat, float minLon, float maxLat, float maxLon, float latCellSize, float lonCellSize, List<uint[]> cellList, 
-            SortedList<string, EnviroData> enviroStack, FunctionalGroupDefinitions cohortFunctionalGroups,
+            SortedList<string, EnviroData> enviroStack ,SortedList<string, EnviroData> enviroStackTemporal, FunctionalGroupDefinitions cohortFunctionalGroups,
             FunctionalGroupDefinitions stockFunctionalGroups, SortedList<string, double> globalDiagnostics, Boolean tracking,
             Boolean specificLocations, Boolean runInParallel, string globalModelTimeStepUnit)
         { 
@@ -458,7 +458,7 @@ namespace Madingley
                 {
                     // Create the grid cell at the specified position
                     InternalGrid[cellList[ii][0], cellList[ii][1]] = new GridCell(_Lats[cellList[ii][0]], cellList[ii][0],
-                        _Lons[cellList[ii][1]], cellList[ii][1], latCellSize, lonCellSize, enviroStack, _GlobalMissingValue,
+                        _Lons[cellList[ii][1]], cellList[ii][1], latCellSize, lonCellSize, enviroStack,enviroStackTemporal, _GlobalMissingValue,
                         cohortFunctionalGroups, stockFunctionalGroups, globalDiagnostics, tracking, specificLocations, globalModelTimeStepUnit);
                     if (!specificLocations)
                     {
@@ -484,7 +484,7 @@ namespace Madingley
                 {
                     // Create the grid cell at the specified position
                     InternalGrid[cellList[ii][0], cellList[ii][1]] = new GridCell(_Lats[cellList[ii][0]], cellList[ii][0],
-                        _Lons[cellList[ii][1]], cellList[ii][1], latCellSize, lonCellSize, enviroStack, _GlobalMissingValue,
+                        _Lons[cellList[ii][1]], cellList[ii][1], latCellSize, lonCellSize, enviroStack, enviroStackTemporal, _GlobalMissingValue,
                         cohortFunctionalGroups, stockFunctionalGroups, globalDiagnostics, tracking, specificLocations, globalModelTimeStepUnit);
                     if (!specificLocations)
                     {

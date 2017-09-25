@@ -72,6 +72,18 @@ namespace Madingley
             GlobalProcessTracker globalTracker, uint currentMonth, 
             string outputDetail, bool specificLocations, Boolean impactCell)
         {
+            double Fimpact = 0.0;
+
+            int ScenarioYear;
+            if(currentTimeStep < burninSteps)
+            {
+                ScenarioYear = 0;
+            }
+            else
+            {
+                ScenarioYear = (int)Math.Floor((currentTimeStep-burninSteps) / 12.0);
+            }
+             
             if (madingleyStockDefinitions.GetTraitNames("Realm", actingStock[0]) == "marine")
             {
                 // Run the autotroph processor
@@ -86,15 +98,18 @@ namespace Madingley
                     //calculate the change in total biomass as a result of coverage changes
                     // assumes that the biomass density stays the same as coverage goes down (ie if chopping down some forest - the density of the remaining stays the same)
                     // However if coverage increases, the density declines, as biomass is only added by NPP..
-                    if (cellEnvironment["Fraction natural"][0] < gridCellStocks[actingStock].FractionalArea)
-                        gridCellStocks[actingStock].TotalBiomass *= 1 - (gridCellStocks[actingStock].FractionalArea - cellEnvironment["Fraction natural"][0]);
-                    gridCellStocks[actingStock].FractionalArea = cellEnvironment["Fraction natural"][0];
+                    if (cellEnvironment["Fnatural"][ScenarioYear] < gridCellStocks[actingStock].FractionalArea)
+                        gridCellStocks[actingStock].TotalBiomass *= 1.0 - 
+                            ((gridCellStocks[actingStock].FractionalArea - cellEnvironment["Fnatural"][ScenarioYear]) / gridCellStocks[actingStock].FractionalArea);
+                    gridCellStocks[actingStock].FractionalArea = cellEnvironment["Fnatural"][ScenarioYear];
                 }
                 else
                 {
-                    if (cellEnvironment["Fraction natural"][0] < gridCellStocks[actingStock].FractionalArea)
-                        gridCellStocks[actingStock].TotalBiomass *= 1 - (gridCellStocks[actingStock].FractionalArea - cellEnvironment["Fraction natural"][0]);
-                    gridCellStocks[actingStock].FractionalArea = 1 - cellEnvironment["Fraction natural"][0];
+                    Fimpact = 1.0 - cellEnvironment["Fnatural"][ScenarioYear];
+                    if (Fimpact < gridCellStocks[actingStock].FractionalArea)
+                        gridCellStocks[actingStock].TotalBiomass *= 1.0 -
+                            ((gridCellStocks[actingStock].FractionalArea - Fimpact) / gridCellStocks[actingStock].FractionalArea);
+                    gridCellStocks[actingStock].FractionalArea = Fimpact;
                 }
 
                 // Run the dynamic plant model to update the leaf stock for this time step
@@ -103,7 +118,7 @@ namespace Madingley
                     outputDetail, specificLocations);
                         
                 double fhanpp = HANPP.RemoveHumanAppropriatedMatter(WetMatterNPP, cellEnvironment, humanNPPScenario, gridCellStocks, actingStock,
-                    currentTimeStep, burninSteps, impactSteps, recoverySteps, instantStep, numInstantSteps, impactCell, globalModelTimeStepUnit, madingleyStockDefinitions,
+                    currentTimeStep, ScenarioYear, burninSteps, impactSteps, recoverySteps, instantStep, numInstantSteps, impactCell, globalModelTimeStepUnit, madingleyStockDefinitions,
                     DynamicPlantModel.CalculateFracEvergreen(cellEnvironment["Fraction Year Frost"][0]));
 
 

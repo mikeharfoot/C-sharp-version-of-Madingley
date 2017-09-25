@@ -45,7 +45,7 @@ namespace Madingley
         /// temporary = constant after burn-in until specified time; value = proportion of plant biomass appropriated</remarks>
         public double RemoveHumanAppropriatedMatter(double wetMatterNPP, SortedList<string, double[]> cellEnvironment,
             Tuple<string, double, double> humanNPPScenario, GridCellStockHandler
-            gridCellStocks, int[] actingStock, uint currentTimestep, uint burninSteps,
+            gridCellStocks, int[] actingStock, uint currentTimestep, int scenarioYear, uint burninSteps,
             uint impactSteps, uint recoverySteps, uint instantStep, uint numInstantStep, Boolean impactCell,
             string globalModelTimestepUnits, FunctionalGroupDefinitions madingleyStockDefinitions, double fracEvergreen)
         {
@@ -123,11 +123,12 @@ namespace Madingley
                 }
                 else if(humanNPPScenario.Item1 == "ssp")
                 {
-                    if (currentTimestep > burninSteps)
+                    //The scenario year calculation removes the need for this if check and allows the burnin period to have HANPP applied
+                    //if (currentTimestep > burninSteps)
                     {
                         // Get the total amount of NPP appropriated by humans from this cell
-                        double HANPPh = cellEnvironment["HANPPharvest"][0];
-                        double HANPPlc = cellEnvironment["HANPPlc"][0];
+                        double HANPPh = cellEnvironment["HANPPharvest"][scenarioYear];
+                        double HANPPlc = cellEnvironment["HANPPlc"][scenarioYear];
 
                         // If HANPP value is missing, then assume zero
                         if (HANPPh == cellEnvironment["Missing Value"][0]) HANPPh = 0.0;
@@ -154,14 +155,14 @@ namespace Madingley
                         {
                             //No Hanpp from land cover change in natural lands
                             HANPPlc *= 0.0;
-                            HANPPh *= FracImpactedHANPPh(cellEnvironment["Fforest"][0], cellEnvironment["Fcropland"][0],
-                                cellEnvironment["Furban"][0],cellEnvironment["Fgrazing"][0]);
+                            HANPPh *= 1.0 - FracImpactedHANPPh(cellEnvironment["Fforest"][scenarioYear], cellEnvironment["Fcropland"][scenarioYear],
+                                cellEnvironment["Furban"][scenarioYear], cellEnvironment["Fgrazing"][scenarioYear]);
                         }
                         else
                         {
                             //All HANPPlc comes from impacted lands
-                            HANPPh *= (1 - FracImpactedHANPPh(cellEnvironment["Fforest"][0], cellEnvironment["Fcropland"][0],
-                                cellEnvironment["Furban"][0],cellEnvironment["Fgrazing"][0]));
+                            HANPPh *= (FracImpactedHANPPh(cellEnvironment["Fforest"][scenarioYear], cellEnvironment["Fcropland"][scenarioYear],
+                                cellEnvironment["Furban"][scenarioYear], cellEnvironment["Fgrazing"][scenarioYear]));
                         }
 
                         //Combine harvest and land change terms
@@ -171,7 +172,7 @@ namespace Madingley
                         HANPP *= m2Tokm2Conversion;
 
                         // Multiply by cell area (in km2) to get g/cell/month
-                        HANPP *= cellEnvironment["Cell Area"][0];
+                        HANPP *= gridCellStocks[actingStock].FractionalArea * cellEnvironment["Cell Area"][0];
 
 
                         // Convert from gC to g dry matter

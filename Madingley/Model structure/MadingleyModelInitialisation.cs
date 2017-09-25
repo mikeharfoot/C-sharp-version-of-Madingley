@@ -380,6 +380,20 @@ namespace Madingley
 
 
         /// <summary>
+        /// The environmental layers for use in the model
+        /// </summary>
+        private SortedList<string, EnviroData> _EnviroStackTemporal = new SortedList<string, EnviroData>();
+        /// <summary>
+        /// Get and set the environmental layers for use in the model
+        /// </summary>
+        public SortedList<string, EnviroData> EnviroStackTemporal
+        {
+            get { return _EnviroStackTemporal; }
+            set { _EnviroStackTemporal = value; }
+        }
+
+
+        /// <summary>
         /// The full path for the output files for a set of simulations
         /// </summary>
         private string _OutputPath;
@@ -1202,40 +1216,65 @@ namespace Madingley
                 {
                     //Debug.Fail("This option is currently not supported");
                     //Filenames[ii] = Filenames[ii] + "1";
-                }
-                if (Sources[ii].ToLower().Equals("local"))
-                {
-                    // For layers where the file format is ESRI ASCII grid, the dataset name is the same as the file name
-                    if (FileTypes[ii].ToLower().Equals("esriasciigrid"))
+                    if (Sources[ii].ToLower().Equals("local"))
                     {
-                        DatasetNames[ii] = Filenames[ii];
-                    }
-                    // Generate the appropriate file name for the environmental data layer
-                    if (Folders[ii].ToLower().Equals("input"))
-                    {
-                        TempFilename = "input/Data/" + Filenames[ii];
-                    }
-                    else
-                    {
-                        TempFilename = Folders[ii] + "/" + Filenames[ii];
-                    }
-                    Filenames[ii] = TempFilename + Extensions[ii];
-                    // Read in and store the environmental data
-                    EnviroStack.Add(LayerName[ii], new EnviroData(Filenames[ii], DatasetNames[ii], FileTypes[ii], Resolutions[ii], MethodUnits[ii]));
-                }
-                else if (Sources[ii].ToLower().Equals("fetchclimate"))
-                {
-
-                    if (!EnviroStack.ContainsKey(LayerName[ii]))
-                        if (_SpecificLocations)
+                        // For layers where the file format is ESRI ASCII grid, the dataset name is the same as the file name
+                        if (FileTypes[ii].ToLower().Equals("esriasciigrid"))
                         {
-                            EnviroStack.Add(LayerName[ii], new EnviroData(DatasetNames[ii], Resolutions[ii], (double)BottomLatitude, (double)LeftmostLongitude, (double)TopLatitude, (double)RightmostLongitude, (double)CellSize, _CellList, EnvironmentalDataSource.ANY));
+                            DatasetNames[ii] = Filenames[ii];
+                        }
+                        // Generate the appropriate file name for the environmental data layer
+                        if (Folders[ii].ToLower().Equals("input"))
+                        {
+                            TempFilename = "input/Data/" + Filenames[ii];
                         }
                         else
                         {
-                            EnviroStack.Add(LayerName[ii], new EnviroData(DatasetNames[ii], Resolutions[ii], (double)BottomLatitude, (double)LeftmostLongitude, (double)TopLatitude, (double)RightmostLongitude, (double)CellSize, EnvironmentalDataSource.ANY));
+                            TempFilename = Folders[ii] + "/" + Filenames[ii];
                         }
+                        Filenames[ii] = TempFilename + Extensions[ii];
+                        // Read in and store the environmental data
+                        EnviroStackTemporal.Add(LayerName[ii], new EnviroData(Filenames[ii], DatasetNames[ii], FileTypes[ii], Resolutions[ii], MethodUnits[ii]));
+                    }
 
+
+                }
+                else
+                {
+                    if (Sources[ii].ToLower().Equals("local"))
+                    {
+                        // For layers where the file format is ESRI ASCII grid, the dataset name is the same as the file name
+                        if (FileTypes[ii].ToLower().Equals("esriasciigrid"))
+                        {
+                            DatasetNames[ii] = Filenames[ii];
+                        }
+                        // Generate the appropriate file name for the environmental data layer
+                        if (Folders[ii].ToLower().Equals("input"))
+                        {
+                            TempFilename = "input/Data/" + Filenames[ii];
+                        }
+                        else
+                        {
+                            TempFilename = Folders[ii] + "/" + Filenames[ii];
+                        }
+                        Filenames[ii] = TempFilename + Extensions[ii];
+                        // Read in and store the environmental data
+                        EnviroStack.Add(LayerName[ii], new EnviroData(Filenames[ii], DatasetNames[ii], FileTypes[ii], Resolutions[ii], MethodUnits[ii]));
+                    }
+                    else if (Sources[ii].ToLower().Equals("fetchclimate"))
+                    {
+
+                        if (!EnviroStack.ContainsKey(LayerName[ii]))
+                            if (_SpecificLocations)
+                            {
+                                EnviroStack.Add(LayerName[ii], new EnviroData(DatasetNames[ii], Resolutions[ii], (double)BottomLatitude, (double)LeftmostLongitude, (double)TopLatitude, (double)RightmostLongitude, (double)CellSize, _CellList, EnvironmentalDataSource.ANY));
+                            }
+                            else
+                            {
+                                EnviroStack.Add(LayerName[ii], new EnviroData(DatasetNames[ii], Resolutions[ii], (double)BottomLatitude, (double)LeftmostLongitude, (double)TopLatitude, (double)RightmostLongitude, (double)CellSize, EnvironmentalDataSource.ANY));
+                            }
+
+                    }
                 }
             }
             Console.WriteLine("\n\n");

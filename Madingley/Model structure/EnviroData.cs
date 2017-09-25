@@ -723,13 +723,13 @@ namespace Madingley
 
                             // Loop over possible names for the monthly temporal dimension until a match in the data file is found
                             kk = 0;
-                            while ((kk < MonthSearchStrings.Length) && (!internalData.Variables.Contains(MonthSearchStrings[kk]))) kk++;
+                            while ((kk < YearSearchStrings.Length) && (!internalData.Variables.Contains(YearSearchStrings[kk]))) kk++;
 
                             // Of a match for the monthly temporal dimension has been found then read in the data, otherwise thrown an error
-                            if (internalData.Variables.Contains(MonthSearchStrings[kk]))
+                            if (internalData.Variables.Contains(YearSearchStrings[kk]))
                             {
                                 // Get the number of months in the temporal dimension
-                                _NumTimes = (uint)internalData.Dimensions[MonthSearchStrings[kk]].Length;
+                                _NumTimes = (uint)internalData.Dimensions[YearSearchStrings[kk]].Length;
                                 
                                 // Read in the values of the temporal dimension from the file
                                 // Check which format the temporal dimension data are in; if unrecognized, then throw an error
@@ -1801,8 +1801,9 @@ namespace Madingley
             else
             {
                 //Debug.Fail("No missing data value found for environmental data file: " + internalData.Name.ToString());
-                Console.WriteLine("No missing data value found for this variable: assigning a value of -9999");
-                _MissingValue = -9999;
+                Console.WriteLine("No missing data value found for this variable: assigning a value of NaN");
+                //Temporarily replacing with NaN since the multi-years variables are using this as a missing value
+                _MissingValue = double.NaN;
             }
 
             // Possible names for the latitude dimension in the NetCDF file
