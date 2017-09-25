@@ -51,14 +51,15 @@ namespace Madingley
         private TextReader SyncStateReader;
 
 
-        public InputModelState(string outputPath, string filename, ModelGrid ecosystemModelGrid, List<uint[]> cellList)
+        public void InputModelStateNCDF(string inputPath, string filename, ModelGrid ecosystemModelGrid, List<uint[]> cellList, bool tracking)
         {
 
             //Set the input state flag to be true
             _InputState = true;
-                                    
+
             // Construct the string required to access the file using Scientific Dataset
-            string _ReadFileString = "msds:nc?file=input/ModelStates/" + filename +".nc&openMode=readOnly";
+            string _ReadFileString = "msds:nc?file=" + inputPath + filename + ".nc&openMode=readOnly";
+
 
             // Open the data file using Scientific Dataset
             DataSet StateDataSet = DataSet.Open(_ReadFileString);
@@ -389,7 +390,7 @@ namespace Madingley
         }
 
         public void InputModelStateTxt(string inputPath, string filename, ModelGrid ecosystemModelGrid,
-    FunctionalGroupDefinitions cohortFunctionalGroupDefinitions, FunctionalGroupDefinitions stockFunctionalGroupDefinitions, bool tracking)
+            FunctionalGroupDefinitions cohortFunctionalGroupDefinitions, FunctionalGroupDefinitions stockFunctionalGroupDefinitions, bool tracking)
         {
             //Set the input state flag to be true
             _InputState = true;

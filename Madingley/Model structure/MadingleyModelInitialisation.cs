@@ -598,6 +598,16 @@ namespace Madingley
             set { _ModelStateFilename = value; }
         }
 
+        private List<string> _ModelStateType;
+
+        public List<string> ModelStateType
+        {
+            get { return _ModelStateType; }
+            set { _ModelStateType = value; }
+        }
+ 
+
+
         
         /// <summary>
         /// Reads the initalization file to get information for the set of simulations to be run
@@ -984,7 +994,7 @@ namespace Madingley
         /// <param name="modelStateFileSpecification">Filename of the setup file specifying the model state datafile</param>
         private void ModelStatesInitialisation(string modelStateFileSpecification, string outputPath)
         {
-            
+
             string FileString = "msds:csv?file=input/Model setup/Initial model state setup/" + modelStateFileSpecification + "&openMode=readOnly";
 
             //Copy the file containing the list of environmental layers to the output directory
@@ -1012,6 +1022,9 @@ namespace Madingley
                         break;
                     case "filename":
                         for (int ii = 0; ii < TempValues.Length; ii++) _ModelStateFilename.Add(TempValues.GetValue(ii).ToString());
+                        break;
+                    case "filetype":
+                        for (int ii = 0; ii < TempValues.Length; ii++) _ModelStateType.Add(TempValues.GetValue(ii).ToString());
                         break;
                 }
             }
