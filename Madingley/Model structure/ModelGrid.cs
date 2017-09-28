@@ -756,13 +756,13 @@ namespace Madingley
 
 
             //Check to see if the correct number of functional groups exist in the definitions file and in the input state
-
-            if (cohortFunctionalGroupDefinitions.GetNumberOfFunctionalGroups() != inputModelState.GridCellCohorts[
-                cellIndices[0][0],cellIndices[0][1]].Count)
+            /*if (cohortFunctionalGroupDefinitions.GetNumberOfFunctionalGroups() != inputModelState.GridCellCohorts[
+                this.GetLatIndex(InternalGrid[cellIndices[0][0], cellIndices[0][1]].Latitude),
+                this.GetLonIndex(InternalGrid[cellIndices[0][0], cellIndices[0][1]].Longitude)].Count)
             {
                 Console.WriteLine("Mismatch in the number of functional groups defined in CohortFunctionalGroupDefinitions.csv set-up file and the Model State being read in");
                 Environment.Exit(0);
-            }
+            }*/
 
             int[] TerrestrialStockFunctionalIndices = stockFunctionalGroupDefinitions.GetFunctionalGroupIndex("Realm", "Terrestrial", false);
             int[] MarineStockFunctionalIndices = stockFunctionalGroupDefinitions.GetFunctionalGroupIndex("Realm", "Marine", false);
@@ -770,86 +770,123 @@ namespace Madingley
             int[] TerrestrialCohortFunctionalIndices = cohortFunctionalGroupDefinitions.GetFunctionalGroupIndex("Realm", "Terrestrial", false);
             int[] MarineCohortFunctionalIndices = cohortFunctionalGroupDefinitions.GetFunctionalGroupIndex("Realm", "Marine", false);
 
-
+            //Input state is held as a grid, not list of cells. So need to convert the cell list indices to lat/lon indices
+            uint InputStateLatInd;
+            uint InputStateLonInd;
             foreach (uint[] cellIndexPair in cellIndices)
             {
+                InputStateLatInd = this.GetLatIndex(InternalGrid[cellIndexPair[0], cellIndexPair[1]].Latitude);
+                InputStateLonInd = this.GetLonIndex(InternalGrid[cellIndexPair[0], cellIndexPair[1]].Longitude);
 
-                for (int i = 0; i < inputModelState.GridCellCohorts[cellIndexPair[0], cellIndexPair[1]].Count; i++)
+                //if (InternalGrid[cellIndexPair[0], cellIndexPair[1]].CellEnvironment["Realm"][0] == 1)
                 {
-                    InternalGrid[cellIndexPair[0], cellIndexPair[1]].GridCellCohorts[i] = new List<Cohort>();
-                }
-                //Check which cohorts should be initialised for each cell
-                if (InternalGrid[cellIndexPair[0], cellIndexPair[1]].CellEnvironment["Realm"][0] == 1)
-                {
-                    //This is a terrestrial cell so only add the terrestrial stocks
                     foreach (int fg in TerrestrialCohortFunctionalIndices)
                     {
-                        //Cohort[] tempGridCellCohorts = (Cohort[])inputModelState.GridCellCohorts[cellIndexPair[0], cellIndexPair[1]][fg].ToArray().Clone();
-                        //Cohort[] tempGridCellCohorts = (Cohort[])Array.ConvertAll(inputModelState.GridCellCohorts[cellIndexPair[0], cellIndexPair[1]][fg].ToArray(),
-                        //    element => (Cohort)element.Clone());
-                        if (inputModelState.GridCellCohorts[cellIndexPair[0], cellIndexPair[1]][fg] != null)
-                        {
-                            Cohort[] tempGridCellCohorts = inputModelState.GridCellCohorts[cellIndexPair[0], cellIndexPair[1]][fg].ToArray().Select(cohort => new Cohort(cohort)).ToArray();
-                            InternalGrid[cellIndexPair[0], cellIndexPair[1]].GridCellCohorts[fg] = tempGridCellCohorts.ToList();
-                        }
+                        InternalGrid[cellIndexPair[0], cellIndexPair[1]].GridCellCohorts[fg] = new List<Cohort>();
                     }
-                }
-                else
-                {
-                    // this is a marine cell so only add the marine stocks
-                    foreach (int fg in MarineCohortFunctionalIndices)
-                    {
-                        //Cohort[] tempGridCellCohorts = (Cohort[])inputModelState.GridCellCohorts[cellIndexPair[0], cellIndexPair[1]][fg].ToArray().Clone(); 
-                        //Cohort[] tempGridCellCohorts = (Cohort[])Array.ConvertAll(inputModelState.GridCellCohorts[cellIndexPair[0], cellIndexPair[1]][fg].ToArray(),
-                        //     element => (Cohort)element.Clone());
-                        if (inputModelState.GridCellCohorts[cellIndexPair[0], cellIndexPair[1]][fg] != null)
-                        {
-                            Cohort[] tempGridCellCohorts = inputModelState.GridCellCohorts[cellIndexPair[0], cellIndexPair[1]][fg].ToArray().Select(cohort => new Cohort(cohort)).ToArray();
-                            InternalGrid[cellIndexPair[0], cellIndexPair[1]].GridCellCohorts[fg] = tempGridCellCohorts.ToList();
-                        }
-                    }
-                }
-
-
-
-                for (int i = 0; i < inputModelState.GridCellStocks[cellIndexPair[0], cellIndexPair[1]].Count; i++)
-                {
-                    InternalGrid[cellIndexPair[0], cellIndexPair[1]].GridCellStocks[i] = new List<Stock>();
-                }
-
-
-                //Check which stocks should be initialised for each cell
-                if (InternalGrid[cellIndexPair[0], cellIndexPair[1]].CellEnvironment["Realm"][0] == 1)
-                {
-                    //This is a terrestrial cell so only add the terrestrial stocks
                     foreach (int fg in TerrestrialStockFunctionalIndices)
                     {
-                        //Stock[] tempGridCellStocks = (Stock[])inputModelState.GridCellStocks[cellIndexPair[0], cellIndexPair[1]][fg].ToArray().Clone();
-                        //Stock[] tempGridCellStocks = (Stock[])Array.ConvertAll(inputModelState.GridCellStocks[cellIndexPair[0], cellIndexPair[1]][fg].ToArray(),
-                        //     element => (Stock)element.Clone());
-                        if (inputModelState.GridCellStocks[cellIndexPair[0], cellIndexPair[1]][fg] != null)
-                        {
-                            Stock[] tempGridCellStocks = inputModelState.GridCellStocks[cellIndexPair[0], cellIndexPair[1]][fg].ToArray().Select(stock => new Stock(stock)).ToArray();
-                            InternalGrid[cellIndexPair[0], cellIndexPair[1]].GridCellStocks[fg] = tempGridCellStocks.ToList();
-                        }
+                        InternalGrid[cellIndexPair[0], cellIndexPair[1]].GridCellStocks[fg] = new List<Stock>();
                     }
                 }
-                else
+                //else
                 {
-                    // this is a marine cell so only add the marine stocks
+                    foreach (int fg in MarineCohortFunctionalIndices)
+                    {
+                        InternalGrid[cellIndexPair[0], cellIndexPair[1]].GridCellCohorts[fg] = new List<Cohort>();
+                    }
                     foreach (int fg in MarineStockFunctionalIndices)
                     {
-                        //Stock[] tempGridCellStocks = (Stock[])inputModelState.GridCellStocks[cellIndexPair[0], cellIndexPair[1]][fg].ToArray().Clone();
-                        //Stock[] tempGridCellStocks = (Stock[])Array.ConvertAll(inputModelState.GridCellStocks[cellIndexPair[0], cellIndexPair[1]][fg].ToArray(),
-                        //     element => (Stock)element.Clone());
-                        if (inputModelState.GridCellStocks[cellIndexPair[0], cellIndexPair[1]][fg] != null)
+                        InternalGrid[cellIndexPair[0], cellIndexPair[1]].GridCellStocks[fg] = new List<Stock>();
+                    }
+                }
+
+                if (inputModelState.GridCellCohorts[InputStateLatInd, InputStateLonInd] != null)
+                {
+                    /*for (int i = 0; i < inputModelState.GridCellCohorts[InputStateLatInd, InputStateLonInd].Count; i++)
+                    {
+                        InternalGrid[cellIndexPair[0], cellIndexPair[1]].GridCellCohorts[i] = new List<Cohort>();
+                    }*/
+                    //Check which cohorts should be initialised for each cell
+                    if (InternalGrid[cellIndexPair[0], cellIndexPair[1]].CellEnvironment["Realm"][0] == 1)
+                    {
+                        //This is a terrestrial cell so only add the terrestrial stocks
+                        foreach (int fg in TerrestrialCohortFunctionalIndices)
                         {
-                            Stock[] tempGridCellStocks = inputModelState.GridCellStocks[cellIndexPair[0], cellIndexPair[1]][fg].ToArray().Select(stock => new Stock(stock)).ToArray();
-                            InternalGrid[cellIndexPair[0], cellIndexPair[1]].GridCellStocks[fg] = tempGridCellStocks.ToList();
+                            //Cohort[] tempGridCellCohorts = (Cohort[])inputModelState.GridCellCohorts[cellIndexPair[0], cellIndexPair[1]][fg].ToArray().Clone();
+                            //Cohort[] tempGridCellCohorts = (Cohort[])Array.ConvertAll(inputModelState.GridCellCohorts[cellIndexPair[0], cellIndexPair[1]][fg].ToArray(),
+                            //    element => (Cohort)element.Clone());
+                            if (inputModelState.GridCellCohorts[InputStateLatInd, InputStateLonInd][fg] != null)
+                            {
+
+
+                                Cohort[] tempGridCellCohorts =
+                                    inputModelState.GridCellCohorts[InputStateLatInd, InputStateLonInd][fg].ToArray().Select(cohort => new Cohort(cohort)).ToArray();
+                                InternalGrid[cellIndexPair[0], cellIndexPair[1]].GridCellCohorts[fg] = tempGridCellCohorts.ToList();
+                            }
+                        }
+                    }
+
+                    else
+                    {
+                        // this is a marine cell so only add the marine stocks
+                        foreach (int fg in MarineCohortFunctionalIndices)
+                        {
+                            //Cohort[] tempGridCellCohorts = (Cohort[])inputModelState.GridCellCohorts[cellIndexPair[0], cellIndexPair[1]][fg].ToArray().Clone(); 
+                            //Cohort[] tempGridCellCohorts = (Cohort[])Array.ConvertAll(inputModelState.GridCellCohorts[cellIndexPair[0], cellIndexPair[1]][fg].ToArray(),
+                            //     element => (Cohort)element.Clone());
+                            if (inputModelState.GridCellCohorts[InputStateLatInd, InputStateLonInd][fg] != null)
+                            {
+                                Cohort[] tempGridCellCohorts = inputModelState.GridCellCohorts[InputStateLatInd, InputStateLonInd][fg].ToArray().Select(cohort => new Cohort(cohort)).ToArray();
+                                InternalGrid[cellIndexPair[0], cellIndexPair[1]].GridCellCohorts[fg] = tempGridCellCohorts.ToList();
+                            }
                         }
                     }
                 }
 
+
+
+
+                if (inputModelState.GridCellStocks[InputStateLatInd, InputStateLonInd] != null)
+                {
+                    /*for (int i = 0; i < inputModelState.GridCellStocks[InputStateLatInd, InputStateLonInd].Count; i++)
+                    {
+                        InternalGrid[cellIndexPair[0], cellIndexPair[1]].GridCellStocks[i] = new List<Stock>();
+                    }*/
+
+
+                    //Check which stocks should be initialised for each cell
+                    if (InternalGrid[cellIndexPair[0], cellIndexPair[1]].CellEnvironment["Realm"][0] == 1)
+                    {
+                        //This is a terrestrial cell so only add the terrestrial stocks
+                        foreach (int fg in TerrestrialStockFunctionalIndices)
+                        {
+                            //Stock[] tempGridCellStocks = (Stock[])inputModelState.GridCellStocks[cellIndexPair[0], cellIndexPair[1]][fg].ToArray().Clone();
+                            //Stock[] tempGridCellStocks = (Stock[])Array.ConvertAll(inputModelState.GridCellStocks[cellIndexPair[0], cellIndexPair[1]][fg].ToArray(),
+                            //     element => (Stock)element.Clone());
+                            if (inputModelState.GridCellStocks[InputStateLatInd, InputStateLonInd][fg] != null)
+                            {
+                                Stock[] tempGridCellStocks = inputModelState.GridCellStocks[InputStateLatInd, InputStateLonInd][fg].ToArray().Select(stock => new Stock(stock)).ToArray();
+                                InternalGrid[cellIndexPair[0], cellIndexPair[1]].GridCellStocks[fg] = tempGridCellStocks.ToList();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // this is a marine cell so only add the marine stocks
+                        foreach (int fg in MarineStockFunctionalIndices)
+                        {
+                            //Stock[] tempGridCellStocks = (Stock[])inputModelState.GridCellStocks[cellIndexPair[0], cellIndexPair[1]][fg].ToArray().Clone();
+                            //Stock[] tempGridCellStocks = (Stock[])Array.ConvertAll(inputModelState.GridCellStocks[cellIndexPair[0], cellIndexPair[1]][fg].ToArray(),
+                            //     element => (Stock)element.Clone());
+                            if (inputModelState.GridCellStocks[InputStateLatInd, InputStateLonInd][fg] != null)
+                            {
+                                Stock[] tempGridCellStocks = inputModelState.GridCellStocks[InputStateLatInd, InputStateLonInd][fg].ToArray().Select(stock => new Stock(stock)).ToArray();
+                                InternalGrid[cellIndexPair[0], cellIndexPair[1]].GridCellStocks[fg] = tempGridCellStocks.ToList();
+                            }
+                        }
+                    }
+                }
                 Console.Write("\rGrid Cell: {0} of {1}", ii++, cellIndices.Count);
 
             }

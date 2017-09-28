@@ -845,6 +845,7 @@ namespace Madingley
 
             if (initialisation.InputState)
             {
+                Console.WriteLine("Reading input state file " + initialisation.ModelStateFilename[simulation]);
                 InputModelState = new InputModelState();
                 switch (initialisation.ModelStateType[simulation])
                 {
@@ -860,8 +861,11 @@ namespace Madingley
 
             }
 
+            EnviroStack.Clear();
+            EnviroStackTemporal.Clear();
+
             // When the last simulation for the current scenario
-            // if ((scenarioParameters.scenarioSimulationsNumber.Count == 1) && (scenarioIndex == scenarioParameters.scenarioSimulationsNumber[scenarioIndex] - 1)) EnviroStack.Clear();
+            //if ((scenarioParameters.scenarioSimulationsNumber.Count == 1) && (scenarioIndex == scenarioParameters.scenarioSimulationsNumber[scenarioIndex] - 1)) EnviroStack.Clear();
             // Seed stocks and cohorts in the grid cells
             // If input state from output from a previous simulation
             if (initialisation.InputState)
@@ -877,14 +881,17 @@ namespace Madingley
 
                     for (int kk = 0; kk < CohortFunctionalGroupDefinitions.GetNumberOfFunctionalGroups(); kk++)
                     {
-                        // Loop through each cohort in the functional group
-                        for (int ll = (workingGridCellCohorts[kk].Count - 1); ll >= 0; ll--)
+                        if (workingGridCellCohorts[kk] != null)
                         {
-                            // If cohort abundance is less than the extinction threshold then add to the list for extinction
-                            if (workingGridCellCohorts[kk][ll].CohortAbundance.CompareTo(0) <= 0 || workingGridCellCohorts[kk][ll].IndividualBodyMass.CompareTo(0.0) == 0)
+                            // Loop through each cohort in the functional group
+                            for (int ll = (workingGridCellCohorts[kk].Count - 1); ll >= 0; ll--)
                             {
-                                // Remove the extinct cohort from the list of cohorts
-                                workingGridCellCohorts[kk].RemoveAt(ll);
+                                // If cohort abundance is less than the extinction threshold then add to the list for extinction
+                                if (workingGridCellCohorts[kk][ll].CohortAbundance.CompareTo(0) <= 0 || workingGridCellCohorts[kk][ll].IndividualBodyMass.CompareTo(0.0) == 0)
+                                {
+                                    // Remove the extinct cohort from the list of cohorts
+                                    workingGridCellCohorts[kk].RemoveAt(ll);
+                                }
                             }
                         }
 
