@@ -231,7 +231,7 @@ namespace Madingley
             _CohortAbundance = initialAbundance;
             _BirthTimeStep = birthTimeStep;
             _MaturityTimeStep = maturityTimeStep;
-            _LogOptimalPreyBodySizeRatio = Math.Log(optimalPreyBodySizeRatio);
+            _LogOptimalPreyBodySizeRatio = optimalPreyBodySizeRatio;
             _MaximumAchievedBodyMass = maxBM;
             _Merged = false;
             _TrophicIndex = trophicIndex;

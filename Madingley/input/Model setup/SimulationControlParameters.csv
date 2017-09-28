@@ -4,10 +4,10 @@ Length of simulation (years),2
 Burn-in (years),1
 Impact duration (years),100
 Recovery duration (years),0
-Bottom Latitude,48
-Top Latitude,56
-Leftmost Longitude,-10
-Rightmost Longitude,6
+Bottom Latitude,-65
+Top Latitude,70
+Leftmost Longitude,-180
+Rightmost Longitude,180
 Grid Cell Size,2
 Read State,ReadModelState.csv
 Specific Location File,
@@ -15,8 +15,8 @@ Plankton size threshold,0.01
 Draw Randomly,yes
 Extinction Threshold,1
 Maximum Number Of Cohorts,1000
-Run Cells In Parallel,no
-Run Simulations In Parallel,yes
+Run Cells In Parallel,yes
+Run Simulations In Parallel,no
 Run Single Realm,terrestrial
 Impact Cell Index,all
 Dispersal only,no

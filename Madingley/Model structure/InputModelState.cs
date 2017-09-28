@@ -483,10 +483,11 @@ namespace Madingley
 
                     if (_GridCellCohorts[lat_ind, lon_ind][Fg] == null) _GridCellCohorts[lat_ind, lon_ind][Fg] = new List<Cohort>();
 
-                    Cohort NewCohort = new Cohort((byte)Fg, J_bm, A_bm, Bm, N, LogOptPreySize, MaxBm,
-                        (ushort)BirthTimestep, (ushort)MaturityTimestep, PropTimeActive, ref cid, TI, tracking);
+                    Cohort NewCohort = new Cohort((byte)Fg, J_bm, A_bm, Bm, N, Math.Exp(LogOptPreySize),
+                        (ushort)BirthTimestep, PropTimeActive, ref cid, TI, tracking);
                     _GridCellCohorts[lat_ind, lon_ind].Add(Fg, NewCohort);
 
+                    
                 }
 
 
