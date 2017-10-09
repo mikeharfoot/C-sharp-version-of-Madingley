@@ -72,7 +72,8 @@ namespace Madingley
             GlobalProcessTracker globalTracker, uint currentMonth, 
             string outputDetail, bool specificLocations, Boolean impactCell)
         {
-            double Fimpact = 0.0;
+            double loss = 0.0;
+            double gain = 0.0;
 
             int ScenarioYear;
             if(currentTimeStep < burninSteps)
@@ -93,24 +94,33 @@ namespace Madingley
             else if (madingleyStockDefinitions.GetTraitNames("Realm", actingStock[0]) == "terrestrial")
             {
 
-                if(madingleyStockDefinitions.GetTraitNames("impact state",actingStock[0]) == "natural")
+                if(madingleyStockDefinitions.GetTraitNames("impact state",actingStock[0]) == "primary")
                 {
+                    loss = cellEnvironment["Primary loss"][ScenarioYear]/12.0;
                     //calculate the change in total biomass as a result of coverage changes
                     // assumes that the biomass density stays the same as coverage goes down (ie if chopping down some forest - the density of the remaining stays the same)
                     // However if coverage increases, the density declines, as biomass is only added by NPP..
-                    if (cellEnvironment["Fnatural"][ScenarioYear] < gridCellStocks[actingStock].FractionalArea)
-                        gridCellStocks[actingStock].TotalBiomass *= 1.0 - 
-                            ((gridCellStocks[actingStock].FractionalArea - cellEnvironment["Fnatural"][ScenarioYear]) / gridCellStocks[actingStock].FractionalArea);
-                    gridCellStocks[actingStock].FractionalArea = cellEnvironment["Fnatural"][ScenarioYear];
+                    //if (cellEnvironment["Primary loss"][ScenarioYear] < gridCellStocks[actingStock].FractionalArea)
+
                 }
-                else
+                else if(madingleyStockDefinitions.GetTraitNames("impact state",actingStock[0]) == "secondary")
                 {
-                    Fimpact = 1.0 - cellEnvironment["Fnatural"][ScenarioYear];
-                    if (Fimpact < gridCellStocks[actingStock].FractionalArea)
-                        gridCellStocks[actingStock].TotalBiomass *= 1.0 -
-                            ((gridCellStocks[actingStock].FractionalArea - Fimpact) / gridCellStocks[actingStock].FractionalArea);
-                    gridCellStocks[actingStock].FractionalArea = Fimpact;
+                    loss = cellEnvironment["Secondary loss"][ScenarioYear] / 12.0;
+                    gain = cellEnvironment["Secondary gain"][ScenarioYear] / 12.0;
+
                 }
+                else if (madingleyStockDefinitions.GetTraitNames("impact state", actingStock[0]) == "impacted")
+                {
+
+                    loss = cellEnvironment["Secondary gain"][ScenarioYear] / 12.0;
+                    gain = (cellEnvironment["Secondary loss"][ScenarioYear] + cellEnvironment["Primary loss"][ScenarioYear]) / 12.0;
+
+                }
+
+                gridCellStocks[actingStock].TotalBiomass *= 1.0 -
+                    (loss / gridCellStocks[actingStock].FractionalArea);
+                gridCellStocks[actingStock].FractionalArea = gridCellStocks[actingStock].FractionalArea - loss + gain;
+
 
                 // Run the dynamic plant model to update the leaf stock for this time step
                 double WetMatterNPP = DynamicPlantModel.UpdateLeafStock(cellEnvironment, gridCellStocks, actingStock, currentTimeStep, madingleyStockDefinitions.
