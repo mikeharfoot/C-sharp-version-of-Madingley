@@ -1,15 +1,15 @@
 Parameter,Value
 Timestep Units,month
-Length of simulation (years),2
+Length of simulation (years),20
 Burn-in (years),1
 Impact duration (years),100
 Recovery duration (years),0
-Bottom Latitude,-65
-Top Latitude,70
-Leftmost Longitude,-180
-Rightmost Longitude,180
+Bottom Latitude,-8
+Top Latitude,-2
+Leftmost Longitude,-68
+Rightmost Longitude,-62
 Grid Cell Size,2
-Read State,ReadModelState.csv
+Read State,
 Specific Location File,
 Plankton size threshold,0.01
 Draw Randomly,yes

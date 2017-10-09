@@ -93,7 +93,7 @@ namespace Madingley
             else if (madingleyStockDefinitions.GetTraitNames("Realm", actingStock[0]) == "terrestrial")
             {
 
-                if(madingleyStockDefinitions.GetTraitNames("impact state",actingStock[0]) == "Natural")
+                if(madingleyStockDefinitions.GetTraitNames("impact state",actingStock[0]) == "natural")
                 {
                     //calculate the change in total biomass as a result of coverage changes
                     // assumes that the biomass density stays the same as coverage goes down (ie if chopping down some forest - the density of the remaining stays the same)
