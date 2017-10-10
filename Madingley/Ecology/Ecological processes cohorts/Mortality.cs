@@ -105,7 +105,12 @@ namespace Madingley
             foreach (var Biomass in deltas["biomass"])
             {
                 // Add the delta biomass to net biomass
-                BodyMassIncludingChangeThisTimeStep += Biomass.Value;
+                if (Biomass.Key != "respiring biomass")  
+                {  
+                    // Add the delta biomass to net biomass  
+                    BodyMassIncludingChangeThisTimeStep += Biomass.Value;  
+                }  
+
             }
             BodyMassIncludingChangeThisTimeStep = Math.Min(gridCellCohorts[actingCohort].AdultMass, BodyMassIncludingChangeThisTimeStep + gridCellCohorts[actingCohort].IndividualBodyMass);
             

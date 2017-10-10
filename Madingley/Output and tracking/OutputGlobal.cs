@@ -78,6 +78,12 @@ namespace Madingley
         /// </summary>
         private double RespiratoryPoolOut;
 
+        /// The total biomass in the respiratory pool per timestep  
+        /// </summary>  
+        private double RespiratoryPoolOutPerTimestep;  
+        /// <summary>  
+
+
         /// <summary>
         /// Total number of cohorts in the grid cell
         /// </summary>
@@ -174,6 +180,7 @@ namespace Madingley
             DataConverter.AddVariable(BasicOutput, "Total living biomass", "Kg / km^2", 1, TimeDimension, ecosystemModelGrid.GlobalMissingValue, TimeSteps);
             DataConverter.AddVariable(BasicOutput, "Organic matter pool", "Kg / km^2", 1, TimeDimension, ecosystemModelGrid.GlobalMissingValue, TimeSteps);
             DataConverter.AddVariable(BasicOutput, "Respiratory CO2 pool", "Kg / km^2", 1, TimeDimension, ecosystemModelGrid.GlobalMissingValue, TimeSteps);
+            DataConverter.AddVariable(BasicOutput, "Respiratory CO2 pool Per Timestep", "Kg / km^2", 1, TimeDimension, ecosystemModelGrid.GlobalMissingValue, TimeSteps);
             DataConverter.AddVariable(BasicOutput, "Number of cohorts extinct", "", 1, TimeDimension, ecosystemModelGrid.GlobalMissingValue, TimeSteps);
             DataConverter.AddVariable(BasicOutput, "Number of cohorts produced", "", 1, TimeDimension, ecosystemModelGrid.GlobalMissingValue, TimeSteps);
             DataConverter.AddVariable(BasicOutput, "Number of cohorts combined", "", 1, TimeDimension, ecosystemModelGrid.GlobalMissingValue, TimeSteps);
@@ -220,6 +227,7 @@ namespace Madingley
 
             // Get total respiratory pool biomass
             RespiratoryPoolOut = ecosystemModelGrid.GetEnviroGridTotal("Respiratory CO2 Pool", 0, cellIndices);
+            RespiratoryPoolOutPerTimestep = ecosystemModelGrid.GetEnviroGridTotal("Respiratory CO2 Pool Per Timestep", 0, cellIndices); 
 
             // Get total of all biomass
             TotalBiomass = TotalLivingBiomass + RespiratoryPoolOut + OrganicPoolOut;
@@ -299,6 +307,9 @@ namespace Madingley
                 BasicOutput, 0);
             DataConverter.ValueToSDS1D(RespiratoryPoolOut, "Respiratory CO2 pool", "Time step", ecosystemModelGrid.GlobalMissingValue,
                 BasicOutput, 0);
+            DataConverter.ValueToSDS1D(RespiratoryPoolOutPerTimestep, "Respiratory CO2 pool Per Timestep", "Time step", ecosystemModelGrid.GlobalMissingValue,
+                BasicOutput, 0); 
+
 
             // Write out the total number of cohorts and stocks to the relevant one-dimensional output variables
             DataConverter.ValueToSDS1D(TotalNumberOfCohorts, "Number of cohorts in model", "Time step", ecosystemModelGrid.
@@ -376,6 +387,7 @@ namespace Madingley
                 {
                     Console.WriteLine("Total biomass (all) = " + String.Format("{0:E}", TotalBiomass / 1000) + " kg");
                     Console.WriteLine("Respiratory pool biomass = " + String.Format("{0:E}", RespiratoryPoolOut / 1000) + " kg");
+                    Console.WriteLine("Respiratory pool biomass per timestep = " + String.Format("{0:E}", RespiratoryPoolOutPerTimestep / 1000) + " kg"); 
                     Console.WriteLine("Organic pool biomass = " + String.Format("{0:E}", OrganicPoolOut / 1000) + " kg");
 
                 }
@@ -399,6 +411,8 @@ namespace Madingley
                 ecosystemModelGrid.GlobalMissingValue, BasicOutput, (int)currentTimeStep + 1);
             DataConverter.ValueToSDS1D(RespiratoryPoolOut, "Respiratory CO2 pool", "Time step",
                 ecosystemModelGrid.GlobalMissingValue, BasicOutput, (int)currentTimeStep + 1);
+            DataConverter.ValueToSDS1D(RespiratoryPoolOutPerTimestep, "Respiratory CO2 pool Per Timestep", "Time step",
+                ecosystemModelGrid.GlobalMissingValue, BasicOutput, (int)currentTimeStep + 1);  
             DataConverter.ValueToSDS1D(TotalNumberOfCohorts, "Number of cohorts in model", "Time step",
                 ecosystemModelGrid.GlobalMissingValue, BasicOutput, (int)currentTimeStep + 1);
             DataConverter.ValueToSDS1D(TotalNumberOfStocks, "Number of stocks in model", "Time step",

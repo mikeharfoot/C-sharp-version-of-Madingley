@@ -523,7 +523,7 @@ namespace Madingley
             madingleyStockDefinitions)
         {
 
-            double DensityScaling = Math.Max(0.01,1.0 - cellEnvironment["RelativeHANPP"][0]);
+            //double DensityScaling = Math.Max(0.01,1.0 - cellEnvironment["RelativeHANPP"][0]);
             //double DensityScaling =1.0;
 
             BinnedPreyDensities = new double[gridCellCohorts.Count, NumberOfBins];
@@ -592,7 +592,7 @@ namespace Madingley
                     // if (Math.Abs(Math.Log(_BodyMassPrey / _BodyMassPredator) - _PredatorLogOptimalPreyBodySizeRatio) < 1.5 && _BodyMassPrey > 0)
                     if (_BodyMassPrey > CriticalPreyBodySizeDown && _BodyMassPrey < CriticalPreyBodySizeUp)
                     {
-                        PreyMassBinNumber = GetBinNumber(_BodyMassPrey, LogPredatorMassPlusPredatorLogOptimalPreyBodySizeRatio); // this stays here in the edited code 
+                        //PreyMassBinNumber = GetBinNumber(_BodyMassPrey, LogPredatorMassPlusPredatorLogOptimalPreyBodySizeRatio); // this stays here in the edited code 
                         // Calculate the potential abundance from this cohort eaten by the acting cohort
                         //_PotentialAbundanceEaten[FunctionalGroup][i] = CalculateExpectedNumberKilledTerrestrial(
                         //    gridCellCohorts[FunctionalGroup][i].CohortAbundance,
@@ -602,8 +602,8 @@ namespace Madingley
 
                         //Scaling by the relative HANPP
                         _PotentialAbundanceEaten[FunctionalGroup][i] = CalculateExpectedNumberKilledTerrestrial(
-                            gridCellCohorts[FunctionalGroup][i].CohortAbundance / DensityScaling,
-                            _BodyMassPrey, PreyMassBinNumber, FunctionalGroup,
+                            gridCellCohorts[FunctionalGroup][i].CohortAbundance,
+                            _BodyMassPrey, FunctionalGroup,
                             _BodyMassPredator, _CarnivoreFunctionalGroups[FunctionalGroup], _OmnivoreFunctionalGroups[FunctionalGroup],
                             _OmnivoreFunctionalGroups[actingCohort[0]], _PredatorLogOptimalPreyBodySizeRatio);
 

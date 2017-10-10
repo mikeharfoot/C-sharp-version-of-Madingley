@@ -1143,7 +1143,8 @@ namespace Madingley
         private void RunWithinCellCohortEcology(uint latCellIndex, uint lonCellIndex, ThreadLockedParallelVariables partial, 
             GridCellCohortHandler workingGridCellCohorts, GridCellStockHandler workingGridCellStocks,string outputDetail, int cellIndex, MadingleyModelInitialisation initialisation)
         {
-
+            // Reset the per timestep CO2 and biomass pool
+            EcosystemModelGrid.ResetGridCellPerTimestepCO2Pool(latCellIndex, lonCellIndex);
 
             // Local instances of classes
             EcologyCohort MadingleyEcologyCohort = new EcologyCohort();

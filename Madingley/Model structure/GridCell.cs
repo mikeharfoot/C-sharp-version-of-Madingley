@@ -212,6 +212,18 @@ namespace Madingley
             tempVector[0] = 0.0;
             _CellEnvironment.Add("Respiratory CO2 Pool", tempVector);
 
+            // Add a per time step respiratory CO2 pool to the cell environment with an initial value of 0  
+            tempVector = new double[1];
+            tempVector[0] = 0.0;
+            CellEnvironment.Add("Respiratory CO2 Pool Per Timestep", tempVector);
+
+            // Add a per time step biomass pool to the cell environment with an initial value of 0. This is used to track the total biomass that has respired this time-step (i.e. ignoring things that  
+            // move in or out, and new cohorts which do not respire during the time stpe that they are products  
+            tempVector = new double[1];
+            tempVector[0] = 0.0;
+            CellEnvironment.Add("Respiring Biomass Pool Per Timestep", tempVector);  
+
+
             // Add the grid cell area (in km2) to the cell environment with an initial value of 0
             tempVector = new double[1];
             // Calculate the area of this grid cell
