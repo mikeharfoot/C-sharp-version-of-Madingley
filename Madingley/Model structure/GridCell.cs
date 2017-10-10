@@ -158,6 +158,7 @@ namespace Madingley
             DeltaBiomass.Add("predation", 0.0);
             DeltaBiomass.Add("herbivory", 0.0);
             DeltaBiomass.Add("reproduction", 0.0);
+            DeltaBiomass.Add("respiring biomass", 0.0);
 
             // Add delta biomass sorted list to deltas sorted list
             _Deltas.Add("biomass", DeltaBiomass);
