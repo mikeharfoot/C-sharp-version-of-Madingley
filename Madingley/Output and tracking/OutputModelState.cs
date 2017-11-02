@@ -63,7 +63,7 @@ namespace Madingley
             // Create a threadsafe textwriter to write outputs to the Maturity stream
             SyncStateWriter = TextWriter.Synchronized(StateWriter);
             SyncStateWriter.WriteLine("TimeStep\tLatitude\tLongitude\tID" +
-            "\tFunctionalGroup\tJuvenileMass\tAdultMass\tIndividualBodyMass\tCohortAbundance\tBirthTimeStep" +
+            "\tFunctionalGroup\tJuvenileMass\tAdultMass\tIndividualBodyMass\tCohortAbundance\tIndividualReproductiveMass\tBirthTimeStep" +
                 "\tMaturityTimeStep\tLogOptimalPreyBodySizeRatio\tMaximumAchievedBodyMass\tTrophicIndex\tProportionTimeActive");
 
             Simulation = simulation;
@@ -113,6 +113,7 @@ namespace Madingley
                                     Convert.ToString(C.AdultMass) + "\t" +
                                     Convert.ToString(C.IndividualBodyMass) + "\t" +
                                     Convert.ToString(C.CohortAbundance) + "\t" +
+                                    Convert.ToString(C.IndividualReproductivePotentialMass) + "\t" +
                                     Convert.ToString(C.BirthTimeStep) + "\t" +
                                     Convert.ToString(C.MaturityTimeStep) + "\t" +
                                     Convert.ToString(C.LogOptimalPreyBodySizeRatio) + "\t" +
