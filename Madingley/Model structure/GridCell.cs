@@ -329,6 +329,7 @@ namespace Madingley
 
                         _CellEnvironment.Add("NPP", _CellEnvironment["LandNPP"]);
                         _CellEnvironment.Add("DiurnalTemperatureRange", _CellEnvironment["LandDTR"]);
+
                     }
                 }
                 else
@@ -341,6 +342,7 @@ namespace Madingley
                     _CellEnvironment.Add("NPP", _CellEnvironment["LandNPP"]);
                     _CellEnvironment.Add("DiurnalTemperatureRange", _CellEnvironment["LandDTR"]);
 
+
                 }
             }
             else
@@ -351,18 +353,13 @@ namespace Madingley
             //Calculate and add the standard deviation of monthly temperature as a measure of seasonality
             //Also calculate and add the annual mean temperature for this cell
             tempVector = new double[12];
-            double[] sdtemp = new double[12];
-            double[] meantemp = new double[12];
-
-            tempVector = _CellEnvironment["Temperature"];
-
-            double Average = tempVector.Average();
-            meantemp[0] = Average;
-            double SumOfSquaresDifferences = tempVector.Select(val => (val - Average) * (val - Average)).Sum();
-            sdtemp[0] = Math.Sqrt(SumOfSquaresDifferences / tempVector.Length);
-
+            double[] sdtemp = CalculateAnnualSD(_CellEnvironment["Temperature"]);
+            double[] meantemp = CalculateAnnualMeans(_CellEnvironment["Temperature"]);
+            
             _CellEnvironment.Add("SDTemperature", sdtemp);
             _CellEnvironment.Add("AnnualTemperature", meantemp);
+
+            
 
             //Remove unrequired cell environment layers
             if (_CellEnvironment.ContainsKey("LandNPP")) _CellEnvironment.Remove("LandNPP");
@@ -374,38 +371,33 @@ namespace Madingley
             // CREATE NPP SEASONALITY LAYER
             _CellEnvironment.Add("Seasonality", CalculateNPPSeasonality(_CellEnvironment["NPP"], _CellEnvironment["Missing Value"][0], globalModelTimeStepUnit));
 
-            // Calculate other climate variables from temperature and precipitation
-            // Declare an instance of the climate variables calculator
-            ClimateVariablesCalculator CVC = new ClimateVariablesCalculator();
+            //if(_CellEnvironment["Realm"][0] == 1.0)
+            {
 
-            // Calculate the fraction of the year that experiences frost
-            double[] NDF = new double[1];
-            NDF[0] = CVC.GetNDF(_CellEnvironment["FrostDays"], _CellEnvironment["Temperature"],_CellEnvironment["Missing Value"][0]);
-            _CellEnvironment.Add("Fraction Year Frost", NDF);
+            
+                // Calculate other climate variables from temperature and precipitation
+                // Declare an instance of the climate variables calculator
+                ClimateVariablesCalculator CVC = new ClimateVariablesCalculator();
 
-            double[] frostMonthly = new double[12];
-            frostMonthly[0] = Math.Min(_CellEnvironment["FrostDays"][0] / 31.0, 1.0);
-            frostMonthly[1] = Math.Min(_CellEnvironment["FrostDays"][1] / 28.0, 1.0);
-            frostMonthly[2] = Math.Min(_CellEnvironment["FrostDays"][2] / 31.0, 1.0);
-            frostMonthly[3] = Math.Min(_CellEnvironment["FrostDays"][3] / 30.0, 1.0);
-            frostMonthly[4] = Math.Min(_CellEnvironment["FrostDays"][4] / 31.0, 1.0);
-            frostMonthly[5] = Math.Min(_CellEnvironment["FrostDays"][5] / 30.0, 1.0);
-            frostMonthly[6] = Math.Min(_CellEnvironment["FrostDays"][6] / 31.0, 1.0);
-            frostMonthly[7] = Math.Min(_CellEnvironment["FrostDays"][7] / 31.0, 1.0);
-            frostMonthly[8] = Math.Min(_CellEnvironment["FrostDays"][8] / 30.0, 1.0);
-            frostMonthly[9] = Math.Min(_CellEnvironment["FrostDays"][9] / 31.0, 1.0);
-            frostMonthly[10] = Math.Min(_CellEnvironment["FrostDays"][10] / 30.0, 1.0);
-            frostMonthly[11] = Math.Min(_CellEnvironment["FrostDays"][11] / 31.0, 1.0);
+                // Calculate the fraction of the year that experiences frost
+                double[] NDF = CVC.GetNDF(_CellEnvironment["FrostDays"], _CellEnvironment["Temperature"],_CellEnvironment["Missing Value"][0]);
+                _CellEnvironment.Add("Fraction Year Frost", NDF);
 
-            _CellEnvironment.Add("Fraction Month Frost", frostMonthly);
-            _CellEnvironment.Remove("FrostDays");
+                _CellEnvironment.Remove("FrostDays");
 
-            // Calculate AET and the fractional length of the fire season
-            Tuple<double[], double, double> TempTuple = new Tuple<double[], double, double>(new double[12], new double(), new double());
-            TempTuple = CVC.MonthlyActualEvapotranspirationSoilMoisture(_CellEnvironment["AWC"][0], _CellEnvironment["Precipitation"], _CellEnvironment["Temperature"]);
-            _CellEnvironment.Add("AET", TempTuple.Item1);
-            _CellEnvironment.Add("Fraction Year Fire", new double[1] { TempTuple.Item3 / 360 });
+                // Calculate AET and the fractional length of the fire season
+                Tuple<double[], double[], double[]> TempTuple = CVC.MonthlyActualEvapotranspirationSoilMoisture(_CellEnvironment["AWC"][0], _CellEnvironment["Precipitation"], _CellEnvironment["Temperature"]);
+                _CellEnvironment.Add("AET", TempTuple.Item1);
+                _CellEnvironment.Add("Fraction Year Fire", TempTuple.Item3);
 
+
+                double[] annualprecip = CalculateAnnualSums(_CellEnvironment["Precipitation"]);
+                _CellEnvironment.Add("AnnualPrecipitation", annualprecip);
+
+                double[] annualAET = CalculateAnnualSums(_CellEnvironment["AET"]);
+                _CellEnvironment.Add("AnnualAET", annualAET);
+
+            }
             // Designate a breeding season for this grid cell, where a month is considered to be part of the breeding season if its NPP is at
             // least 80% of the maximum NPP throughout the whole year
             //double[] BreedingSeason = new double[12];
@@ -430,6 +422,86 @@ namespace Madingley
             _GridCellCohorts = new GridCellCohortHandler(cohortFunctionalGroups.GetNumberOfFunctionalGroups());
             _GridCellStocks = new GridCellStockHandler(stockFunctionalGroups.GetNumberOfFunctionalGroups());
 
+        }
+
+
+        private double[] CalculateAnnualSums(double[] v)
+        {
+            double[] outData = new double[v.Length];
+            int nyears = (int)Math.Floor(v.Length / 12.0);
+
+            for (int i = 0; i < nyears; i++)
+            {
+                double[] TempVector = new double[12];
+                for (int m = (i * 12); m < (i + 1) * 12; m++)
+                {
+                    TempVector[m - (i * 12)] = v[m];
+                }
+
+                double Sum = TempVector.Sum();
+
+                for (int m = (i * 12); m < (i + 1) * 12; m++)
+                {
+                    outData[m] = Sum;
+                }
+            }
+
+            return outData;
+
+        }
+
+
+        private double[] CalculateAnnualMeans(double[] v)
+        {
+            double[] means = new double[v.Length];
+            int nyears = (int)Math.Floor(v.Length / 12.0);
+            
+            for (int i = 0; i < nyears; i++)
+            {
+                double[] TempVector = new double[12];
+                for (int m = (i*12); m < (i+1)*12; m++)
+                {
+                    TempVector[m-(i*12)] = v[m];
+                }
+			
+			    double Average = TempVector.Average();
+
+                for (int m = (i*12); m < (i+1)*12; m++)
+                {
+                    means[m] = Average;
+                }
+			}
+
+            return means;
+            
+        }
+
+        private double[] CalculateAnnualSD(double[] v)
+        {
+            double[] sd = new double[v.Length];
+            int nyears = (int)Math.Floor(v.Length / 12.0);
+
+
+            for (int i = 0; i < nyears; i++)
+            {
+                double[] TempVector = new double[12];
+                for (int m = (i * 12); m < (i + 1) * 12; m++)
+                {
+                    TempVector[m - (i * 12)] = v[m];
+                }
+
+                double Average = TempVector.Average();
+                double SumOfSquaresDifferences = TempVector.Select(val => (val - Average) * (val - Average)).Sum();
+                double SD = Math.Sqrt(SumOfSquaresDifferences / TempVector.Length);
+
+                for (int m = (i * 12); m < (i + 1) * 12; m++)
+                {
+                    sd[m] = SD;
+                }
+            }
+
+            return sd;
+            
         }
 
         /// <summary>

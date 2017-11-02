@@ -96,7 +96,7 @@ namespace Madingley
                                                 currentTimestep,
                                                 gridCellCohorts[actingCohort].IndividualBodyMass,
                                                 actingCohort[0],
-                                                cellEnvironment["Temperature"][currentMonth],
+                                                cellEnvironment["Temperature"][currentTimestep],
                                                 deltas["biomass"]["metabolism"]);
 
             }

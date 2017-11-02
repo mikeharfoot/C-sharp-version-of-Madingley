@@ -555,13 +555,13 @@ namespace Madingley
                     }
 
                     // If the cell environment does not contain valid monthly mean diurnal temperature range data then interpolate values
-                    if (InternalGrid[ii, jj].ContainsMissingValue(WorkingCellEnvironment["DiurnalTemperatureRange"], WorkingCellEnvironment["Missing Value"][0]))
-                    {
-                        //If NPP doesn't exist the interpolate from surrounding values (of the same realm)
-                        WorkingCellEnvironment["DiurnalTemperatureRange"] = FillWithInterpolatedValues(ii, jj, GetCellLatitude(ii), GetCellLongitude(jj), "DiurnalTemperatureRange", WorkingCellEnvironment["Realm"][0]);
+                    //if (InternalGrid[ii, jj].ContainsMissingValue(WorkingCellEnvironment["DiurnalTemperatureRange"], WorkingCellEnvironment["Missing Value"][0]))
+                    //{
+                    //    //If NPP doesn't exist the interpolate from surrounding values (of the same realm)
+                    //    WorkingCellEnvironment["DiurnalTemperatureRange"] = FillWithInterpolatedValues(ii, jj, GetCellLatitude(ii), GetCellLongitude(jj), "DiurnalTemperatureRange", WorkingCellEnvironment["Realm"][0]);
 
-                        Changed = true;
-                    }
+                    //    Changed = true;
+                    //}
 
                     // Same for u and v velocities
                     if (!InternalGrid[ii, jj].ContainsData(WorkingCellEnvironment["uVel"], WorkingCellEnvironment["Missing Value"][0]))

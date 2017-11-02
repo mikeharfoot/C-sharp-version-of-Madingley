@@ -444,7 +444,7 @@ namespace Madingley
 
             Realm = ecosystemModelGrid.GetEnviroGrid("Realm", 0);
 
-            FrostDays = ecosystemModelGrid.GetEnviroGrid("Fraction Year Frost", 0);
+            FrostDays = ecosystemModelGrid.GetEnviroGrid("Fraction Year Frost", currentTimeStep);
 
             for (int i = 0; i < ecosystemModelGrid.NumLatCells; i++)
             {

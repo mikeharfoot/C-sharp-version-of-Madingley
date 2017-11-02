@@ -151,17 +151,22 @@ namespace Madingley
                             HANPPh *= (fracEvergreen);
                         }
                         //Allocate between impacted and natural using fractional cell area
-                        if (madingleyStockDefinitions.GetTraitNames("impact state",actingStock[0]).Equals("Natural"))
+                        if (madingleyStockDefinitions.GetTraitNames("impact state",actingStock[0]).Equals("primary"))
                         {
                             //No Hanpp from land cover change in natural lands
                             HANPPlc *= 0.0;
-                            HANPPh *= 1.0 - FracImpactedHANPPh(cellEnvironment["Fforest"][scenarioYear], cellEnvironment["Fcropland"][scenarioYear],
+                            HANPPh *= 0.0;
+                        } else if (madingleyStockDefinitions.GetTraitNames("impact state", actingStock[0]).Equals("secondary"))
+                        {
+                            //No Hanpp from land cover change in natural lands
+                            HANPPlc *= 0.0;
+                            HANPPh *= 1.0 - FracImpactedHANPPh(cellEnvironment["Fsecondary"][scenarioYear], cellEnvironment["Fcropland"][scenarioYear],
                                 cellEnvironment["Furban"][scenarioYear], cellEnvironment["Fgrazing"][scenarioYear]);
                         }
                         else
                         {
                             //All HANPPlc comes from impacted lands
-                            HANPPh *= (FracImpactedHANPPh(cellEnvironment["Fforest"][scenarioYear], cellEnvironment["Fcropland"][scenarioYear],
+                            HANPPh *= (FracImpactedHANPPh(cellEnvironment["Fsecondary"][scenarioYear], cellEnvironment["Fcropland"][scenarioYear],
                                 cellEnvironment["Furban"][scenarioYear], cellEnvironment["Fgrazing"][scenarioYear]));
                         }
 
@@ -323,6 +328,9 @@ namespace Madingley
         {
             double FracImpHANPPh = (fcrop*HANPPh_crop + furb*HANPPh_urban + fgra*HANPPh_grazing)/
                 (fcrop * HANPPh_crop + furb * HANPPh_urban + fgra * HANPPh_grazing + ffor * HANPPh_forestry);
+
+            //Prevent NaNs arising from division by zero
+            if (double.IsNaN(FracImpHANPPh)) FracImpHANPPh = 0.0;
 
             return FracImpHANPPh;
         }

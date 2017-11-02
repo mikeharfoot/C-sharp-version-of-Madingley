@@ -310,13 +310,13 @@ namespace Madingley
         public double CalculateEquilibriumLeafMass(SortedList<string, double[]> cellEnvironment, bool deciduous)
         {
             // Calculate annual average temperature
-            double MeanTemp = cellEnvironment["Temperature"].Average();
+            double MeanTemp = cellEnvironment["AnnualTemperature"][0];
 
             // Calculate total annual precipitation
-            double TotalPrecip = cellEnvironment["Precipitation"].Sum();
+            double TotalPrecip = cellEnvironment["AnnualPrecipitation"][0];
 
             // Calculate total annual AET
-            double TotalAET = cellEnvironment["AET"].Sum();
+            double TotalAET = cellEnvironment["AnnualAET"][0];
 
             // Calculate NPP using the Miami model
             double NPP = this.CalculateMiamiNPP(MeanTemp, TotalPrecip);
@@ -403,7 +403,7 @@ namespace Madingley
             // ESTIMATE ANNUAL LEAF CARBON FIXATION ASSUMING ENVIRONMENT THROUGHOUT THE YEAR IS THE SAME AS IN THIS MONTH
 
             // Calculate annual NPP
-            double NPP = this.CalculateMiamiNPP(cellEnvironment["Temperature"].Average(), cellEnvironment["Precipitation"].Sum());
+            double NPP = this.CalculateMiamiNPP(cellEnvironment["AnnualTemperature"][currentTimeStep], cellEnvironment["AnnualPrecipitation"][currentTimeStep]);
 
             // Calculate fractional allocation to structural tissue
             double FracStruct = this.CalculateFracStruct(NPP);
@@ -427,18 +427,19 @@ namespace Madingley
             if (deciduous)
             {
                 // Calculate annual deciduous leaf mortality
-                AnnualLeafMortRate = this.CalculateDeciduousAnnualLeafMortality(cellEnvironment["Temperature"].Average());
+                AnnualLeafMortRate = this.CalculateDeciduousAnnualLeafMortality(cellEnvironment["AnnualTemperature"][currentTimeStep]);
 
                 // For deciduous plants monthly leaf mortality is weighted by temperature deviance from the average, to capture seasonal patterns
                 double[] ExpTempDev = new double[12];
                 double SumExpTempDev = 0.0;
                 double[] TempDev = new double[12];
+                int year = (int)Math.Floor(currentTimeStep / 12.0);
                 double Weight;
-                for (int i = 0; i < 12; i++)
+                for (int i = year*12; i < (year+1)*12; i++)
                 {
-                    TempDev[i] = cellEnvironment["Temperature"][i] - cellEnvironment["Temperature"].Average();
-                    ExpTempDev[i] = Math.Exp(-TempDev[i] / 3);
-                    SumExpTempDev += ExpTempDev[i];
+                    TempDev[i-(year*12)] = cellEnvironment["Temperature"][i] - cellEnvironment["AnnualTemperature"][currentTimeStep];
+                    ExpTempDev[i - (year * 12)] = Math.Exp(-TempDev[i - (year * 12)] / 3);
+                    SumExpTempDev += ExpTempDev[i - (year * 12)];
                 }
                 Weight = ExpTempDev[currentMonth] / SumExpTempDev;
                 MonthlyLeafMortRate = AnnualLeafMortRate * Weight;
@@ -447,7 +448,7 @@ namespace Madingley
             else
             {
                 // Calculate annual evergreen leaf mortality
-                AnnualLeafMortRate = this.CalculateEvergreenAnnualLeafMortality(cellEnvironment["Temperature"].Average());
+                AnnualLeafMortRate = this.CalculateEvergreenAnnualLeafMortality(cellEnvironment["AnnualTemperature"][currentTimeStep]);
 
                 // For evergreen plants, leaf mortality is assumed to be equal throughout the year
                 MonthlyLeafMortRate = AnnualLeafMortRate * (1.0 / 12.0);
@@ -455,7 +456,7 @@ namespace Madingley
             }
 
             // Calculate fine root mortality rate
-            double AnnualFRootMort = this.CalculateFineRootMortalityRate(cellEnvironment["Temperature"][currentMonth]);
+            double AnnualFRootMort = this.CalculateFineRootMortalityRate(cellEnvironment["Temperature"][currentTimeStep]);
 
             // Calculate the NPP allocated to non-structural tissues
             double FracNonStruct = (1 - FracStruct);
@@ -464,7 +465,7 @@ namespace Madingley
             double FracLeaves = FracNonStruct * this.CalculateLeafFracAllocation(AnnualLeafMortRate, AnnualFRootMort);
 
             // Calculate the fractional allocation of NPP to evergreen plant matter
-            double FracEvergreen = this.CalculateFracEvergreen(cellEnvironment["Fraction Year Frost"][0]);
+            double FracEvergreen = this.CalculateFracEvergreen(cellEnvironment["Fraction Year Frost"][currentTimeStep]);
 
             // Update NPP depending on whether the acting stock is deciduous or evergreen
             if (deciduous)
@@ -477,10 +478,10 @@ namespace Madingley
             }
           
             // Calculate the fire mortality rate
-            double FireMortRate = this.CalculateFireMortalityRate(NPP, cellEnvironment["Fraction Year Fire"][0]);
+            double FireMortRate = this.CalculateFireMortalityRate(NPP, cellEnvironment["Fraction Year Fire"][currentTimeStep]);
 
             // Calculate the structural mortality rate
-            double StMort = this.CalculateStructuralMortality(cellEnvironment["AET"][currentMonth] * 12);
+            double StMort = this.CalculateStructuralMortality(cellEnvironment["AET"][currentTimeStep] * 12);
 
             // Calculate leaf C fixation
             double LeafCFixation = NPP * FracLeaves;
