@@ -200,7 +200,7 @@ namespace Madingley
         /// <param name="trophicIndex">The trophic level index of the cohort</param>
         /// <param name="tracking">Whether the process tracker is enabled</param>
         public Cohort(byte functionalGroupIndex, double juvenileBodyMass, double adultBodyMass, double initialBodyMass, 
-            double initialAbundance, double optimalPreyBodySizeRatio, ushort birthTimeStep, double proportionTimeActive, ref Int64 nextCohortID,
+            double initialAbundance, double reproductivePotentialBodyMass, double optimalPreyBodySizeRatio, ushort birthTimeStep, double proportionTimeActive, ref Int64 nextCohortID,
             double trophicIndex, Boolean tracking)
         {
             _FunctionalGroupIndex = functionalGroupIndex;
@@ -209,6 +209,7 @@ namespace Madingley
             _IndividualBodyMass = initialBodyMass;
             _CohortAbundance = initialAbundance;
             _BirthTimeStep = birthTimeStep;
+            _IndividualReproductivePotentialMass = reproductivePotentialBodyMass;
             _MaturityTimeStep = uint.MaxValue;
             _LogOptimalPreyBodySizeRatio = Math.Log(optimalPreyBodySizeRatio);
             _MaximumAchievedBodyMass = juvenileBodyMass;
@@ -220,7 +221,7 @@ namespace Madingley
         }
 
         public Cohort(byte functionalGroupIndex, double juvenileBodyMass, double adultBodyMass, double initialBodyMass,
-    double initialAbundance, double optimalPreyBodySizeRatio, double maxBM, ushort birthTimeStep, ushort maturityTimeStep, 
+    double initialAbundance, double reproductivePotentialBodyMass, double optimalPreyBodySizeRatio, double maxBM, ushort birthTimeStep, ushort maturityTimeStep, 
             double proportionTimeActive, ref Int64 nextCohortID,
     double trophicIndex, Boolean tracking)
         {
@@ -230,6 +231,7 @@ namespace Madingley
             _IndividualBodyMass = initialBodyMass;
             _CohortAbundance = initialAbundance;
             _BirthTimeStep = birthTimeStep;
+            _IndividualReproductivePotentialMass = reproductivePotentialBodyMass;
             _MaturityTimeStep = maturityTimeStep;
             _LogOptimalPreyBodySizeRatio = optimalPreyBodySizeRatio;
             _MaximumAchievedBodyMass = maxBM;
@@ -246,6 +248,7 @@ namespace Madingley
             _JuvenileMass = c._JuvenileMass;
             _AdultMass = c._AdultMass;
             _IndividualBodyMass = c._IndividualBodyMass;
+            _IndividualReproductivePotentialMass = c._IndividualReproductivePotentialMass;
             _CohortAbundance = c._CohortAbundance;
             _BirthTimeStep = c._BirthTimeStep;
             _MaturityTimeStep = c._MaturityTimeStep;

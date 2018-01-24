@@ -88,7 +88,8 @@ namespace Madingley
             
             List<double[,,]> CohortJuvenileMass = new List<double[,,]>();
             List<double[,,]> CohortAdultMass = new List<double[,,]>();
-            List<double[,,]> CohortIndividualBodyMass = new List<double[,,]>();
+            List<double[, ,]> CohortIndividualBodyMass = new List<double[, ,]>();
+            List<double[, ,]> CohortIndividualReproductiveBodyMass = new List<double[, ,]>();
             List<double[,,]> CohortCohortAbundance = new List<double[,,]>();
             List<double[,,]> CohortLogOptimalPreyBodySizeRatio = new List<double[,,]>();
             List<double[,,]> CohortBirthTimeStep = new List<double[,,]>();
@@ -156,6 +157,27 @@ namespace Madingley
                     }
                 }
             }
+
+
+            tempData = StateDataSet.GetData<double[, , ,]>("CohortIndividualReproductiveBodyMass");
+
+            for (int la = 0; la < Latitude.Length; la++)
+            {
+                CohortIndividualBodyMass.Add(new double[Longitude.Length, CohortFunctionalGroup.Length, Cohort.Length]);
+            }
+
+            foreach (uint[] cell in cellList)
+            {
+                for (int fg = 0; fg < CohortFunctionalGroup.Length; fg++)
+                {
+                    for (int c = 0; c < Cohort.Length; c++)
+                    {
+                        CohortIndividualReproductiveBodyMass[(int)cell[0]][cell[1], fg, c] = tempData[
+                            cell[0], cell[1], fg, c];
+                    }
+                }
+            }
+
 
             tempData = StateDataSet.GetData<double[,,,]>("CohortCohortAbundance");
 
@@ -273,6 +295,7 @@ namespace Madingley
                                 CohortAdultMass[(int)cellList[cell][0]][cellList[cell][1], fg, c],
                                 CohortIndividualBodyMass[(int)cellList[cell][0]][cellList[cell][1], fg, c],
                                 CohortCohortAbundance[(int)cellList[cell][0]][cellList[cell][1], fg, c],
+                                CohortIndividualReproductiveBodyMass[(int)cellList[cell][0]][cellList[cell][1], fg, c],
                                 Math.Exp(CohortLogOptimalPreyBodySizeRatio[(int)cellList[cell][0]][cellList[cell][1], fg, c]),
                                 Convert.ToUInt16(CohortBirthTimeStep[(int)cellList[cell][0]][cellList[cell][1], fg, c]),
                                 CohortProportionTimeActive[(int)cellList[cell][0]][cellList[cell][1], fg, c], ref temp,
@@ -289,6 +312,7 @@ namespace Madingley
             CohortJuvenileMass.RemoveRange(0, CohortJuvenileMass.Count);
             CohortAdultMass.RemoveRange(0, CohortAdultMass.Count);
             CohortIndividualBodyMass.RemoveRange(0, CohortIndividualBodyMass.Count);
+            CohortIndividualReproductiveBodyMass.RemoveRange(0, CohortIndividualReproductiveBodyMass.Count);
             CohortCohortAbundance.RemoveRange(0, CohortCohortAbundance.Count);
             CohortLogOptimalPreyBodySizeRatio.RemoveRange(0, CohortLogOptimalPreyBodySizeRatio.Count);
             CohortBirthTimeStep.RemoveRange(0, CohortBirthTimeStep.Count);
@@ -413,6 +437,7 @@ namespace Madingley
             double Bm;
             double J_bm;
             double A_bm;
+            double R_bm;
             double TI;
             double LogOptPreySize;
             uint BirthTimestep;
@@ -472,6 +497,7 @@ namespace Madingley
                     A_bm = Convert.ToDouble(vals[i++]);
                     Bm = Convert.ToDouble(vals[i++]);
                     N = Convert.ToDouble(vals[i++]);
+                    R_bm = Convert.ToDouble(vals[i++]);
                     BirthTimestep = Convert.ToUInt32(vals[i++]);
                     MaturityTimestep = Convert.ToUInt32(vals[i++]);
                     LogOptPreySize = Convert.ToDouble(vals[i++]);
@@ -483,7 +509,7 @@ namespace Madingley
 
                     if (_GridCellCohorts[lat_ind, lon_ind][Fg] == null) _GridCellCohorts[lat_ind, lon_ind][Fg] = new List<Cohort>();
 
-                    Cohort NewCohort = new Cohort((byte)Fg, J_bm, A_bm, Bm, N, Math.Exp(LogOptPreySize),
+                    Cohort NewCohort = new Cohort((byte)Fg, J_bm, A_bm, Bm, N,R_bm, Math.Exp(LogOptPreySize),
                         (ushort)BirthTimestep, PropTimeActive, ref cid, TI, tracking);
                     _GridCellCohorts[lat_ind, lon_ind].Add(Fg, NewCohort);
 
