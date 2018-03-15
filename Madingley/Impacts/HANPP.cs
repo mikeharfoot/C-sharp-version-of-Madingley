@@ -12,7 +12,7 @@ namespace Madingley
     /// <remarks>Assumes that autotroph matter is appropriated evenly from different stocks in proportion to their biomass</remarks>
     public class HumanAutotrophMatterAppropriation
     {
-        //Global mean HANPP from harvesting values from Haberl et al. (2007), PNAS
+        //Global mean HANPP from harvesting values from Haberl et al. (2007), PNAS (gC/m2/yr)
         double HANPPh_crop = 296;
         double HANPPh_wilderness = 0.0;
         double HANPPh_grazing = 41;
@@ -121,13 +121,14 @@ namespace Madingley
                         //if (gridCellStocks[actingStock].TotalBiomass < 0.0) gridCellStocks[actingStock].TotalBiomass = 0.0;
                     }
                 }
-                else if(humanNPPScenario.Item1 == "ssp")
+                else if(humanNPPScenario.Item1 == "btc")
                 {
                     //The scenario year calculation removes the need for this if check and allows the burnin period to have HANPP applied
                     //if (currentTimestep > burninSteps)
                     {
                         // Get the total amount of NPP appropriated by humans from this cell
-                        double HANPPh = cellEnvironment["HANPPharvest"][scenarioYear];
+                        double HANPPh = CalculateHANPPh(cellEnvironment["Fsecondary"][scenarioYear], cellEnvironment["Fcropland"][scenarioYear],
+                                cellEnvironment["Furban"][scenarioYear], cellEnvironment["Fgrazing"][scenarioYear]);
                         double HANPPlc = cellEnvironment["HANPPlc"][scenarioYear];
 
                         // If HANPP value is missing, then assume zero
@@ -323,6 +324,16 @@ namespace Madingley
             return(RemovalRate);
         }
 
+
+        public double CalculateHANPPh(double ffor, double fcrop, double furb, double fgra)
+        {
+            double HANPPh = (fcrop * HANPPh_crop + furb * HANPPh_urban + fgra * HANPPh_grazing + ffor * HANPPh_forestry);
+
+            //Prevent NaNs arising from division by zero
+            if (double.IsNaN(HANPPh)) HANPPh = 0.0;
+
+            return HANPPh;
+        }
 
         public double FracImpactedHANPPh(double ffor, double fcrop, double furb, double fgra)
         {
