@@ -485,8 +485,16 @@ namespace Madingley
 
                     Stock NewStock = new Stock((byte)SFG, SIM, STM, SFA);
 
-                    if (_GridCellStocks[lat_ind, lon_ind][SFG] == null) _GridCellStocks[lat_ind, lon_ind][SFG] = new List<Stock>();
-                    _GridCellStocks[lat_ind, lon_ind].Add(SFG, NewStock);
+                    if (_GridCellStocks[lat_ind, lon_ind][SFG] == null)
+                    {
+                        _GridCellStocks[lat_ind, lon_ind][SFG] = new List<Stock>();
+                        _GridCellStocks[lat_ind, lon_ind].Add(SFG, NewStock);
+                    }
+                    else
+                    {
+                        _GridCellStocks[lat_ind, lon_ind][SFG][0].TotalBiomass += NewStock.TotalBiomass;
+                        //_GridCellStocks[lat_ind, lon_ind][SFG][0].FractionalArea = _GridCellStocks[lat_ind, lon_ind][SFG][0].FractionalArea + NewStock.FractionalArea;
+                    }
                 }
                 else // is a cohort
                 {

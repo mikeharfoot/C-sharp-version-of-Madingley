@@ -171,6 +171,8 @@ namespace Madingley
                                 cellEnvironment["Furban"][scenarioYear], cellEnvironment["Fgrazing"][scenarioYear]));
                         }
 
+
+
                         //Combine harvest and land change terms
                         double HANPP = HANPPh + HANPPlc;
 
@@ -187,6 +189,7 @@ namespace Madingley
                         // Convert from g dry matter to g wet matter
                         double WetMatterAppropriated = DryMatterAppropriated * 2;
 
+                        Console.WriteLine(madingleyStockDefinitions.GetTraitNames("impact state", actingStock[0]), HANPPh, HANPPlc, WetMatterAppropriated, wetMatterNPP);
 
                         //Calculate the rate of HANPP offtake
                         if (wetMatterNPP.CompareTo(0.0) == 0)
