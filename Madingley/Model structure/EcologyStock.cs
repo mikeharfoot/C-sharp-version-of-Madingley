@@ -102,8 +102,12 @@ namespace Madingley
                     // However if coverage increases, the density declines, as biomass is only added by NPP..
                     if (cellEnvironment["Fprimary"][ScenarioYear] < gridCellStocks[actingStock].FractionalArea)
                     {
-                        gridCellStocks[actingStock].TotalBiomass *= (gridCellStocks[actingStock].FractionalArea - cellEnvironment["Fprimary"][ScenarioYear])/
-                            gridCellStocks[actingStock].FractionalArea;
+                        //gridCellStocks[actingStock].TotalBiomass *= (gridCellStocks[actingStock].FractionalArea - cellEnvironment["Fprimary"][ScenarioYear])/
+                        //    gridCellStocks[actingStock].FractionalArea;
+
+                        gridCellStocks[actingStock].TotalBiomass = gridCellStocks[actingStock].TotalBiomass -
+                            ((gridCellStocks[actingStock].TotalBiomass / gridCellStocks[actingStock].FractionalArea) *
+                                (gridCellStocks[actingStock].FractionalArea - cellEnvironment["Fprimary"][ScenarioYear]));
                     }
                     gridCellStocks[actingStock].FractionalArea = cellEnvironment["Fprimary"][ScenarioYear];
 
@@ -112,8 +116,11 @@ namespace Madingley
                 {
                     if (cellEnvironment["Fsecondary"][ScenarioYear] < gridCellStocks[actingStock].FractionalArea)
                     {
-                        gridCellStocks[actingStock].TotalBiomass *= (gridCellStocks[actingStock].FractionalArea - cellEnvironment["Fsecondary"][ScenarioYear]) /
-                            gridCellStocks[actingStock].FractionalArea;
+                        //gridCellStocks[actingStock].TotalBiomass *= (gridCellStocks[actingStock].FractionalArea - cellEnvironment["Fsecondary"][ScenarioYear]) /
+                        //    gridCellStocks[actingStock].FractionalArea;
+                        gridCellStocks[actingStock].TotalBiomass = gridCellStocks[actingStock].TotalBiomass -
+                            ((gridCellStocks[actingStock].TotalBiomass / gridCellStocks[actingStock].FractionalArea) * 
+                                (gridCellStocks[actingStock].FractionalArea - cellEnvironment["Fsecondary"][ScenarioYear]));
                     }
                     gridCellStocks[actingStock].FractionalArea = cellEnvironment["Fsecondary"][ScenarioYear];
 
@@ -122,8 +129,12 @@ namespace Madingley
                 {
                     if (cellEnvironment["Fimpacted"][ScenarioYear] < gridCellStocks[actingStock].FractionalArea)
                     {
-                        gridCellStocks[actingStock].TotalBiomass *= (gridCellStocks[actingStock].FractionalArea - cellEnvironment["Fimpacted"][ScenarioYear]) /
-                            gridCellStocks[actingStock].FractionalArea;
+                        //gridCellStocks[actingStock].TotalBiomass *= (gridCellStocks[actingStock].FractionalArea - cellEnvironment["Fimpacted"][ScenarioYear]) /
+                        //    gridCellStocks[actingStock].FractionalArea;
+
+                        gridCellStocks[actingStock].TotalBiomass = gridCellStocks[actingStock].TotalBiomass -
+                            ((gridCellStocks[actingStock].TotalBiomass / gridCellStocks[actingStock].FractionalArea) *
+                                (gridCellStocks[actingStock].FractionalArea - cellEnvironment["Fimpacted"][ScenarioYear]));
                     }
                     gridCellStocks[actingStock].FractionalArea = cellEnvironment["Fimpacted"][ScenarioYear];
 
