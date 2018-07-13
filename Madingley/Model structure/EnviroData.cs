@@ -1655,7 +1655,7 @@ namespace Madingley
             }
 
             // Possible names for the monthly temporal dimension in the netCDF file
-            SearchStrings = new string[] { "time", "month", "Month", "months", "Months" };
+            SearchStrings = new string[] {"time", "month", "Month", "months", "Months" };
             // Check which position the temporal dimension is in in the NetCDF file and add this to the vector of positions. If the temporal dimension cannot be
             // found then throw an error
             if (SearchStrings.Contains(internalData.Dimensions[0].Name.ToString()))
