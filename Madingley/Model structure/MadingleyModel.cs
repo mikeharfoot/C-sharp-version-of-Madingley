@@ -425,7 +425,23 @@ namespace Madingley
             // Temporary variable
             Boolean varExists;
 
-            
+            if (OutputModelStateTimestep.Contains(999999))
+            {
+                OutputTimer.Start();
+                Console.WriteLine("Outputting model state");
+
+                //Writing to text based output
+                WriteModelState.OutputCurrentModelState(EcosystemModelGrid, _CellList, 999999);
+                //WriteModelState.OutputCurrentModelState(EcosystemModelGrid,CohortFunctionalGroupDefinitions, _CellList, CurrentTimeStep, initialisation.MaxNumberOfCohorts,"ModelState");
+
+
+                OutputTimer.Stop();
+                // Write the results of dispersal to the console
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Writing model state took: {0}", OutputTimer.GetElapsedTimeSecs());
+                Console.ForegroundColor = ConsoleColor.White;
+
+            }
 
              // Run the model
              for (UInt32 hh = 0; hh < NumTimeSteps; hh += 1)
@@ -861,8 +877,7 @@ namespace Madingley
 
             }
 
-            EnviroStack.Clear();
-            EnviroStackTemporal.Clear();
+
 
             // When the last simulation for the current scenario
             //if ((scenarioParameters.scenarioSimulationsNumber.Count == 1) && (scenarioIndex == scenarioParameters.scenarioSimulationsNumber[scenarioIndex] - 1)) EnviroStack.Clear();

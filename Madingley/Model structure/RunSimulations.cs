@@ -90,6 +90,10 @@ namespace Madingley
                                 InitialiseMadingley.GlobalModelTimeStepUnit, simulation);
                         }
 
+
+                        InitialiseMadingley.EnviroStack.Clear();
+                        InitialiseMadingley.EnviroStackTemporal.Clear();
+
                         // Loop over the specified number of simulations for each scenario
                         //for (int simulation = 0; simulation<  scenarios.scenarioSimulationsNumber[ScenarioIndex]; simulation++)
                         Parallel.For(0, scenarios.scenarioParameters.ElementAt(ScenarioIndex).Item2, simulation =>
