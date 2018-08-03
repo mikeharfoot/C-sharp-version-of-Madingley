@@ -1006,7 +1006,7 @@ namespace Madingley
                             
                             // Initialise the new cohort with the relevant properties
                             NewCohort = new Cohort((byte)FunctionalGroup, CohortJuvenileMass, CohortAdultMass, CohortJuvenileMass, NewAbund,0.0,
-                            OptimalPreyBodySizeRatio, (ushort)0, ProportionTimeActive[FunctionalGroup], ref CohortIDIncrementer,TrophicIndex, tracking);
+                            OptimalPreyBodySizeRatio, 0, ProportionTimeActive[FunctionalGroup], ref CohortIDIncrementer,TrophicIndex, tracking);
 
                             // Add the new cohort to the list of grid cell cohorts
                             _GridCellCohorts[FunctionalGroup].Add(NewCohort);
@@ -1124,8 +1124,24 @@ namespace Madingley
                         // Calculate predicted leaf mass at equilibrium for this stock
                         double LeafMass = PlantModel.CalculateEquilibriumLeafMass(_CellEnvironment, functionalGroups.GetTraitNames("leaf strategy", FunctionalGroup) == "deciduous");
 
+                        double InitialFractionalArea = 0.0;
+                        if (functionalGroups.GetTraitNames("impact state", FunctionalGroup).Equals("primary"))
+                        {
+                            InitialFractionalArea = _CellEnvironment["Fprimary"][0];
+                        }
+                        else if (functionalGroups.GetTraitNames("impact state", FunctionalGroup).Equals("secondary"))
+                        {
+                            InitialFractionalArea = _CellEnvironment["Fsecondary"][0];
+                        }
+                        else
+                        {
+                            //All HANPPlc comes from impacted lands
+                            InitialFractionalArea = 1 - (_CellEnvironment["Fprimary"][0] + _CellEnvironment["Fsecondary"][0]);
+                        }
+
+
                         // Initialise the new stock with the relevant properties
-                        NewStock = new Stock((byte)FunctionalGroup, IndividualMass[FunctionalGroup], LeafMass,1.0);
+                        NewStock = new Stock((byte)FunctionalGroup, IndividualMass[FunctionalGroup], LeafMass, InitialFractionalArea);
 
                         // Add the new stock to the list of grid cell stocks
                         _GridCellStocks[FunctionalGroup].Add(NewStock);

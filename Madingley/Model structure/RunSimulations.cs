@@ -117,6 +117,8 @@ namespace Madingley
                 {
                     //Run simulations sequentially
 
+
+
                     // Loop over specified scenarios
                     for (int ScenarioIndex = 0; ScenarioIndex < scenarios.scenarioNumber; ScenarioIndex++)
                     {
@@ -156,6 +158,8 @@ namespace Madingley
             // Declare an instance of the class that runs a Madingley model simulation
             MadingleyModel MadingleyEcosystemModel;
             
+
+
             // Declare and start a timer
             StopWatch s = new StopWatch();
             s.Start();
@@ -166,6 +170,10 @@ namespace Madingley
             MadingleyEcosystemModel = new MadingleyModel(initialiseMadingley, scenarios, scenarioIndex, outputFileSuffix, 
                 initialiseMadingley.GlobalModelTimeStepUnit,simulation);
             t.Stop();
+
+            initialiseMadingley.EnviroStack.Clear();
+            initialiseMadingley.EnviroStackTemporal.Clear();
+
 
             // Run the simulation
             MadingleyEcosystemModel.RunMadingley(initialiseMadingley);

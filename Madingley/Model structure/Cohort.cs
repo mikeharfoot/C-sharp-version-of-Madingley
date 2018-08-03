@@ -200,7 +200,7 @@ namespace Madingley
         /// <param name="trophicIndex">The trophic level index of the cohort</param>
         /// <param name="tracking">Whether the process tracker is enabled</param>
         public Cohort(byte functionalGroupIndex, double juvenileBodyMass, double adultBodyMass, double initialBodyMass, 
-            double initialAbundance, double reproductivePotentialBodyMass, double optimalPreyBodySizeRatio, ushort birthTimeStep, double proportionTimeActive, ref Int64 nextCohortID,
+            double initialAbundance, double reproductivePotentialBodyMass, double optimalPreyBodySizeRatio, uint birthTimeStep, double proportionTimeActive, ref Int64 nextCohortID,
             double trophicIndex, Boolean tracking)
         {
             _FunctionalGroupIndex = functionalGroupIndex;
@@ -221,7 +221,7 @@ namespace Madingley
         }
 
         public Cohort(byte functionalGroupIndex, double juvenileBodyMass, double adultBodyMass, double initialBodyMass,
-    double initialAbundance, double reproductivePotentialBodyMass, double optimalPreyBodySizeRatio, double maxBM, ushort birthTimeStep, ushort maturityTimeStep, 
+    double initialAbundance, double reproductivePotentialBodyMass, double optimalPreyBodySizeRatio, double maxBM, uint birthTimeStep, uint maturityTimeStep, 
             double proportionTimeActive, ref Int64 nextCohortID,
     double trophicIndex, Boolean tracking)
         {

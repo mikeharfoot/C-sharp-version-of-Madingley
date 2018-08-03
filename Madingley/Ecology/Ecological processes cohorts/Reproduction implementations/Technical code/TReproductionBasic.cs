@@ -187,7 +187,7 @@ namespace Madingley
                 // Create the offspring cohort
                 OffspringCohort = new Cohort((byte)actingCohort[0], OffspringJuvenileAndAdultBodyMasses[0], OffspringJuvenileAndAdultBodyMasses[1], OffspringJuvenileAndAdultBodyMasses[0],
                                                     _OffspringCohortAbundance,0.0, Math.Exp(gridCellCohorts[actingCohort].LogOptimalPreyBodySizeRatio),
-                                                    (ushort)currentTimestep, gridCellCohorts[actingCohort].ProportionTimeActive, ref partial.NextCohortIDThreadLocked,TrophicIndex, tracker.TrackProcesses);
+                                                    currentTimestep, gridCellCohorts[actingCohort].ProportionTimeActive, ref partial.NextCohortIDThreadLocked,TrophicIndex, tracker.TrackProcesses);
                 
                 // Add the offspring cohort to the grid cell cohorts array
                 gridCellCohorts[actingCohort[0]].Add(OffspringCohort);

@@ -219,7 +219,7 @@ namespace Madingley
                 for (int i = 0; i < gridCellStocks[FunctionalGroup].Count; i++)
                 {
                    
-                    DensityScaling = Math.Max(0.01, 1.0 - gridCellStocks[FunctionalGroup][i].FractionalArea);
+                    DensityScaling = Math.Max(0.01, gridCellStocks[FunctionalGroup][i].FractionalArea);
                     // Get the mass from this stock that is available for eating (assumes only 10% is edible)
                     EdibleMass = gridCellStocks[FunctionalGroup][i].TotalBiomass* 0.1;
 

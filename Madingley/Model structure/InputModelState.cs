@@ -297,7 +297,7 @@ namespace Madingley
                                 CohortCohortAbundance[(int)cellList[cell][0]][cellList[cell][1], fg, c],
                                 CohortIndividualReproductiveBodyMass[(int)cellList[cell][0]][cellList[cell][1], fg, c],
                                 Math.Exp(CohortLogOptimalPreyBodySizeRatio[(int)cellList[cell][0]][cellList[cell][1], fg, c]),
-                                Convert.ToUInt16(CohortBirthTimeStep[(int)cellList[cell][0]][cellList[cell][1], fg, c]),
+                                Convert.ToUInt32(CohortBirthTimeStep[(int)cellList[cell][0]][cellList[cell][1], fg, c]),
                                 CohortProportionTimeActive[(int)cellList[cell][0]][cellList[cell][1], fg, c], ref temp,
                                 CohortTrophicIndex[(int)cellList[cell][0]][cellList[cell][1], fg, c],
                                 false);
@@ -510,7 +510,7 @@ namespace Madingley
                     if (_GridCellCohorts[lat_ind, lon_ind][Fg] == null) _GridCellCohorts[lat_ind, lon_ind][Fg] = new List<Cohort>();
 
                     Cohort NewCohort = new Cohort((byte)Fg, J_bm, A_bm, Bm, N,R_bm, Math.Exp(LogOptPreySize),MaxBm,
-                        (ushort)BirthTimestep, (ushort)MaturityTimestep, PropTimeActive, ref cid, TI, tracking);
+                        BirthTimestep, MaturityTimestep, PropTimeActive, ref cid, TI, tracking);
                     _GridCellCohorts[lat_ind, lon_ind].Add(Fg, NewCohort);
 
                     
