@@ -399,26 +399,27 @@ namespace Madingley
             uint currentMonth, string outputDetail, bool specificLocations)
         {
 
-
+            uint monthOfYear = currentMonth % 12;
             // ESTIMATE ANNUAL LEAF CARBON FIXATION ASSUMING ENVIRONMENT THROUGHOUT THE YEAR IS THE SAME AS IN THIS MONTH
 
             // Calculate annual NPP
-            double NPP = this.CalculateMiamiNPP(cellEnvironment["AnnualTemperature"][currentTimeStep], cellEnvironment["AnnualPrecipitation"][currentTimeStep]);
+            //double NPP = this.CalculateMiamiNPP(cellEnvironment["AnnualTemperature"][currentTimeStep], cellEnvironment["AnnualPrecipitation"][currentTimeStep]);
+            double NPP = cellEnvironment["NPP"][currentMonth];
 
             // Calculate fractional allocation to structural tissue
             double FracStruct = this.CalculateFracStruct(NPP);
 
             // Estimate monthly NPP based on daily seasonality layer
-            if (GlobalModelTimeStepUnit == "day")
-            {
-                uint day = currentTimeStep % 360;
-                NPP *= 30 * cellEnvironment["Seasonality"][day];
-            }
-            // Estimate monthly NPP based on monthly seasonality layer
-            else
-            {
-                NPP *= cellEnvironment["Seasonality"][currentMonth];
-            }
+            //if (GlobalModelTimeStepUnit == "day")
+            //{
+            //    uint day = currentTimeStep % 360;
+            //    NPP *= 30 * cellEnvironment["Seasonality"][day];
+            //}
+            //// Estimate monthly NPP based on monthly seasonality layer
+            //else
+            //{
+            //    NPP *= cellEnvironment["Seasonality"][currentMonth];
+            //}
             // Calculate leaf mortality rates
             double AnnualLeafMortRate;
             double MonthlyLeafMortRate;
@@ -427,17 +428,18 @@ namespace Madingley
             if (deciduous)
             {
                 // Calculate annual deciduous leaf mortality
-                AnnualLeafMortRate = this.CalculateDeciduousAnnualLeafMortality(cellEnvironment["AnnualTemperature"][currentTimeStep]);
+                AnnualLeafMortRate = this.CalculateDeciduousAnnualLeafMortality(cellEnvironment["AnnualTemperature"][monthOfYear]);
 
                 // For deciduous plants monthly leaf mortality is weighted by temperature deviance from the average, to capture seasonal patterns
                 double[] ExpTempDev = new double[12];
                 double SumExpTempDev = 0.0;
                 double[] TempDev = new double[12];
-                int year = (int)Math.Floor(currentTimeStep / 12.0);
+                //int year = (int)Math.Floor(currentTimeStep / 12.0);
+                int year = 0;
                 double Weight;
                 for (int i = year*12; i < (year+1)*12; i++)
                 {
-                    TempDev[i-(year*12)] = cellEnvironment["Temperature"][i] - cellEnvironment["AnnualTemperature"][currentTimeStep];
+                    TempDev[i-(year*12)] = cellEnvironment["Temperature"][i] - cellEnvironment["AnnualTemperature"][monthOfYear];
                     ExpTempDev[i - (year * 12)] = Math.Exp(-TempDev[i - (year * 12)] / 3);
                     SumExpTempDev += ExpTempDev[i - (year * 12)];
                 }
@@ -448,7 +450,7 @@ namespace Madingley
             else
             {
                 // Calculate annual evergreen leaf mortality
-                AnnualLeafMortRate = this.CalculateEvergreenAnnualLeafMortality(cellEnvironment["AnnualTemperature"][currentTimeStep]);
+                AnnualLeafMortRate = this.CalculateEvergreenAnnualLeafMortality(cellEnvironment["AnnualTemperature"][currentMonth]);
 
                 // For evergreen plants, leaf mortality is assumed to be equal throughout the year
                 MonthlyLeafMortRate = AnnualLeafMortRate * (1.0 / 12.0);
@@ -456,7 +458,7 @@ namespace Madingley
             }
 
             // Calculate fine root mortality rate
-            double AnnualFRootMort = this.CalculateFineRootMortalityRate(cellEnvironment["Temperature"][currentTimeStep]);
+            double AnnualFRootMort = this.CalculateFineRootMortalityRate(cellEnvironment["Temperature"][monthOfYear]);
 
             // Calculate the NPP allocated to non-structural tissues
             double FracNonStruct = (1 - FracStruct);
@@ -465,7 +467,7 @@ namespace Madingley
             double FracLeaves = FracNonStruct * this.CalculateLeafFracAllocation(AnnualLeafMortRate, AnnualFRootMort);
 
             // Calculate the fractional allocation of NPP to evergreen plant matter
-            double FracEvergreen = this.CalculateFracEvergreen(cellEnvironment["Fraction Year Frost"][currentTimeStep]);
+            double FracEvergreen = this.CalculateFracEvergreen(cellEnvironment["Fraction Year Frost"][monthOfYear]);
 
             // Update NPP depending on whether the acting stock is deciduous or evergreen
             if (deciduous)
@@ -478,16 +480,16 @@ namespace Madingley
             }
           
             // Calculate the fire mortality rate
-            double FireMortRate = this.CalculateFireMortalityRate(NPP, cellEnvironment["Fraction Year Fire"][currentTimeStep]);
+            double FireMortRate = this.CalculateFireMortalityRate(NPP, cellEnvironment["Fraction Year Fire"][monthOfYear]);
 
             // Calculate the structural mortality rate
-            double StMort = this.CalculateStructuralMortality(cellEnvironment["AET"][currentTimeStep] * 12);
+            double StMort = this.CalculateStructuralMortality(cellEnvironment["AET"][monthOfYear] * 12);
 
             // Calculate leaf C fixation
             double LeafCFixation = NPP * FracLeaves;
 
             // Convert from carbon to leaf wet matter
-            double WetMatterIncrement = this.ConvertToLeafWetMass(LeafCFixation, gridCellStocks[actingStock].FractionalArea * cellEnvironment["Cell Area"][0]);
+            double WetMatterIncrement = this.ConvertToLeafWetMass(LeafCFixation, cellEnvironment["Cell Area"][0]);
 
             // Convert from the monthly time step used for this process to the global model time step unit
             WetMatterIncrement *= Utilities.ConvertTimeUnits(GlobalModelTimeStepUnit, "month");

@@ -1182,6 +1182,7 @@ namespace Madingley
             // variable to track cohort number
             uint TotalCohortNumber = 0;
 
+            
             // Fill in the array with the number of cohorts per functional group before ecological processes are run
             OriginalGridCellCohortsNumbers = new int[workingGridCellCohorts.Count];
 
@@ -1256,6 +1257,7 @@ namespace Madingley
                     CohortActivity.AssignProportionTimeActive(workingGridCellCohorts[ActingCohort], EcosystemModelGrid.GetCellEnvironment(latCellIndex, lonCellIndex), CohortFunctionalGroupDefinitions, CurrentTimeStep, CurrentMonth);
 
                     // Run ecology
+                    //
                     MadingleyEcologyCohort.RunWithinCellEcology(workingGridCellCohorts, workingGridCellStocks,
                         ActingCohort, EcosystemModelGrid.GetCellEnvironment(latCellIndex, lonCellIndex),
                         EcosystemModelGrid.GetCellDeltas(latCellIndex, lonCellIndex),

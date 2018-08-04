@@ -369,7 +369,8 @@ namespace Madingley
             if (_CellEnvironment.ContainsKey("SST")) _CellEnvironment.Remove("SST");
 
             // CREATE NPP SEASONALITY LAYER
-            _CellEnvironment.Add("Seasonality", CalculateNPPSeasonality(_CellEnvironment["NPP"], _CellEnvironment["Missing Value"][0], globalModelTimeStepUnit));
+            //Hard code this as month as the NPP data is monthly.
+            _CellEnvironment.Add("Seasonality", CalculateNPPSeasonality(_CellEnvironment["NPP"], _CellEnvironment["Missing Value"][0], "month"));
 
             //if(_CellEnvironment["Realm"][0] == 1.0)
             {
@@ -1124,20 +1125,20 @@ namespace Madingley
                         // Calculate predicted leaf mass at equilibrium for this stock
                         double LeafMass = PlantModel.CalculateEquilibriumLeafMass(_CellEnvironment, functionalGroups.GetTraitNames("leaf strategy", FunctionalGroup) == "deciduous");
 
-                        double InitialFractionalArea = 0.0;
-                        if (functionalGroups.GetTraitNames("impact state", FunctionalGroup).Equals("primary"))
-                        {
-                            InitialFractionalArea = _CellEnvironment["Fprimary"][0];
-                        }
-                        else if (functionalGroups.GetTraitNames("impact state", FunctionalGroup).Equals("secondary"))
-                        {
-                            InitialFractionalArea = _CellEnvironment["Fsecondary"][0];
-                        }
-                        else
-                        {
-                            //All HANPPlc comes from impacted lands
-                            InitialFractionalArea = 1 - (_CellEnvironment["Fprimary"][0] + _CellEnvironment["Fsecondary"][0]);
-                        }
+                        double InitialFractionalArea = 1.0;
+                        //if (functionalGroups.GetTraitNames("impact state", FunctionalGroup).Equals("primary"))
+                        //{
+                        //    InitialFractionalArea = _CellEnvironment["Fprimary"][0];
+                        //}
+                        //else if (functionalGroups.GetTraitNames("impact state", FunctionalGroup).Equals("secondary"))
+                        //{
+                        //    InitialFractionalArea = _CellEnvironment["Fsecondary"][0];
+                        //}
+                        //else
+                        //{
+                        //    //All HANPPlc comes from impacted lands
+                        //    InitialFractionalArea = 1 - (_CellEnvironment["Fprimary"][0] + _CellEnvironment["Fsecondary"][0]);
+                        //}
 
 
                         // Initialise the new stock with the relevant properties

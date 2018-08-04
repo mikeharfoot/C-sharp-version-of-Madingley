@@ -138,13 +138,13 @@ namespace Madingley
             // RUN EATING
             _EatingFormulations["Basic eating"].RunEcologicalProcess(gridCellCohorts, gridCellStocks, actingCohort, cellEnvironment,
                 deltas, madingleyCohortDefinitions, madingleyStockDefinitions, currentTimestep, trackProcesses, ref partial,
-                specificLocations, outputDetail, currentMonth, initialisation);
+                specificLocations, outputDetail, currentMonth % 12, initialisation);
 
             
             // RUN METABOLISM - THIS TIME TAKE THE METABOLIC LOSS TAKING INTO ACCOUNT WHAT HAS BEEN INGESTED THROUGH EATING
             _MetabolismFormulations["Basic metabolism"].RunEcologicalProcess(gridCellCohorts, gridCellStocks, actingCohort,
                 cellEnvironment, deltas, madingleyCohortDefinitions, madingleyStockDefinitions, currentTimestep, trackProcesses, ref partial,
-                specificLocations, outputDetail, currentMonth, initialisation);
+                specificLocations, outputDetail, currentMonth % 12, initialisation);
               
            
             // RUN REPRODUCTION - TAKING INTO ACCOUNT NET BIOMASS CHANGES RESULTING FROM EATING AND METABOLISING
@@ -156,7 +156,7 @@ namespace Madingley
             // RUN MORTALITY - TAKING INTO ACCOUNT NET BIOMASS CHANGES RESULTING FROM EATING, METABOLISM AND REPRODUCTION
             _MortalityFormulations["Basic mortality"].RunEcologicalProcess(gridCellCohorts, gridCellStocks, actingCohort,
                 cellEnvironment, deltas, madingleyCohortDefinitions, madingleyStockDefinitions, currentTimestep, trackProcesses, ref partial,
-                specificLocations, outputDetail, currentMonth, initialisation);
+                specificLocations, outputDetail, currentMonth % 12, initialisation);
         }
 
         /// <summary>
