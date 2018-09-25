@@ -450,6 +450,7 @@ namespace Madingley
             double STM;
             double SFA;
 
+            uint timestep = uint.MaxValue;
             uint lat_ind;
             uint lon_ind;
 
@@ -463,6 +464,7 @@ namespace Madingley
                 l = SyncStateReader.ReadLine();
                 string[] vals = l.Split(tab);
 
+                if (timestep == uint.MaxValue) timestep = Convert.ToUInt32(vals[0]);
                 Latitude = Convert.ToDouble(vals[1]);
                 Longitude = Convert.ToDouble(vals[2]);
 
@@ -507,10 +509,12 @@ namespace Madingley
 
                     //Instantiate the list for this functional group
 
+                    
                     if (_GridCellCohorts[lat_ind, lon_ind][Fg] == null) _GridCellCohorts[lat_ind, lon_ind][Fg] = new List<Cohort>();
 
-                    Cohort NewCohort = new Cohort((byte)Fg, J_bm, A_bm, Bm, N,R_bm, Math.Exp(LogOptPreySize),MaxBm,
-                        BirthTimestep, MaturityTimestep, PropTimeActive, ref cid, TI, tracking);
+                    
+                    Cohort NewCohort = new Cohort((byte)Fg, J_bm, A_bm, Bm, N,R_bm, LogOptPreySize,MaxBm,
+                        BirthTimestep, MaturityTimestep, PropTimeActive, ref cid, TI, tracking,timestep);
                     _GridCellCohorts[lat_ind, lon_ind].Add(Fg, NewCohort);
 
                     
