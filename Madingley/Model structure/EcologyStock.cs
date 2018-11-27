@@ -93,15 +93,17 @@ namespace Madingley
             }
             else if (madingleyStockDefinitions.GetTraitNames("Realm", actingStock[0]) == "terrestrial")
             {
-
+                
                 if (madingleyStockDefinitions.GetTraitNames("impact state", actingStock[0]) == "primary")
                 {
+                    
                     //loss = cellEnvironment["Primary loss"][ScenarioYear] / 12.0;
                     //calculate the change in total biomass as a result of coverage changes
                     // assumes that the biomass density stays the same as coverage goes down (ie if chopping down some forest - the density of the remaining stays the same)
                     // However if coverage increases, the density declines, as biomass is only added by NPP..
                     if (cellEnvironment["Fprimary"][ScenarioYear] < gridCellStocks[actingStock].FractionalArea)
                     {
+                        
                         //gridCellStocks[actingStock].TotalBiomass *= (gridCellStocks[actingStock].FractionalArea - cellEnvironment["Fprimary"][ScenarioYear])/
                         //    gridCellStocks[actingStock].FractionalArea;
 
@@ -114,8 +116,10 @@ namespace Madingley
                 }
                 else if (madingleyStockDefinitions.GetTraitNames("impact state", actingStock[0]) == "secondary")
                 {
+                    
                     if (cellEnvironment["Fsecondary"][ScenarioYear] < gridCellStocks[actingStock].FractionalArea)
                     {
+                        
                         //gridCellStocks[actingStock].TotalBiomass *= (gridCellStocks[actingStock].FractionalArea - cellEnvironment["Fsecondary"][ScenarioYear]) /
                         //    gridCellStocks[actingStock].FractionalArea;
                         gridCellStocks[actingStock].TotalBiomass = gridCellStocks[actingStock].TotalBiomass -
@@ -127,8 +131,11 @@ namespace Madingley
                 }
                 else if (madingleyStockDefinitions.GetTraitNames("impact state", actingStock[0]) == "impacted")
                 {
+                    
+
                     if (cellEnvironment["Fimpacted"][ScenarioYear] < gridCellStocks[actingStock].FractionalArea)
                     {
+                    
                         //gridCellStocks[actingStock].TotalBiomass *= (gridCellStocks[actingStock].FractionalArea - cellEnvironment["Fimpacted"][ScenarioYear]) /
                         //    gridCellStocks[actingStock].FractionalArea;
 

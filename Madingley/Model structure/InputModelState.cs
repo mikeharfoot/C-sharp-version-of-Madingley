@@ -85,23 +85,23 @@ namespace Madingley
                 Debug.Assert(ecosystemModelGrid.GetCellEnvironment(0, (uint)lo)["Longitude"][0] == Longitude[lo],
                     "Error: input-state grid doesn't match current model grid");
             }
-            
-            List<double[,,]> CohortJuvenileMass = new List<double[,,]>();
-            List<double[,,]> CohortAdultMass = new List<double[,,]>();
+
+            List<double[, ,]> CohortJuvenileMass = new List<double[, ,]>();
+            List<double[, ,]> CohortAdultMass = new List<double[, ,]>();
             List<double[, ,]> CohortIndividualBodyMass = new List<double[, ,]>();
             List<double[, ,]> CohortIndividualReproductiveBodyMass = new List<double[, ,]>();
-            List<double[,,]> CohortCohortAbundance = new List<double[,,]>();
-            List<double[,,]> CohortLogOptimalPreyBodySizeRatio = new List<double[,,]>();
-            List<double[,,]> CohortBirthTimeStep = new List<double[,,]>();
-            List<double[,,]> CohortProportionTimeActive = new List<double[,,]>();
-            List<double[,,]> CohortTrophicIndex = new List<double[,,]>();
+            List<double[, ,]> CohortCohortAbundance = new List<double[, ,]>();
+            List<double[, ,]> CohortLogOptimalPreyBodySizeRatio = new List<double[, ,]>();
+            List<double[, ,]> CohortBirthTimeStep = new List<double[, ,]>();
+            List<double[, ,]> CohortProportionTimeActive = new List<double[, ,]>();
+            List<double[, ,]> CohortTrophicIndex = new List<double[, ,]>();
 
-            double[,,,] tempData = new double[Latitude.Length, Longitude.Length,
+            double[, , ,] tempData = new double[Latitude.Length, Longitude.Length,
                 CohortFunctionalGroup.Length, Cohort.Length];
 
-            tempData = StateDataSet.GetData<double[,,,]>("CohortJuvenileMass");
-            
-            
+            tempData = StateDataSet.GetData<double[, , ,]>("CohortJuvenileMass");
+
+
             for (int la = 0; la < Latitude.Length; la++)
             {
                 CohortJuvenileMass.Add(new double[Longitude.Length, CohortFunctionalGroup.Length, Cohort.Length]);
@@ -118,9 +118,9 @@ namespace Madingley
                     }
                 }
             }
-            
-            
-            tempData = StateDataSet.GetData<double[,,,]>("CohortAdultMass");
+
+
+            tempData = StateDataSet.GetData<double[, , ,]>("CohortAdultMass");
 
             for (int la = 0; la < Latitude.Length; la++)
             {
@@ -139,7 +139,7 @@ namespace Madingley
                 }
             }
 
-            tempData = StateDataSet.GetData<double[,,,]>("CohortIndividualBodyMass");
+            tempData = StateDataSet.GetData<double[, , ,]>("CohortIndividualBodyMass");
 
             for (int la = 0; la < Latitude.Length; la++)
             {
@@ -179,7 +179,7 @@ namespace Madingley
             }
 
 
-            tempData = StateDataSet.GetData<double[,,,]>("CohortCohortAbundance");
+            tempData = StateDataSet.GetData<double[, , ,]>("CohortCohortAbundance");
 
             for (int la = 0; la < Latitude.Length; la++)
             {
@@ -198,7 +198,7 @@ namespace Madingley
                 }
             }
 
-            tempData = StateDataSet.GetData<double[,,,]>("CohortLogOptimalPreyBodySizeRatio");
+            tempData = StateDataSet.GetData<double[, , ,]>("CohortLogOptimalPreyBodySizeRatio");
 
             for (int la = 0; la < Latitude.Length; la++)
             {
@@ -217,7 +217,7 @@ namespace Madingley
                 }
             }
 
-            tempData = StateDataSet.GetData<double[,,,]>("CohortBirthTimeStep");
+            tempData = StateDataSet.GetData<double[, , ,]>("CohortBirthTimeStep");
 
             for (int la = 0; la < Latitude.Length; la++)
             {
@@ -236,7 +236,7 @@ namespace Madingley
                 }
             }
 
-            tempData = StateDataSet.GetData<double[,,,]>("CohortProportionTimeActive");
+            tempData = StateDataSet.GetData<double[, , ,]>("CohortProportionTimeActive");
 
             for (int la = 0; la < Latitude.Length; la++)
             {
@@ -255,7 +255,7 @@ namespace Madingley
                 }
             }
 
-            tempData = StateDataSet.GetData<double[,,,]>("CohortTrophicIndex");
+            tempData = StateDataSet.GetData<double[, , ,]>("CohortTrophicIndex");
 
             for (int la = 0; la < Latitude.Length; la++)
             {
@@ -287,7 +287,7 @@ namespace Madingley
                     _GridCellCohorts[cellList[cell][0], cellList[cell][1]][fg] = new List<Cohort>();
                     for (int c = 0; c < Cohort.Length; c++)
                     {
-                        if (CohortCohortAbundance[(int)cellList[cell][0]][cellList[cell][1],fg,c] > 0.0)
+                        if (CohortCohortAbundance[(int)cellList[cell][0]][cellList[cell][1], fg, c] > 0.0)
                         {
                             Cohort TempCohort = new Cohort(
                                 (byte)fg,
@@ -297,7 +297,7 @@ namespace Madingley
                                 CohortCohortAbundance[(int)cellList[cell][0]][cellList[cell][1], fg, c],
                                 CohortIndividualReproductiveBodyMass[(int)cellList[cell][0]][cellList[cell][1], fg, c],
                                 Math.Exp(CohortLogOptimalPreyBodySizeRatio[(int)cellList[cell][0]][cellList[cell][1], fg, c]),
-                                Convert.ToUInt16(CohortBirthTimeStep[(int)cellList[cell][0]][cellList[cell][1], fg, c]),
+                                Convert.ToUInt32(CohortBirthTimeStep[(int)cellList[cell][0]][cellList[cell][1], fg, c]),
                                 CohortProportionTimeActive[(int)cellList[cell][0]][cellList[cell][1], fg, c], ref temp,
                                 CohortTrophicIndex[(int)cellList[cell][0]][cellList[cell][1], fg, c],
                                 false);
@@ -319,14 +319,14 @@ namespace Madingley
             CohortProportionTimeActive.RemoveRange(0, CohortProportionTimeActive.Count);
             CohortTrophicIndex.RemoveRange(0, CohortTrophicIndex.Count);
 
-            List<double[,,]> StockIndividualBodyMass = new List<double[,,]>();
+            List<double[, ,]> StockIndividualBodyMass = new List<double[, ,]>();
             List<double[, ,]> StockTotalBiomass = new List<double[, ,]>();
             List<double[, ,]> StockFractionalArea = new List<double[, ,]>();
 
-            double[,,,] tempData2 = new double[Latitude.Length, Longitude.Length,
-                StockFunctionalGroup.Length,Stock.Length];
+            double[, , ,] tempData2 = new double[Latitude.Length, Longitude.Length,
+                StockFunctionalGroup.Length, Stock.Length];
 
-            tempData2 = StateDataSet.GetData<double[,,,]>("StockIndividualBodyMass");
+            tempData2 = StateDataSet.GetData<double[, , ,]>("StockIndividualBodyMass");
 
             for (int la = 0; la < Latitude.Length; la++)
             {
@@ -345,7 +345,7 @@ namespace Madingley
                 }
             }
 
-            tempData2 = StateDataSet.GetData<double[,,,]>("StockTotalBiomass");
+            tempData2 = StateDataSet.GetData<double[, , ,]>("StockTotalBiomass");
 
             for (int la = 0; la < Latitude.Length; la++)
             {
@@ -385,11 +385,11 @@ namespace Madingley
             }
 
             _GridCellStocks = new GridCellStockHandler[Latitude.Length, Longitude.Length];
-            
+
             for (int cell = 0; cell < cellList.Count; cell++)
             {
                 _GridCellStocks[cellList[cell][0], cellList[cell][1]] = new GridCellStockHandler(StockFunctionalGroup.Length);
-                
+
                 for (int fg = 0; fg < StockFunctionalGroup.Length; fg++)
                 {
                     _GridCellStocks[cellList[cell][0], cellList[cell][1]][fg] = new List<Stock>();
@@ -398,7 +398,7 @@ namespace Madingley
                         if (StockTotalBiomass[(int)cellList[cell][0]][cellList[cell][1], fg, c] > 0.0)
                         {
                             Stock TempStock = new Stock(
-                                (byte)fg, 
+                                (byte)fg,
                                 StockIndividualBodyMass[(int)cellList[cell][0]][cellList[cell][1], fg, c],
                                 StockTotalBiomass[(int)cellList[cell][0]][cellList[cell][1], fg, c],
                                 StockFractionalArea[(int)cellList[cell][0]][cellList[cell][1], fg, c]);
@@ -409,7 +409,7 @@ namespace Madingley
                 }
 
             }
-            
+
 
         }
 
@@ -450,6 +450,7 @@ namespace Madingley
             double STM;
             double SFA;
 
+            uint timestep = uint.MaxValue;
             uint lat_ind;
             uint lon_ind;
 
@@ -463,6 +464,7 @@ namespace Madingley
                 l = SyncStateReader.ReadLine();
                 string[] vals = l.Split(tab);
 
+                if (timestep == uint.MaxValue) timestep = Convert.ToUInt32(vals[0]);
                 Latitude = Convert.ToDouble(vals[1]);
                 Longitude = Convert.ToDouble(vals[2]);
 
@@ -485,20 +487,12 @@ namespace Madingley
 
                     Stock NewStock = new Stock((byte)SFG, SIM, STM, SFA);
 
-                    if (_GridCellStocks[lat_ind, lon_ind][SFG] == null)
-                    {
-                        _GridCellStocks[lat_ind, lon_ind][SFG] = new List<Stock>();
-                        _GridCellStocks[lat_ind, lon_ind].Add(SFG, NewStock);
-                    }
-                    else
-                    {
-                        _GridCellStocks[lat_ind, lon_ind][SFG][0].TotalBiomass += NewStock.TotalBiomass;
-                        //_GridCellStocks[lat_ind, lon_ind][SFG][0].FractionalArea = _GridCellStocks[lat_ind, lon_ind][SFG][0].FractionalArea + NewStock.FractionalArea;
-                    }
+                    if (_GridCellStocks[lat_ind, lon_ind][SFG] == null) _GridCellStocks[lat_ind, lon_ind][SFG] = new List<Stock>();
+                    _GridCellStocks[lat_ind, lon_ind].Add(SFG, NewStock);
                 }
                 else // is a cohort
                 {
-                    //Expects the file to have timestep, latitude, longitude, Cohort ID. So start reading the values at column index 4.
+                    //Expects the file to have timestep, latitude, longitude, Cohort ID. So start reading the values at column index 4 (0 indexed).
                     int i = 4;
                     Fg = Convert.ToInt32(vals[i++]);
                     J_bm = Convert.ToDouble(vals[i++]);
@@ -515,13 +509,15 @@ namespace Madingley
 
                     //Instantiate the list for this functional group
 
+
                     if (_GridCellCohorts[lat_ind, lon_ind][Fg] == null) _GridCellCohorts[lat_ind, lon_ind][Fg] = new List<Cohort>();
 
-                    Cohort NewCohort = new Cohort((byte)Fg, J_bm, A_bm, Bm, N,R_bm, Math.Exp(LogOptPreySize),
-                        (ushort)BirthTimestep, PropTimeActive, ref cid, TI, tracking);
+
+                    Cohort NewCohort = new Cohort((byte)Fg, J_bm, A_bm, Bm, N, R_bm, LogOptPreySize, MaxBm,
+                        BirthTimestep, MaturityTimestep, PropTimeActive, ref cid, TI, tracking, timestep);
                     _GridCellCohorts[lat_ind, lon_ind].Add(Fg, NewCohort);
 
-                    
+
                 }
 
 

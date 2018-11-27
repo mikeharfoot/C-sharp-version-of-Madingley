@@ -801,8 +801,11 @@ namespace Madingley
                     }
                 }
 
+                
+
                 if (inputModelState.GridCellCohorts[InputStateLatInd, InputStateLonInd] != null)
                 {
+                    Console.WriteLine("Input state lat ind {0}, lon ind {1} not null",InputStateLatInd, InputStateLonInd);
                     /*for (int i = 0; i < inputModelState.GridCellCohorts[InputStateLatInd, InputStateLonInd].Count; i++)
                     {
                         InternalGrid[cellIndexPair[0], cellIndexPair[1]].GridCellCohorts[i] = new List<Cohort>();
@@ -887,7 +890,7 @@ namespace Madingley
                         }
                     }
                 }
-                Console.Write("\rGrid Cell: {0} of {1}", ii++, cellIndices.Count);
+                Console.WriteLine("\rGrid Cell: {0} of {1}", ii++, cellIndices.Count);
 
             }
 

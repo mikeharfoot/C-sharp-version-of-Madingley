@@ -182,7 +182,7 @@
     <Compile Include="Ecology\Ecological processes cohorts\Eating implementations\Technical code\TRevisedPredation.cs" />
     <Compile Include="Ecology\Ecological processes cohorts\Eating implementations\Technical code\TRevisedHerbivory.cs" />
     <Compile Include="Ecology\EcologicalParameters.cs" />
-    <Compile Include="Ecology\Ecological processes cohorts\Metabolism implementations\MetabolismEctotherm.cs" />
+    <Compile Include="Ecology\Ecological processes cohorts\Mortality implementations\MetabolismEctotherm.cs" />
     <Compile Include="Ecology\Ecological processes cohorts\Metabolism implementations\MetabolismEndotherm.cs" />
     <Compile Include="Ecology\Ecological processes cohorts\Metabolism implementations\Technical code\IMetabolismImplementation.cs" />
     <Compile Include="Ecology\Ecological processes cohorts\Metabolism implementations\Technical code\TMetabolismEctotherm.cs" />

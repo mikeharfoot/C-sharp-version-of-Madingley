@@ -870,6 +870,7 @@ namespace Madingley
             // If input state from output from a previous simulation
             if (initialisation.InputState)
             {
+                Console.WriteLine("Seeding stocks and cohorts from state file");
                 // Seed grid cell cohort and stocks
                 EcosystemModelGrid.SeedGridCellStocksAndCohorts(_CellList, InputModelState, CohortFunctionalGroupDefinitions, StockFunctionalGroupDefinitions);
 
