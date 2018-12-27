@@ -119,12 +119,12 @@ namespace Madingley
                     if (cellEnvironment["Realm"][0] == 2.0)
                         Implementations["revised herbivory"].GetEatingPotentialMarine
                         (gridCellCohorts, gridCellStocks, actingCohort, 
-                        cellEnvironment, madingleyCohortDefinitions, madingleyStockDefinitions);
+                        cellEnvironment, madingleyCohortDefinitions, madingleyStockDefinitions,currentMonth);
                     else
 
                         Implementations["revised herbivory"].GetEatingPotentialTerrestrial
                         (gridCellCohorts, gridCellStocks, actingCohort,
-                        cellEnvironment, madingleyCohortDefinitions, madingleyStockDefinitions);
+                        cellEnvironment, madingleyCohortDefinitions, madingleyStockDefinitions,currentMonth);
 
                     // Run herbivory to apply changes in autotroph biomass from herbivory and add biomass eaten to the delta arrays
                     Implementations["revised herbivory"].RunEating
@@ -148,11 +148,11 @@ namespace Madingley
                     if (cellEnvironment["Realm"][0] == 2.0) 
                         Implementations["revised predation"].GetEatingPotentialMarine
                         (gridCellCohorts, gridCellStocks, actingCohort, 
-                        cellEnvironment, madingleyCohortDefinitions, madingleyStockDefinitions);
+                        cellEnvironment, madingleyCohortDefinitions, madingleyStockDefinitions,currentMonth);
                     else
                         Implementations["revised predation"].GetEatingPotentialTerrestrial
                         (gridCellCohorts, gridCellStocks, actingCohort,
-                        cellEnvironment, madingleyCohortDefinitions, madingleyStockDefinitions);
+                        cellEnvironment, madingleyCohortDefinitions, madingleyStockDefinitions,currentMonth);
                     // Run predation to apply changes in prey biomass from predation and add biomass eaten to the delta arrays
                     Implementations["revised predation"].RunEating
                         (gridCellCohorts, gridCellStocks, actingCohort, cellEnvironment, deltas, 
@@ -184,24 +184,24 @@ namespace Madingley
                         Implementations["revised herbivory"].GetEatingPotentialMarine
                         (gridCellCohorts, gridCellStocks, actingCohort, 
                         cellEnvironment, madingleyCohortDefinitions, 
-                        madingleyStockDefinitions);
+                        madingleyStockDefinitions,currentMonth);
                     else
                         Implementations["revised herbivory"].GetEatingPotentialTerrestrial
                         (gridCellCohorts, gridCellStocks, actingCohort,
                         cellEnvironment, madingleyCohortDefinitions,
-                        madingleyStockDefinitions);
+                        madingleyStockDefinitions,currentMonth);
 
                     // Calculate the potential biomass available from predation
                     if (cellEnvironment["Realm"][0] == 2.0) 
                         Implementations["revised predation"].GetEatingPotentialMarine
                         (gridCellCohorts, gridCellStocks, actingCohort, 
                         cellEnvironment, madingleyCohortDefinitions, 
-                        madingleyStockDefinitions);
+                        madingleyStockDefinitions,currentMonth);
                     else
                         Implementations["revised predation"].GetEatingPotentialTerrestrial
                         (gridCellCohorts, gridCellStocks, actingCohort,
                         cellEnvironment, madingleyCohortDefinitions,
-                        madingleyStockDefinitions);
+                        madingleyStockDefinitions,currentMonth);
 
                     // Calculate the total handling time for all expected kills from predation and expected plant matter eaten in herbivory
                     TotalTimeToEatForOmnivores = 

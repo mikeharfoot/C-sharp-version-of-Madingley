@@ -187,6 +187,18 @@ namespace Madingley
         /// </summary>
         public double KillRateConstantMassExponent { get { return _KillRateConstantMassExponent; } }
 
+        private double _AttackRateActivationEnergy;
+        public double AttackRateActivationEnergy { get { return _AttackRateActivationEnergy; } }
+
+        private double _HandlingTimeActivationEnergy;
+        public double HandlingTimeActivationEnergy { get { return _HandlingTimeActivationEnergy; } }
+
+        private double _ReferenceTemperature;
+        public double ReferenceTemperature { get { return _ReferenceTemperature; } }
+
+        private double _BoltzmannConstant;
+        public double BoltzmannConstant { get { return _BoltzmannConstant; } }
+
 
         public void InitialiseParametersPredation()
         {
@@ -201,6 +213,10 @@ namespace Madingley
             _KillRateConstantMassExponent = EcologicalParameters.Parameters["Predation.RevisedPredation.KillRateConstantMassExponent"];
             _FeedingPreferenceStandardDeviation = EcologicalParameters.Parameters["Predation.RevisedPredation.FeedingPreferenceStandardDeviation"];
             NumberOfBins = (int)EcologicalParameters.Parameters["Predation.RevisedPredation.NumberOfMassAggregationBins"];
+            _AttackRateActivationEnergy = EcologicalParameters.Parameters["Feeding.TemperatureDependence.AttackRateActivationEnergy"];
+            _HandlingTimeActivationEnergy = EcologicalParameters.Parameters["Feeding.TemperatureDependence.HandlingTimeActivationEnergy"];
+            _ReferenceTemperature = EcologicalParameters.Parameters["Feeding.TemperatureDependence.ReferenceTemperature"];
+            _BoltzmannConstant = EcologicalParameters.Parameters["BoltzmannConstant"];
         }
 
 
@@ -220,6 +236,10 @@ namespace Madingley
             sw.WriteLine("Predation\tKillRateConstant\t" + Convert.ToString(_KillRateConstant));
             sw.WriteLine("Predation\tFeedingPreferenceStandardDeviation\t" + Convert.ToString(_FeedingPreferenceStandardDeviation));
             sw.WriteLine("Predation\tKillRateConstantMassExponent\t" + Convert.ToString(_KillRateConstantMassExponent));
+            sw.WriteLine("Predation\tAttackRateActivationEnergy\t" + Convert.ToString(_AttackRateActivationEnergy));
+            sw.WriteLine("Predation\tHandlingTimeActivationEnergy\t" + Convert.ToString(_HandlingTimeActivationEnergy));
+            sw.WriteLine("Predation\tReferenceTemperature\t" + Convert.ToString(_ReferenceTemperature));
+            sw.WriteLine("Predation\tBoltzmannConstant\t" + Convert.ToString(_BoltzmannConstant));
 
         }
 

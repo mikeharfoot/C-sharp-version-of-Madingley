@@ -138,6 +138,10 @@ namespace Madingley
         // Holds the scaling to get from exstant autotroph biomass to the edible mass
         private double EdibleScaling;
 
+
+        private double _AttackRateTemperatureScalar;
+        private double _HandlingTimeTemperatureScalar;
+
         /// <summary>
         /// Instance of the class to perform general functions
         /// </summary>
@@ -188,7 +192,8 @@ namespace Madingley
         /// <param name="cellEnvironment">The environment in the current grid cell</param>
         /// <param name="madingleyCohortDefinitions">The functional group definitions for cohorts in the model</param>
         /// <param name="madingleyStockDefinitions">The functional group definitions for stocks  in the model</param>
-        public void GetEatingPotentialTerrestrial(GridCellCohortHandler gridCellCohorts, GridCellStockHandler gridCellStocks, int[] actingCohort, SortedList<string, double[]> cellEnvironment, FunctionalGroupDefinitions madingleyCohortDefinitions, FunctionalGroupDefinitions madingleyStockDefinitions)
+        public void GetEatingPotentialTerrestrial(GridCellCohortHandler gridCellCohorts, GridCellStockHandler gridCellStocks, int[] actingCohort,
+            SortedList<string, double[]> cellEnvironment, FunctionalGroupDefinitions madingleyCohortDefinitions, FunctionalGroupDefinitions madingleyStockDefinitions,uint currentMonth)
         {
             double DensityScaling = 0.0;
             //double DensityScaling = 1.0;
@@ -204,6 +209,19 @@ namespace Madingley
             // Initialise the jagged arrays to hold the potential and actual biomass eaten in each of the grid cell autotroph stocks
             _BiomassesEaten = new double[gridCellStocks.Count][];
             _PotentialBiomassesEaten = new double[gridCellStocks.Count][];
+
+
+            _AttackRateTemperatureScalar =
+                (madingleyCohortDefinitions.GetTraitNames("Endo/Ectotherm", actingCohort[0]) == "ectotherm") ?
+                Math.Exp(AttackRateActivationEnergy * (cellEnvironment["Temperature"][currentMonth] + 273.15 - _ReferenceTemperature) /
+                (_BoltzmannConstant * _ReferenceTemperature * (cellEnvironment["Temperature"][currentMonth] + 273.15))) : 1.0;
+
+
+            _HandlingTimeTemperatureScalar =
+                (madingleyCohortDefinitions.GetTraitNames("Endo/Ectotherm", actingCohort[0]) == "ectotherm") ?
+                Math.Exp(HandlingTimeActivationEnergy * (cellEnvironment["Temperature"][currentMonth] + 273.15 - _ReferenceTemperature) /
+                (_BoltzmannConstant * _ReferenceTemperature * (cellEnvironment["Temperature"][currentMonth] + 273.15))) : 1.0;
+
 
             // Loop over rows in the jagged arrays and initialise each vector
             for (int i = 0; i < gridCellStocks.Count; i++)
@@ -227,7 +245,7 @@ namespace Madingley
                     EdibleMass = EdibleMass / DensityScaling;
 
                     // Calculate the potential biomass eaten from this stock by the acting cohort
-                    _PotentialBiomassesEaten[FunctionalGroup][i] = CalculatePotentialBiomassEatenTerrestrial(EdibleMass, _BodyMassHerbivore);
+                    _PotentialBiomassesEaten[FunctionalGroup][i] = CalculatePotentialBiomassEatenTerrestrial(EdibleMass, _BodyMassHerbivore) * _AttackRateTemperatureScalar;
 
                     // Add the time required to handle the potential biomass eaten from this stock to the cumulative total for all stocks
                     _TimeUnitsToHandlePotentialFoodItems += _PotentialBiomassesEaten[FunctionalGroup][i] *
@@ -235,6 +253,7 @@ namespace Madingley
                     
                 }
             }
+            _TimeUnitsToHandlePotentialFoodItems *= _HandlingTimeTemperatureScalar;
 
         }
 
@@ -248,7 +267,8 @@ namespace Madingley
         /// <param name="cellEnvironment">The environment in the current grid cell</param>
         /// <param name="madingleyCohortDefinitions">The functional group definitions for cohorts in the model</param>
         /// <param name="madingleyStockDefinitions">The functional group definitions for stocks  in the model</param>
-        public void GetEatingPotentialMarine(GridCellCohortHandler gridCellCohorts, GridCellStockHandler gridCellStocks, int[] actingCohort, SortedList<string, double[]> cellEnvironment, FunctionalGroupDefinitions madingleyCohortDefinitions, FunctionalGroupDefinitions madingleyStockDefinitions)
+        public void GetEatingPotentialMarine(GridCellCohortHandler gridCellCohorts, GridCellStockHandler gridCellStocks, int[] actingCohort,
+            SortedList<string, double[]> cellEnvironment, FunctionalGroupDefinitions madingleyCohortDefinitions, FunctionalGroupDefinitions madingleyStockDefinitions,uint currentMonth)
         {
             // Set the total biomass eaten by the acting cohort to zero
             _TotalBiomassEatenByCohort = 0.0;
@@ -262,6 +282,18 @@ namespace Madingley
             // Initialise the jagged arrays to hold the potential and actual biomass eaten in each of the grid cell autotroph stocks
             _BiomassesEaten = new double[gridCellStocks.Count][];
             _PotentialBiomassesEaten = new double[gridCellStocks.Count][];
+
+
+            _AttackRateTemperatureScalar =
+                (madingleyCohortDefinitions.GetTraitNames("Endo/Ectotherm", actingCohort[0]) == "ectotherm") ?
+                Math.Exp(AttackRateActivationEnergy * (cellEnvironment["Temperature"][currentMonth] + 273.15 - _ReferenceTemperature) /
+                (_BoltzmannConstant * _ReferenceTemperature * (cellEnvironment["Temperature"][currentMonth] + 273.15))) : 1.0;
+
+
+            _HandlingTimeTemperatureScalar =
+                (madingleyCohortDefinitions.GetTraitNames("Endo/Ectotherm", actingCohort[0]) == "ectotherm") ?
+                Math.Exp(HandlingTimeActivationEnergy * (cellEnvironment["Temperature"][currentMonth] + 273.15 - _ReferenceTemperature) /
+                (_BoltzmannConstant * _ReferenceTemperature * (cellEnvironment["Temperature"][currentMonth] + 273.15))) : 1.0;
 
             // Loop over rows in the jagged arrays and initialise each vector
             for (int i = 0; i < gridCellStocks.Count; i++)
@@ -281,7 +313,7 @@ namespace Madingley
                     EdibleMass = gridCellStocks[FunctionalGroup][i].TotalBiomass;
 
                     // Calculate the potential biomass eaten from this stock by the acting cohort
-                    _PotentialBiomassesEaten[FunctionalGroup][i] = CalculatePotentialBiomassEatenMarine(EdibleMass, _BodyMassHerbivore);
+                    _PotentialBiomassesEaten[FunctionalGroup][i] = CalculatePotentialBiomassEatenMarine(EdibleMass, _BodyMassHerbivore)*_AttackRateTemperatureScalar;
 
                     // Add the time required to handle the potential biomass eaten from this stock to the cumulative total for all stocks
                     _TimeUnitsToHandlePotentialFoodItems += _PotentialBiomassesEaten[FunctionalGroup][i] *
@@ -289,6 +321,7 @@ namespace Madingley
 
                 }
             }
+            _TimeUnitsToHandlePotentialFoodItems *= _HandlingTimeTemperatureScalar;
 
         }
 
