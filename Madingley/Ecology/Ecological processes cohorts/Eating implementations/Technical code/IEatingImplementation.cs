@@ -78,8 +78,8 @@ namespace Madingley
         /// <param name="madingleyCohortDefinitions">The definitions for cohorts in the model</param>
         /// <param name="madingleyStockDefinitions">The definitions for stocks in the model</param>
         void GetEatingPotentialMarine(GridCellCohortHandler gridCellCohorts, GridCellStockHandler gridCellStocks, int[] actingCohort, 
-            SortedList<string, double[]> cellEnvironment, FunctionalGroupDefinitions madingleyCohortDefinitions, FunctionalGroupDefinitions 
-            madingleyStockDefinitions);
+            SortedList<string, double[]> cellEnvironment, FunctionalGroupDefinitions madingleyCohortDefinitions, FunctionalGroupDefinitions
+            madingleyStockDefinitions, uint currentMonth, uint currentTimeStep);
 
         /// <summary>
         /// Calculate the potential biomass that could be gained through eating for terrestrial cells
@@ -92,7 +92,7 @@ namespace Madingley
         /// <param name="madingleyStockDefinitions">The definitions for stocks in the model</param>
         void GetEatingPotentialTerrestrial(GridCellCohortHandler gridCellCohorts, GridCellStockHandler gridCellStocks, int[] actingCohort,
             SortedList<string, double[]> cellEnvironment, FunctionalGroupDefinitions madingleyCohortDefinitions, FunctionalGroupDefinitions
-            madingleyStockDefinitions);
+            madingleyStockDefinitions, uint currentMonth,uint currentTimeStep);
 
 
         /// <summary>

@@ -209,6 +209,9 @@ namespace Madingley
         // Temporary value to hold calculations
         private double TempDouble;
 
+        private double _AttackRateTemperatureScalar;
+        private double _HandlingTimeTemperatureScalar;
+
         /// <summary>
         /// Instance of the class to perform general functions
         /// </summary>
@@ -308,8 +311,8 @@ namespace Madingley
         /// <param name="madingleyCohortDefinitions">The functional group definitions for cohorts in the model</param>
         /// <param name="madingleyStockDefinitions">The functional group definitions for stocks  in the model</param>
         public void GetEatingPotentialMarine(GridCellCohortHandler gridCellCohorts, GridCellStockHandler gridCellStocks, int[] actingCohort, 
-            SortedList<string, double[]> cellEnvironment, FunctionalGroupDefinitions madingleyCohortDefinitions, FunctionalGroupDefinitions 
-            madingleyStockDefinitions)
+            SortedList<string, double[]> cellEnvironment, FunctionalGroupDefinitions madingleyCohortDefinitions, FunctionalGroupDefinitions
+            madingleyStockDefinitions, uint currentMonth, uint currentTimeStep)
         {
 
             BinnedPreyDensities = new double[gridCellCohorts.Count, NumberOfBins];
@@ -325,6 +328,19 @@ namespace Madingley
 
             // Get the abundance of the acting (predator) cohort
             _AbundancePredator = gridCellCohorts[actingCohort].CohortAbundance;
+
+
+            _AttackRateTemperatureScalar =
+                (madingleyCohortDefinitions.GetTraitNames("Endo/Ectotherm", actingCohort[0]) == "ectotherm") ?
+                Math.Exp(AttackRateActivationEnergy * (cellEnvironment["Temperature"][currentTimeStep] + 273.15 - _ReferenceTemperature) /
+                (_BoltzmannConstant * _ReferenceTemperature * (cellEnvironment["Temperature"][currentTimeStep] + 273.15))) : 1.0;
+
+
+            _HandlingTimeTemperatureScalar =
+                (madingleyCohortDefinitions.GetTraitNames("Endo/Ectotherm", actingCohort[0]) == "ectotherm") ?
+                Math.Exp(HandlingTimeActivationEnergy * (cellEnvironment["Temperature"][currentTimeStep] + 273.15 - _ReferenceTemperature) /
+                (_BoltzmannConstant * _ReferenceTemperature * (cellEnvironment["Temperature"][currentTimeStep] + 273.15))) : 1.0;
+
 
             // Pre-calculate individual values for this predator to speed things up
             _SpecificPredatorKillRateConstant = _KillRateConstant * Math.Pow(_BodyMassPredator, (_KillRateConstantMassExponent));
@@ -393,11 +409,11 @@ namespace Madingley
                             _PotentialAbundanceEaten[FunctionalGroup][i] = CalculateExpectedNumberKilledMarine(
                                 gridCellCohorts[FunctionalGroup][i].CohortAbundance, _BodyMassPrey, FunctionalGroup,
                                 _BodyMassPredator, _CarnivoreFunctionalGroups[FunctionalGroup], _OmnivoreFunctionalGroups[FunctionalGroup],
-                                _OmnivoreFunctionalGroups[actingCohort[0]], _PredatorLogOptimalPreyBodySizeRatio);
+                                _OmnivoreFunctionalGroups[actingCohort[0]], _PredatorLogOptimalPreyBodySizeRatio) * _AttackRateTemperatureScalar;
                             
                             // Add the time required to handle the potential abundance eaten from this cohort to the cumulative total for all cohorts
                             _TimeUnitsToHandlePotentialFoodItems += _PotentialAbundanceEaten[FunctionalGroup][i] *
-                                CalculateHandlingTimeMarine(_BodyMassPrey);
+                                CalculateHandlingTimeMarine(_BodyMassPrey) * _HandlingTimeTemperatureScalar;
                         }
                         else
                         {
@@ -433,11 +449,11 @@ namespace Madingley
                             _PotentialAbundanceEaten[FunctionalGroup][i] = CalculateExpectedNumberKilledMarine(
                                gridCellCohorts[FunctionalGroup][i].CohortAbundance, _BodyMassPrey, FunctionalGroup,
                                _BodyMassPredator, _CarnivoreFunctionalGroups[FunctionalGroup], _OmnivoreFunctionalGroups[FunctionalGroup],
-                               _OmnivoreFunctionalGroups[actingCohort[0]], _PredatorLogOptimalPreyBodySizeRatio);
+                               _OmnivoreFunctionalGroups[actingCohort[0]], _PredatorLogOptimalPreyBodySizeRatio) * _AttackRateTemperatureScalar;
                             
                             // Add the time required to handle the potential abundance eaten from this cohort to the cumulative total for all cohorts
                             _TimeUnitsToHandlePotentialFoodItems += _PotentialAbundanceEaten[FunctionalGroup][i] *
-                                CalculateHandlingTimeMarine(_BodyMassPrey);
+                                CalculateHandlingTimeMarine(_BodyMassPrey) * _HandlingTimeTemperatureScalar;
                         }
                         else
                         {
@@ -451,7 +467,7 @@ namespace Madingley
                        
             // No cannibalism; do this outside the loop to speed up the calculations
             _TimeUnitsToHandlePotentialFoodItems -= PotentialAbundanceEaten[actingCohort[0]][actingCohort[1]] *
-                CalculateHandlingTimeMarine(_BodyMassPredator);
+                CalculateHandlingTimeMarine(_BodyMassPredator) * _HandlingTimeTemperatureScalar;
             PotentialAbundanceEaten[actingCohort[0]][actingCohort[1]] = 0.0;
         }
 
@@ -520,7 +536,7 @@ namespace Madingley
         /// <param name="madingleyStockDefinitions">The functional group definitions for stocks  in the model</param>
         public void GetEatingPotentialTerrestrial(GridCellCohortHandler gridCellCohorts, GridCellStockHandler gridCellStocks, int[] actingCohort,
             SortedList<string, double[]> cellEnvironment, FunctionalGroupDefinitions madingleyCohortDefinitions, FunctionalGroupDefinitions
-            madingleyStockDefinitions)
+            madingleyStockDefinitions, uint currentMonth, uint currentTimeStep)
         {
 
             //double DensityScaling = Math.Max(0.01,1.0 - cellEnvironment["RelativeHANPP"][0]);
@@ -539,6 +555,18 @@ namespace Madingley
 
             // Get the abundance of the acting (predator) cohort
             _AbundancePredator = gridCellCohorts[actingCohort].CohortAbundance;
+
+
+            _AttackRateTemperatureScalar =
+                (madingleyCohortDefinitions.GetTraitNames("Endo/Ectotherm", actingCohort[0]) == "ectotherm") ?
+                Math.Exp(AttackRateActivationEnergy * (cellEnvironment["Temperature"][currentTimeStep] + 273.15 - _ReferenceTemperature) /
+                (_BoltzmannConstant * _ReferenceTemperature * (cellEnvironment["Temperature"][currentTimeStep] + 273.15))) : 1.0;
+
+
+            _HandlingTimeTemperatureScalar =
+                (madingleyCohortDefinitions.GetTraitNames("Endo/Ectotherm", actingCohort[0]) == "ectotherm") ?
+                Math.Exp(HandlingTimeActivationEnergy * (cellEnvironment["Temperature"][currentTimeStep] + 273.15 - _ReferenceTemperature) /
+                (_BoltzmannConstant * _ReferenceTemperature * (cellEnvironment["Temperature"][currentTimeStep] + 273.15))) : 1.0;
 
             // Pre-calculate individual values for this predator
             _SpecificPredatorKillRateConstant = _KillRateConstant * Math.Pow(_BodyMassPredator, (_KillRateConstantMassExponent));
@@ -605,11 +633,11 @@ namespace Madingley
                             gridCellCohorts[FunctionalGroup][i].CohortAbundance,
                             _BodyMassPrey, FunctionalGroup,
                             _BodyMassPredator, _CarnivoreFunctionalGroups[FunctionalGroup], _OmnivoreFunctionalGroups[FunctionalGroup],
-                            _OmnivoreFunctionalGroups[actingCohort[0]], _PredatorLogOptimalPreyBodySizeRatio);
+                            _OmnivoreFunctionalGroups[actingCohort[0]], _PredatorLogOptimalPreyBodySizeRatio) * _AttackRateTemperatureScalar;
 
                         // Add the time required to handle the potential abundance eaten from this cohort to the cumulative total for all cohorts
                         _TimeUnitsToHandlePotentialFoodItems += _PotentialAbundanceEaten[FunctionalGroup][i] *
-                            CalculateHandlingTimeTerrestrial(_BodyMassPrey);
+                            CalculateHandlingTimeTerrestrial(_BodyMassPrey) * _HandlingTimeTemperatureScalar;
                     }
                     else
                     {
@@ -621,7 +649,7 @@ namespace Madingley
 
             // No cannibalism; do this outside the loop to speed up the calculations
             _TimeUnitsToHandlePotentialFoodItems -= PotentialAbundanceEaten[actingCohort[0]][actingCohort[1]] *
-                CalculateHandlingTimeTerrestrial(_BodyMassPredator);
+                CalculateHandlingTimeTerrestrial(_BodyMassPredator) * _HandlingTimeTemperatureScalar;
             PotentialAbundanceEaten[actingCohort[0]][actingCohort[1]] = 0.0;
         }
 
