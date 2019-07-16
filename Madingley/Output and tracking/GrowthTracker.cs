@@ -41,7 +41,7 @@ namespace Madingley
             // Initialise streamwriter to output growth data
             GrowthWriter = new StreamWriter(outputPath + GrowthFilename + outputFilesSuffix + "_Cell" + cellIndex + ".txt");
             SyncGrowthWriter = TextWriter.Synchronized(GrowthWriter);
-            SyncGrowthWriter.WriteLine("Latitude\tLongitude\ttime_step\tCurrent_body_mass_g\tfunctional_group\tgrowth_g\tmetabolism_g\tpredation_g\therbivory_g");
+            SyncGrowthWriter.WriteLine("Latitude\tLongitude\ttime_step\tCurrent_body_mass_g\tCurrent_abundance\tfunctional_group\tgrowth_g\tmetabolism_g\tpredation_g\therbivory_g");
 
         }
 
@@ -57,11 +57,12 @@ namespace Madingley
         /// <param name="metabolism">The biomass lost by individuals in this cohort through metabolism</param>
         /// <param name="predation">The biomass gained by individuals in this cohort through predation</param>
         /// <param name="herbivory">The biomass gained by individuals in this cohort through herbivory</param>
-        public void RecordGrowth(uint latIndex, uint lonIndex, uint timeStep, double currentBodyMass, int functionalGroup, 
+        public void RecordGrowth(uint latIndex, uint lonIndex, uint timeStep, double currentBodyMass, double currentAbundance, int functionalGroup, 
             double netGrowth, double metabolism, double predation, double herbivory)
         {
             SyncGrowthWriter.WriteLine(Convert.ToString(latIndex) + '\t' + Convert.ToString(lonIndex) + '\t' + Convert.ToString(timeStep) +
-                '\t' + Convert.ToString(currentBodyMass) + '\t' + Convert.ToString(functionalGroup) + '\t' + Convert.ToString(netGrowth)+ '\t' + Convert.ToString(metabolism)+ '\t' + Convert.ToString(predation)+ '\t' + Convert.ToString(herbivory));
+                '\t' + Convert.ToString(currentBodyMass) + '\t' + Convert.ToString(currentAbundance) + '\t' + Convert.ToString(functionalGroup) +
+                '\t' + Convert.ToString(netGrowth) + '\t' + Convert.ToString(metabolism) + '\t' + Convert.ToString(predation) + '\t' + Convert.ToString(herbivory));
         }
 
         /// <summary>

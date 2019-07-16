@@ -152,6 +152,8 @@ namespace Madingley
             float latCellSize,
             float lonCellSize)
         {
+            //Take this out of the _TrackProcesses test to allow only growth to be written out
+            _TrackGrowth = new GrowthTracker(numTimesteps, (uint)lats.Length, (uint)lons.Length, cellIndices, Filenames["GrowthOutput"], outputFileSuffix, outputPath, cellIndex);
             // Initialise trackers for ecological processes
             _TrackProcesses = trackProcesses;
 
@@ -281,10 +283,10 @@ namespace Madingley
         /// <param name="metabolism">The mass lost to indivduals in the cohort through metabolism</param>
         /// <param name="predation">The mass gained by individuals in the cohort through predation</param>
         /// <param name="herbivory">The mass gained by individuals in the cohort through herbivory</param>
-        public void TrackTimestepGrowth(uint latIndex, uint lonIndex, uint timeStep, double currentBodyMass, 
+        public void TrackTimestepGrowth(uint latIndex, uint lonIndex, uint timeStep, double currentBodyMass, double currentAbundance, 
             int functionalGroup, double netGrowth, double metabolism, double predation, double herbivory)
         {
-            _TrackGrowth.RecordGrowth(latIndex, lonIndex, timeStep, currentBodyMass, functionalGroup, netGrowth, metabolism, predation,herbivory);
+            _TrackGrowth.RecordGrowth(latIndex, lonIndex, timeStep, currentBodyMass, currentAbundance, functionalGroup, netGrowth, metabolism, predation, herbivory);
         }
 
         /// <summary>

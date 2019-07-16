@@ -577,6 +577,8 @@ namespace Madingley
             // Loop over cells and close process trackers
              for (int i = 0; i < _CellList.Count; i++)
              {
+                //Allow growth tracking on its own
+                 ProcessTrackers[i].TrackGrowth.CloseStreams(); 
                  if (ProcessTrackers[i].TrackProcesses) ProcessTrackers[i].CloseStreams(SpecificLocations);
              }
 
