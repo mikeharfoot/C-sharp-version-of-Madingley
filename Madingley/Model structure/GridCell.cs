@@ -1127,17 +1127,17 @@ namespace Madingley
                         double InitialFractionalArea = 0.0;
                         if (functionalGroups.GetTraitNames("impact state", FunctionalGroup).Equals("primary"))
                         {
-                            InitialFractionalArea = _CellEnvironment["Fprimary"][0];
+                            InitialFractionalArea = 1.0;
                         }
-                        else if (functionalGroups.GetTraitNames("impact state", FunctionalGroup).Equals("secondary"))
-                        {
-                            InitialFractionalArea = _CellEnvironment["Fsecondary"][0];
-                        }
-                        else
-                        {
-                            //All HANPPlc comes from impacted lands
-                            InitialFractionalArea = 1 - (_CellEnvironment["Fprimary"][0] + _CellEnvironment["Fsecondary"][0]);
-                        }
+                        //else if (functionalGroups.GetTraitNames("impact state", FunctionalGroup).Equals("secondary"))
+                        //{
+                        //    InitialFractionalArea = _CellEnvironment["Fsecondary"][0];
+                        //}
+                        //else
+                        //{
+                        //    //All HANPPlc comes from impacted lands
+                        //    InitialFractionalArea = 1 - (_CellEnvironment["Fprimary"][0] + _CellEnvironment["Fsecondary"][0]);
+                        //}
 
 
                         // Initialise the new stock with the relevant properties

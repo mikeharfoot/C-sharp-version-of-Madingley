@@ -135,12 +135,12 @@ namespace Madingley
                     //If ectotherm then use realm specific function
                     if (Realm == 1.0)
                     {
-                        actingCohort.ProportionTimeActive = CalculateProportionTimeSuitableTerrestrial(cellEnvironment, currentTimestep, Endotherm) *
+                        actingCohort.ProportionTimeActive = CalculateProportionTimeSuitableTerrestrial(cellEnvironment, currentMonth, Endotherm) *
                             madingleyCohortDefinitions.GetBiologicalPropertyOneFunctionalGroup("proportion suitable time active", actingCohort.FunctionalGroupIndex);
                     }
                     else
                     {
-                        actingCohort.ProportionTimeActive = CalculateProportionTimeSuitableMarine(cellEnvironment, currentTimestep, Endotherm) *
+                        actingCohort.ProportionTimeActive = CalculateProportionTimeSuitableMarine(cellEnvironment, currentMonth, Endotherm) *
                             madingleyCohortDefinitions.GetBiologicalPropertyOneFunctionalGroup("proportion suitable time active", actingCohort.FunctionalGroupIndex);
                     }
 

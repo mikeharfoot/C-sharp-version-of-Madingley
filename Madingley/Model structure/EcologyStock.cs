@@ -75,67 +75,67 @@ namespace Madingley
             double loss = 0.0;
             double gain = 0.0;
 
-            int ScenarioYear;
-            if(currentTimeStep < burninSteps)
-            {
-                ScenarioYear = 0;
-                if (madingleyStockDefinitions.GetTraitNames("impact state", actingStock[0]) == "primary")
-                {
-                    gridCellStocks[actingStock].FractionalArea = cellEnvironment["Fprimary"][ScenarioYear];
-                }
-                else if (madingleyStockDefinitions.GetTraitNames("impact state", actingStock[0]) == "secondary")
-                {
-                    gridCellStocks[actingStock].FractionalArea = cellEnvironment["Fsecondary"][ScenarioYear];
-                }
-                else
-                {
-                    //All HANPPlc comes from impacted lands
-                    gridCellStocks[actingStock].FractionalArea = 1 - (cellEnvironment["Fprimary"][ScenarioYear] + cellEnvironment["Fsecondary"][ScenarioYear]);
-                }
-            }
-            else
-            {
-                ScenarioYear = (int)Math.Floor((currentTimeStep-burninSteps) / 12.0);
+            int ScenarioYear = 0;
+            //if(currentTimeStep < burninSteps)
+            //{
+            //    ScenarioYear = 0;
+            //    if (madingleyStockDefinitions.GetTraitNames("impact state", actingStock[0]) == "primary")
+            //    {
+            //        gridCellStocks[actingStock].FractionalArea = cellEnvironment["Fprimary"][ScenarioYear];
+            //    }
+            //    else if (madingleyStockDefinitions.GetTraitNames("impact state", actingStock[0]) == "secondary")
+            //    {
+            //        gridCellStocks[actingStock].FractionalArea = cellEnvironment["Fsecondary"][ScenarioYear];
+            //    }
+            //    else
+            //    {
+            //        //All HANPPlc comes from impacted lands
+            //        gridCellStocks[actingStock].FractionalArea = 1 - (cellEnvironment["Fprimary"][ScenarioYear] + cellEnvironment["Fsecondary"][ScenarioYear]);
+            //    }
+            //}
+            //else
+            //{
+            //    ScenarioYear = (int)Math.Floor((currentTimeStep-burninSteps) / 12.0);
                 
-                //NEEDS amending as is only set up for terrestrial cells at present.
-                //if (madingleyStockDefinitions.GetTraitNames("Realm", actingStock[0]) == "marine")
-                //{
-                //    // Run the autotroph processor
-                //    MarineNPPtoAutotrophStock.ConvertNPPToAutotroph(cellEnvironment, gridCellStocks, actingStock, environmentalDataUnits["LandNPP"], 
-                //        environmentalDataUnits["OceanNPP"], currentTimeStep,globalModelTimeStepUnit,tracker,globalTracker ,outputDetail,specificLocations,currentMonth);
-                //}
-                //else if (madingleyStockDefinitions.GetTraitNames("Realm", actingStock[0]) == "terrestrial")
-                {
+            //    //NEEDS amending as is only set up for terrestrial cells at present.
+            //    //if (madingleyStockDefinitions.GetTraitNames("Realm", actingStock[0]) == "marine")
+            //    //{
+            //    //    // Run the autotroph processor
+            //    //    MarineNPPtoAutotrophStock.ConvertNPPToAutotroph(cellEnvironment, gridCellStocks, actingStock, environmentalDataUnits["LandNPP"], 
+            //    //        environmentalDataUnits["OceanNPP"], currentTimeStep,globalModelTimeStepUnit,tracker,globalTracker ,outputDetail,specificLocations,currentMonth);
+            //    //}
+            //    //else if (madingleyStockDefinitions.GetTraitNames("Realm", actingStock[0]) == "terrestrial")
+            //    {
 
-                    if (madingleyStockDefinitions.GetTraitNames("impact state", actingStock[0]) == "primary")
-                    {
-                        loss = cellEnvironment["Primary loss"][ScenarioYear] / 12.0;
-                        //calculate the change in total biomass as a result of coverage changes
-                        // assumes that the biomass density stays the same as coverage goes down (ie if chopping down some forest - the density of the remaining stays the same)
-                        // However if coverage increases, the density declines, as biomass is only added by NPP..
-                        //if (cellEnvironment["Primary loss"][ScenarioYear] < gridCellStocks[actingStock].FractionalArea)
+            //        if (madingleyStockDefinitions.GetTraitNames("impact state", actingStock[0]) == "primary")
+            //        {
+            //            loss = cellEnvironment["Primary loss"][ScenarioYear] / 12.0;
+            //            //calculate the change in total biomass as a result of coverage changes
+            //            // assumes that the biomass density stays the same as coverage goes down (ie if chopping down some forest - the density of the remaining stays the same)
+            //            // However if coverage increases, the density declines, as biomass is only added by NPP..
+            //            //if (cellEnvironment["Primary loss"][ScenarioYear] < gridCellStocks[actingStock].FractionalArea)
 
-                    }
-                    else if (madingleyStockDefinitions.GetTraitNames("impact state", actingStock[0]) == "secondary")
-                    {
-                        loss = cellEnvironment["Secondary loss"][ScenarioYear] / 12.0;
-                        gain = cellEnvironment["Secondary gain"][ScenarioYear] / 12.0;
+            //        }
+            //        else if (madingleyStockDefinitions.GetTraitNames("impact state", actingStock[0]) == "secondary")
+            //        {
+            //            loss = cellEnvironment["Secondary loss"][ScenarioYear] / 12.0;
+            //            gain = cellEnvironment["Secondary gain"][ScenarioYear] / 12.0;
 
-                    }
-                    else if (madingleyStockDefinitions.GetTraitNames("impact state", actingStock[0]) == "impacted")
-                    {
+            //        }
+            //        else if (madingleyStockDefinitions.GetTraitNames("impact state", actingStock[0]) == "impacted")
+            //        {
 
-                        loss = cellEnvironment["Secondary gain"][ScenarioYear] / 12.0;
-                        gain = (cellEnvironment["Secondary loss"][ScenarioYear] + cellEnvironment["Primary loss"][ScenarioYear]) / 12.0;
+            //            loss = cellEnvironment["Secondary gain"][ScenarioYear] / 12.0;
+            //            gain = (cellEnvironment["Secondary loss"][ScenarioYear] + cellEnvironment["Primary loss"][ScenarioYear]) / 12.0;
 
-                    }
+            //        }
 
-                    if(gridCellStocks[actingStock].FractionalArea.CompareTo(0.0) > 0)
-                        gridCellStocks[actingStock].TotalBiomass *= 1.0 - Math.Min(1.0,loss / gridCellStocks[actingStock].FractionalArea);
-                    gridCellStocks[actingStock].FractionalArea = Math.Max(0.0,gridCellStocks[actingStock].FractionalArea - loss + gain);
+            //        if(gridCellStocks[actingStock].FractionalArea.CompareTo(0.0) > 0)
+            //            gridCellStocks[actingStock].TotalBiomass *= 1.0 - Math.Min(1.0,loss / gridCellStocks[actingStock].FractionalArea);
+            //        gridCellStocks[actingStock].FractionalArea = Math.Max(0.0,gridCellStocks[actingStock].FractionalArea - loss + gain);
 
-                }
-            }
+            //    }
+            //}
 
             // Run the dynamic plant model to update the leaf stock for this time step
             double WetMatterNPP = DynamicPlantModel.UpdateLeafStock(cellEnvironment, gridCellStocks, actingStock, currentTimeStep, madingleyStockDefinitions.
@@ -144,7 +144,7 @@ namespace Madingley
                         
             double fhanpp = HANPP.RemoveHumanAppropriatedMatter(WetMatterNPP, cellEnvironment, humanNPPScenario, gridCellStocks, actingStock,
                 currentTimeStep, ScenarioYear, burninSteps, impactSteps, recoverySteps, instantStep, numInstantSteps, impactCell, globalModelTimeStepUnit, madingleyStockDefinitions,
-                DynamicPlantModel.CalculateFracEvergreen(cellEnvironment["Fraction Year Frost"][currentTimeStep]));
+                DynamicPlantModel.CalculateFracEvergreen(cellEnvironment["Fraction Year Frost"][currentMonth]));
 
 
 

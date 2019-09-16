@@ -407,6 +407,8 @@ namespace Madingley
         private void CalculateOutputs(ModelGrid ecosystemModelGrid, FunctionalGroupDefinitions cohortFunctionalGroupDefinitions,
             FunctionalGroupDefinitions stockFunctionalGroupDefinitions, List<uint[]> cellIndices, MadingleyModelInitialisation initialisation, uint currentTimeStep)
         {
+
+            uint month = currentTimeStep % 12;
             // Get grids of the total biomass densities of all stocks and all cohorts in each grid cell
             LogBiomassDensityGridCohorts = ecosystemModelGrid.GetStateVariableGridLogDensityPerSqKm("Biomass", "NA", cohortFunctionalGroupDefinitions.
                 AllFunctionalGroupsIndex, cellIndices, "cohort", initialisation);
@@ -444,7 +446,7 @@ namespace Madingley
 
             Realm = ecosystemModelGrid.GetEnviroGrid("Realm", 0);
 
-            FrostDays = ecosystemModelGrid.GetEnviroGrid("Fraction Year Frost", currentTimeStep);
+            FrostDays = ecosystemModelGrid.GetEnviroGrid("Fraction Year Frost", month);
 
             for (int i = 0; i < ecosystemModelGrid.NumLatCells; i++)
             {
