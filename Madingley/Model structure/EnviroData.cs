@@ -920,7 +920,8 @@ namespace Madingley
                                 // Get the number of months in the temporal dimension
                                 _NumTimes = (uint)internalData.Dimensions[MonthSearchStrings[kk]].Length;
                                 // Check that the number of months is 12
-                                Debug.Assert(_NumTimes == 12, "Number of time intervals in an environmental data file with specified monthly temporal resolution is not equal to 12");
+                                // no longer necessary
+                                //Debug.Assert(_NumTimes == 12, "Number of time intervals in an environmental data file with specified monthly temporal resolution is not equal to 12");
                                 // Read in the values of the temporal dimension from the file
                                 // Check which format the temporal dimension data are in; if unrecognized, then throw an error
                                 if (internalData.Variables[MonthSearchStrings[kk]].TypeOfData.Name.ToString().ToLower() == "single")

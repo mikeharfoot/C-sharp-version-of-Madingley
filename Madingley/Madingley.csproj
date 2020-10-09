@@ -65,7 +65,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -151,6 +151,9 @@
     <Reference Include="RserveCli, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\RserveCLI\RServeCLI\bin\x64\Debug\RserveCli.dll</HintPath>
+    </Reference>
+    <Reference Include="sds">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Microsoft Research\Scientific DataSet 1.3\sds.exe</HintPath>
     </Reference>
     <Reference Include="SDSArrays, Version=1.3.14517.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
@@ -265,42 +268,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />
-    <None Include="input\Data\Original\LandSeaMask.nc">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="input\Data\Original\Land\AvailableWaterCapacity.nc">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="input\Data\Original\Land\cru20.nc">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="input\Data\Original\Land\HANPP.nc">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="input\Data\Original\Land\hanpp_2005.nc">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="input\Data\Original\Land\NPP.nc">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="input\Data\Original\Ocean\averaged_SST_50y_top100m_monthly.nc">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="input\Data\Original\Ocean\averaged_u_50y_top100m_monthly.nc">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="input\Data\Original\Ocean\averaged_v_50y_top100m_monthly.nc">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="input\Data\Original\Ocean\KennedyetalDTR_monthly_climatology.nc">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="input\Data\Original\Ocean\OceanNPP.nc">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="input\Data\Original\TropicalGrasslandsMask.nc">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="input\Model setup\Ecological definition files\CohortFunctionalGroupDefinitions.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

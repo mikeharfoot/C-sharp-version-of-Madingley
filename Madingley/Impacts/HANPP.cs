@@ -13,11 +13,11 @@ namespace Madingley
     public class HumanAutotrophMatterAppropriation
     {
         //Global mean HANPP from harvesting values from Haberl et al. (2007), PNAS
-        double HANPPh_crop = 296;
+        double HANPPh_crop = 296.0/611.0;
         double HANPPh_wilderness = 0.0;
-        double HANPPh_grazing = 41;
-        double HANPPh_forestry = 48;
-        double HANPPh_urban = 63;
+        double HANPPh_grazing = 41.0/486.0;
+        double HANPPh_forestry = 48.0/720.0;
+        double HANPPh_urban = 63.0/586.0;
 
         UtilityFunctions _Utilities;
 
@@ -123,6 +123,17 @@ namespace Madingley
                 }
                 else if(humanNPPScenario.Item1 == "ssp")
                 {
+
+                    //double HANPPfor = 0.06;
+                    //double HANPPcrop = 0.84;
+                    //double HANPPgrazing = 0.84;
+                    //double HANPPinf = 0.75;
+                    
+
+                    //RemovalRate = (cellEnvironment["Fsecondary"][scenarioYear] * HANPPfor) + (cellEnvironment["Fcropland"][scenarioYear] * HANPPcrop) +
+                    //            (cellEnvironment["Furban"][scenarioYear] * HANPPinf) + (cellEnvironment["Fgrazing"][scenarioYear]*HANPPgrazing);
+
+
                     //The scenario year calculation removes the need for this if check and allows the burnin period to have HANPP applied
                     //if (currentTimestep > burninSteps)
                     {
@@ -134,22 +145,22 @@ namespace Madingley
                         if (HANPPh == cellEnvironment["Missing Value"][0]) HANPPh = 0.0;
                         if (HANPPlc == cellEnvironment["Missing Value"][0]) HANPPlc = 0.0;
 
-                        HANPPh *= cellEnvironment["Seasonality"][currentTimestep % 12];
-                        HANPPlc *= cellEnvironment["Seasonality"][currentTimestep % 12];
+                        //HANPPh *= cellEnvironment["Seasonality"][currentTimestep % 12];
+                        //HANPPlc *= cellEnvironment["Seasonality"][currentTimestep % 12];
                         
                         //Allocate HANPP to this stock depending on its definition
                         
                         //Allocate HANPP between deciduous and evergreen according to FracEvergreen
-                        if (madingleyStockDefinitions.GetTraitNames("leaf strategy", actingStock[0]).Equals("deciduous"))
-                        {
-                            HANPPlc *= (1.0 -fracEvergreen);
-                            HANPPh *= (1.0 - fracEvergreen);
-                        }
-                        else
-                        {
-                            HANPPlc *= (fracEvergreen);
-                            HANPPh *= (fracEvergreen);
-                        }
+                        //if (madingleyStockDefinitions.GetTraitNames("leaf strategy", actingStock[0]).Equals("deciduous"))
+                        //{
+                        //    HANPPlc *= (1.0 -fracEvergreen);
+                        //    HANPPh *= (1.0 - fracEvergreen);
+                        //}
+                        //else
+                        //{
+                        //    HANPPlc *= (fracEvergreen);
+                        //    HANPPh *= (fracEvergreen);
+                        //}
                         //Allocate between impacted and natural using fractional cell area
                         if (madingleyStockDefinitions.GetTraitNames("impact state",actingStock[0]).Equals("primary"))
                         {
@@ -171,20 +182,24 @@ namespace Madingley
                         }
 
                         //Combine harvest and land change terms
-                        double HANPP = HANPPh + HANPPlc;
+                        //double HANPP = HANPPh + HANPPlc;
 
                         // Convert gC/m2/month to gC/km2/month
-                        HANPP *= m2Tokm2Conversion;
+                        //HANPP *= m2Tokm2Conversion;
 
-                        // Multiply by cell area (in km2) to get g/cell/month
-                        HANPP *= gridCellStocks[actingStock].FractionalArea * cellEnvironment["Cell Area"][0];
+                        //// Multiply by cell area (in km2) to get g/cell/month
+                        //HANPP *= gridCellStocks[actingStock].FractionalArea * cellEnvironment["Cell Area"][0];
 
 
-                        // Convert from gC to g dry matter
-                        double DryMatterAppropriated = HANPP * 2;
+                        //// Convert from gC to g dry matter
+                        //double DryMatterAppropriated = HANPP * 2;
 
-                        // Convert from g dry matter to g wet matter
-                        double WetMatterAppropriated = DryMatterAppropriated * 2;
+                        //// Convert from g dry matter to g wet matter
+                        //double WetMatterAppropriated = DryMatterAppropriated * 2;
+
+
+                        double NPPact = wetMatterNPP * (1.0 - HANPPlc);
+                        double NPPeco = NPPact * (1.0 - HANPPh);
 
 
                         //Calculate the rate of HANPP offtake
@@ -194,7 +209,7 @@ namespace Madingley
                         }
                         else
                         {
-                            RemovalRate = Math.Min(1.0, WetMatterAppropriated / wetMatterNPP);
+                            RemovalRate = 1.0 - (NPPeco/wetMatterNPP); //Math.Min(1.0, WetMatterAppropriated / wetMatterNPP);
                         }
 
                     }

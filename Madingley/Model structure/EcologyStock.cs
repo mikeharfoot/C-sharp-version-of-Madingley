@@ -28,8 +28,9 @@ namespace Madingley
         /// </summary>
         HumanAutotrophMatterAppropriation HANPP;
 
-
-
+        
+        //public StreamWriter TransitionsWriter;
+        
         public void InitializeEcology()
         {
             //Initialize the autotrophprocessor
@@ -41,6 +42,18 @@ namespace Madingley
             // Initialise the human NPP appropriation class
             HANPP = new HumanAutotrophMatterAppropriation();
 
+            //if (!File.Exists("Transitions.csv"))
+            //{
+            //    TransitionsWriter = new StreamWriter("Transitions.csv", true);
+            //    TransitionsWriter.WriteLine("Latitude" + "," + "Longitude" + "," +
+            //            "currentTimeStep" + "," + "ScenarioYear" + "," + "actingStock" + "," +
+            //            "loss" + "," + "gain" + "," + "FractionalArea" + "," + "TotalBiomass" + "," +
+            //            "WetMatterNPP" + "," + "fhanpp");
+            //}
+            //else
+            //{
+            //    TransitionsWriter = new StreamWriter("Transitions.csv", true);
+            //}
         }
 
 
@@ -72,11 +85,13 @@ namespace Madingley
             GlobalProcessTracker globalTracker, uint currentMonth, 
             string outputDetail, bool specificLocations, Boolean impactCell)
         {
+
             double loss = 0.0;
             double gain = 0.0;
 
             int ScenarioYear;
-            if(currentTimeStep < burninSteps)
+
+            if (currentTimeStep < burninSteps)
             {
                 ScenarioYear = 0;
                 if (madingleyStockDefinitions.GetTraitNames("impact state", actingStock[0]) == "primary")
@@ -95,8 +110,9 @@ namespace Madingley
             }
             else
             {
-                ScenarioYear = (int)Math.Floor((currentTimeStep-burninSteps) / 12.0);
-                
+
+                ScenarioYear = (int)Math.Floor((currentTimeStep - burninSteps) / 12.0);
+
                 //NEEDS amending as is only set up for terrestrial cells at present.
                 //if (madingleyStockDefinitions.GetTraitNames("Realm", actingStock[0]) == "marine")
                 //{
@@ -130,9 +146,12 @@ namespace Madingley
 
                     }
 
+
                     if(gridCellStocks[actingStock].FractionalArea.CompareTo(0.0) > 0)
                         gridCellStocks[actingStock].TotalBiomass *= 1.0 - Math.Min(1.0,loss / gridCellStocks[actingStock].FractionalArea);
                     gridCellStocks[actingStock].FractionalArea = Math.Max(0.0,gridCellStocks[actingStock].FractionalArea - loss + gain);
+
+                    
 
                 }
             }
@@ -146,7 +165,10 @@ namespace Madingley
                 currentTimeStep, ScenarioYear, burninSteps, impactSteps, recoverySteps, instantStep, numInstantSteps, impactCell, globalModelTimeStepUnit, madingleyStockDefinitions,
                 DynamicPlantModel.CalculateFracEvergreen(cellEnvironment["Fraction Year Frost"][currentTimeStep]));
 
-
+            //TransitionsWriter.WriteLine(cellEnvironment["Latitude"][0] + "," + cellEnvironment["Longitude"][0] + "," +
+            //            currentTimeStep + "," + ScenarioYear + "," + actingStock[0] + "," + 
+            //            loss + "," + gain + "," + gridCellStocks[actingStock].FractionalArea + "," + gridCellStocks[actingStock].TotalBiomass + "," +
+            //            WetMatterNPP + "," + fhanpp);
 
             // Apply human appropriation of NPP
             gridCellStocks[actingStock].TotalBiomass += WetMatterNPP * (1.0 - fhanpp);

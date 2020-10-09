@@ -1153,6 +1153,7 @@ namespace Madingley
                 }
             }
 
+            //MadingleyEcologyStock.TransitionsWriter.Close();
         }
 
         private void RunWithinCellCohortEcology(uint latCellIndex, uint lonCellIndex, ThreadLockedParallelVariables partial, 
