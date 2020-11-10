@@ -935,8 +935,23 @@ namespace Madingley
                                 // Draw adult mass from a log-normal distribution with mean -6.9 and standard deviation 10.0,
                                 // within the bounds of the minimum and maximum body masses for the functional group
                                 CohortAdultMass = Math.Pow(10, (RandomNumberGenerator.GetUniform() * (Math.Log10(MassMaxima[FunctionalGroup]) - Math.Log10(50 * MassMinima[FunctionalGroup])) + Math.Log10(50 * MassMinima[FunctionalGroup])));
+
+
+                                //# update to improve e.g. predation process of large carnivores (only applies to terrestrial fauna)
+                                if (CohortAdultMass < 21000 ||
+                                    functionalGroups.GetTraitNames("Nutrition source", FunctionalGroup) == "herbivore" ||
+                                    functionalGroups.GetTraitNames("Nutrition source", FunctionalGroup) == "omnivore" ||
+                                    cellEnvironment["Realm"][0] != 1.0
+                                    )
+                                {
+                                    OptimalPreyBodySizeRatio = Math.Max(0.01, RandomNumberGenerator.GetNormal(0.1, 0.02));
+                                }
+                                else
+                                {
+                                    OptimalPreyBodySizeRatio = Math.Max(0.01, RandomNumberGenerator.GetNormal(0.8, 0.02));
+                                }
+
                                 
-                                OptimalPreyBodySizeRatio = Math.Max(0.01, RandomNumberGenerator.GetNormal(0.1, 0.02));
                                 
                                 // Draw from a log-normal distribution with mean 10.0 and standard deviation 5.0, then add one to obtain 
                                 // the ratio of adult to juvenile body mass, and then calculate juvenile mass based on this ratio and within the
@@ -1003,9 +1018,11 @@ namespace Madingley
                                     TrophicIndex = 0.0;
                                     break;
                             }
-                            
+
+                            double CohortInitialMass = CohortJuvenileMass + ((CohortAdultMass-CohortJuvenileMass) * RandomNumberGenerator.GetUniform());
+
                             // Initialise the new cohort with the relevant properties
-                            NewCohort = new Cohort((byte)FunctionalGroup, CohortJuvenileMass, CohortAdultMass, CohortJuvenileMass, NewAbund,0.0,
+                            NewCohort = new Cohort((byte)FunctionalGroup, CohortJuvenileMass, CohortAdultMass, CohortInitialMass, NewAbund,0.0,
                             OptimalPreyBodySizeRatio, 0, ProportionTimeActive[FunctionalGroup], ref CohortIDIncrementer,TrophicIndex, tracking);
 
                             // Add the new cohort to the list of grid cell cohorts
