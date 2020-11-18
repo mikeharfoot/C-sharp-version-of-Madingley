@@ -157,10 +157,15 @@ namespace Madingley
             }
 
             // Run the dynamic plant model to update the leaf stock for this time step
-            double WetMatterNPP = DynamicPlantModel.UpdateLeafStock(cellEnvironment, gridCellStocks, actingStock, currentTimeStep, madingleyStockDefinitions.
+            //double WetMatterNPP = DynamicPlantModel.UpdateLeafStock(cellEnvironment, gridCellStocks, actingStock, currentTimeStep, madingleyStockDefinitions.
+            //    GetTraitNames("leaf strategy", actingStock[0]).Equals("deciduous"), globalModelTimeStepUnit, tracker, globalTracker, currentMonth,
+            //    outputDetail, specificLocations);
+
+            // RUNNING WITH STATIC CLIMATE FOR TESTING
+            double WetMatterNPP = DynamicPlantModel.UpdateLeafStock(cellEnvironment, gridCellStocks, actingStock, currentMonth, madingleyStockDefinitions.
                 GetTraitNames("leaf strategy", actingStock[0]).Equals("deciduous"), globalModelTimeStepUnit, tracker, globalTracker, currentMonth,
                 outputDetail, specificLocations);
-                        
+
             double fhanpp = HANPP.RemoveHumanAppropriatedMatter(WetMatterNPP, cellEnvironment, humanNPPScenario, gridCellStocks, actingStock,
                 currentTimeStep, ScenarioYear, burninSteps, impactSteps, recoverySteps, instantStep, numInstantSteps, impactCell, globalModelTimeStepUnit, madingleyStockDefinitions,
                 DynamicPlantModel.CalculateFracEvergreen(cellEnvironment["Fraction Year Frost"][currentTimeStep]));

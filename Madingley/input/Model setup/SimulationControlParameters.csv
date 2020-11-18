@@ -1,7 +1,7 @@
 Parameter,Value
 Timestep Units,month
-Length of simulation (years),50
-Burn-in (years),50
+Length of simulation (years),205
+Burn-in (years),100
 Impact duration (years),105
 Recovery duration (years),0
 Bottom Latitude,-90

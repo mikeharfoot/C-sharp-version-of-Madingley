@@ -382,7 +382,7 @@ namespace Madingley
             }
 
             // Define the stock traits that will be used to separate outputs
-            StockTraits = new string[2] { "Heterotroph/Autotroph" ,"Leaf strategy"};
+            StockTraits = new string[3] { "Heterotroph/Autotroph" ,"Leaf strategy", "Impact state" };
 
             // Re-initialise the sorted dictionary to hold all unique trait values
             StockTraitValues = new SortedDictionary<string, string[]>();
