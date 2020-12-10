@@ -85,7 +85,7 @@ namespace Madingley
             GlobalProcessTracker globalTracker, uint currentMonth, 
             string outputDetail, bool specificLocations, Boolean impactCell)
         {
-
+            /*
             double loss = 0.0;
             double gain = 0.0;
 
@@ -172,11 +172,15 @@ namespace Madingley
 
             // Apply human appropriation of NPP
             gridCellStocks[actingStock].TotalBiomass += WetMatterNPP * (1.0 - fhanpp);
-            if (globalTracker.TrackProcesses)
-            {
-                globalTracker.RecordHANPP((uint)cellEnvironment["LatIndex"][0], (uint)cellEnvironment["LonIndex"][0], (uint)actingStock[0],
-                    fhanpp);
-            }
+            */
+            //Overwrite current stock with that calculated by LPJ: *1000*cellArea*1000000.0 to convert from kg m-2 to g per total cell area 
+            gridCellStocks[actingStock].TotalBiomass = cellEnvironment["S" + actingStock[0]][currentTimeStep] * 1000.0 * 1000000.0 * cellEnvironment["Cell Area"][0];
+            
+            //if (globalTracker.TrackProcesses)
+            //{
+            //    globalTracker.RecordHANPP((uint)cellEnvironment["LatIndex"][0], (uint)cellEnvironment["LonIndex"][0], (uint)actingStock[0],
+            //        fhanpp);
+            //}
 
             if (gridCellStocks[actingStock].TotalBiomass < 0.0) gridCellStocks[actingStock].TotalBiomass = 0.0;
 

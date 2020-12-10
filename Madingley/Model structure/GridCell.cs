@@ -1139,7 +1139,7 @@ namespace Madingley
 
 
                         // Calculate predicted leaf mass at equilibrium for this stock
-                        double LeafMass = PlantModel.CalculateEquilibriumLeafMass(_CellEnvironment, functionalGroups.GetTraitNames("leaf strategy", FunctionalGroup) == "deciduous");
+                        /*double LeafMass = PlantModel.CalculateEquilibriumLeafMass(_CellEnvironment, functionalGroups.GetTraitNames("leaf strategy", FunctionalGroup) == "deciduous");
 
                         double InitialFractionalArea = 0.0;
                         if (functionalGroups.GetTraitNames("impact state", FunctionalGroup).Equals("primary"))
@@ -1155,10 +1155,10 @@ namespace Madingley
                             //All HANPPlc comes from impacted lands
                             InitialFractionalArea = 1 - (_CellEnvironment["Fprimary"][0] + _CellEnvironment["Fsecondary"][0]);
                         }
-
+                        */
 
                         // Initialise the new stock with the relevant properties
-                        NewStock = new Stock((byte)FunctionalGroup, IndividualMass[FunctionalGroup], LeafMass, InitialFractionalArea);
+                        NewStock = new Stock((byte)FunctionalGroup, IndividualMass[FunctionalGroup], cellEnvironment["S"+ FunctionalGroup][0], 1.0);
 
                         // Add the new stock to the list of grid cell stocks
                         _GridCellStocks[FunctionalGroup].Add(NewStock);

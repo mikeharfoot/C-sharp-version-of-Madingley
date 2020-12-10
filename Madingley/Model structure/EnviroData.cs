@@ -841,6 +841,7 @@ namespace Madingley
                             {
                                 // Get number of latitudinal cells in the file
                                 _NumLats = (uint)internalData.Dimensions[LatSearchStrings[kk]].Length;
+                                
                                 // Read in the values of the latitude dimension from the file
                                 // Check which format the latitude dimension data are in; if unrecognized, then throw an error
                                 if (internalData.Variables[LatSearchStrings[kk]].TypeOfData.Name.ToString().ToLower() == "single")
@@ -880,6 +881,7 @@ namespace Madingley
                             {
                                 // Get number of longitudinal cells in the file
                                 _NumLons = (uint)internalData.Dimensions[LonSearchStrings[kk]].Length;
+                                
                                 // Read in the values of the longitude dimension from the file
                                 // Check which format the longitude dimension data are in; if unrecognized, then throw an error
                                 if (internalData.Variables[LonSearchStrings[kk]].TypeOfData.Name.ToString().ToLower() == "single")
