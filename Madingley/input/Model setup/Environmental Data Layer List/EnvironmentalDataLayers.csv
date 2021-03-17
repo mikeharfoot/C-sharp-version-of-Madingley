@@ -15,8 +15,8 @@ Local,Y:/Mike/SSPs/Historic/input/Data/SSP,HistoricClimate1901-2015_1dd,.nc,frs,
 Local,Y:/Mike/SSPs/Historic/input/Data/New/Land,H_max,.nc,H_max,nc,Max_Size_10,Y,year,n/a
 Local,Y:/Mike/SSPs/Historic/input/Data/New/Land,C_max,.nc,C_max,nc,Max_Size_11,Y,year,n/a
 Local,Y:/Mike/SSPs/Historic/input/Data/New/Land,O_max,.nc,O_max,nc,Max_Size_12,Y,year,n/a
-Local,Y:/Mike/SSPs/Historic/input/Data/SSP,HYDE32_relative_HANPP_1901-2015,.nc,HANPPharvest,nc,HANPPharvest,N,multi-year,gC/m2/day
-Local,Y:/Mike/SSPs/Historic/input/Data/SSP,HYDE32_relative_HANPP_1901-2015,.nc,HANPPluc,nc,HANPPlc,N,multi-year,gC/m2/day
+Local,Y:/Mike/SSPs/Historic/input/Data/SSP,HYDE32_relative_HANPP_1901-2015v2,.nc,HANPPharvest,nc,HANPPharvest,N,multi-year,gC/m2/day
+Local,Y:/Mike/SSPs/Historic/input/Data/SSP,HYDE32_relative_HANPP_1901-2015v2,.nc,HANPPluc,nc,HANPPlc,N,multi-year,gC/m2/day
 Local,Y:/Mike/SSPs/Historic/input/Data/SSP,FractionalLandUse1901-2015,.nc,Furban,nc,Furban,N,multi-year,gC/m2/day
 Local,Y:/Mike/SSPs/Historic/input/Data/SSP,FractionalLandUse1901-2015,.nc,Fcropland,nc,Fcropland,N,multi-year,gC/m2/day
 Local,Y:/Mike/SSPs/Historic/input/Data/SSP,FractionalLandUse1901-2015,.nc,Fgrazing,nc,Fgrazing,N,multi-year,gC/m2/day

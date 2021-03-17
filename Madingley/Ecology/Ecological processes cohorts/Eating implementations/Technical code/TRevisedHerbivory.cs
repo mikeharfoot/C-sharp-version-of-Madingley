@@ -147,6 +147,12 @@ namespace Madingley
         /// </summary>
         private UtilityFunctions Utilities;
 
+        /// <summary>.
+        /// Instance of random number generator
+        /// </summary>
+        private NonStaticSimpleRNG RandomNumberGenerator = new NonStaticSimpleRNG();
+
+
         /// <summary>
         /// Constructor for herbivory: assigns all parameter values
         /// </summary>
@@ -165,7 +171,7 @@ namespace Madingley
             // Store the specified cell area in this instance of this herbivory implementation
             _CellArea = cellArea;
             _CellAreaHectares = cellArea * 100;
-            
+
         }
 
         /// <summary>
@@ -193,7 +199,8 @@ namespace Madingley
         /// <param name="madingleyCohortDefinitions">The functional group definitions for cohorts in the model</param>
         /// <param name="madingleyStockDefinitions">The functional group definitions for stocks  in the model</param>
         public void GetEatingPotentialTerrestrial(GridCellCohortHandler gridCellCohorts, GridCellStockHandler gridCellStocks, int[] actingCohort,
-            SortedList<string, double[]> cellEnvironment, FunctionalGroupDefinitions madingleyCohortDefinitions, FunctionalGroupDefinitions madingleyStockDefinitions,uint currentMonth)
+            SortedList<string, double[]> cellEnvironment, FunctionalGroupDefinitions madingleyCohortDefinitions, FunctionalGroupDefinitions madingleyStockDefinitions,uint currentMonth,
+            MadingleyModelInitialisation initialisation)
         {
             double DensityScaling = 0.0;
             //double DensityScaling = 1.0;
@@ -229,17 +236,22 @@ namespace Madingley
                 _BiomassesEaten[i] = new double[gridCellStocks[i].Count];
                 _PotentialBiomassesEaten[i] = new double[gridCellStocks[i].Count];
             }
+            double ImpactScaling = 1;
 
-            // Loop over functional groups that can be eaten
+            // Loop over autotroph functional groups that can be eaten
             foreach (int FunctionalGroup in _FunctionalGroupIndicesToEat)
             {
-                // Loop over stocks within the functional group
+                if(initialisation.ImpactAccessibility) 
+                    ImpactScaling = madingleyStockDefinitions.GetTraitNames("impact state", FunctionalGroup) == "impacted" ?
+                    Math.Max(0.0, Math.Min(1.0, RandomNumberGenerator.GetNormal(0.3 - (0.3 * gridCellCohorts[actingCohort].IndividualBodyMass / 1E6),0.05))) :
+                    1.0;//
+                        // Loop over stocks within the functional group
                 for (int i = 0; i < gridCellStocks[FunctionalGroup].Count; i++)
                 {
                    
                     DensityScaling = Math.Max(0.01, gridCellStocks[FunctionalGroup][i].FractionalArea);
                     // Get the mass from this stock that is available for eating (assumes only 10% is edible)
-                    EdibleMass = gridCellStocks[FunctionalGroup][i].TotalBiomass* 0.1;
+                    EdibleMass = gridCellStocks[FunctionalGroup][i].TotalBiomass* 0.1 * ImpactScaling;
 
                     //Scale Edible mass by the current fractional hanpp to adjust the density
                     EdibleMass = EdibleMass / DensityScaling;
@@ -268,7 +280,8 @@ namespace Madingley
         /// <param name="madingleyCohortDefinitions">The functional group definitions for cohorts in the model</param>
         /// <param name="madingleyStockDefinitions">The functional group definitions for stocks  in the model</param>
         public void GetEatingPotentialMarine(GridCellCohortHandler gridCellCohorts, GridCellStockHandler gridCellStocks, int[] actingCohort,
-            SortedList<string, double[]> cellEnvironment, FunctionalGroupDefinitions madingleyCohortDefinitions, FunctionalGroupDefinitions madingleyStockDefinitions,uint currentMonth)
+            SortedList<string, double[]> cellEnvironment, FunctionalGroupDefinitions madingleyCohortDefinitions, FunctionalGroupDefinitions madingleyStockDefinitions,uint currentMonth,
+            MadingleyModelInitialisation initialisation)
         {
             // Set the total biomass eaten by the acting cohort to zero
             _TotalBiomassEatenByCohort = 0.0;
@@ -349,6 +362,7 @@ namespace Madingley
             EdibleScaling = 1.0;
             if (cellEnvironment["Realm"][0] == 1.0) EdibleScaling = 0.1;
 
+            
             // Loop over autotroph functional groups that can be eaten
             foreach (int FunctionalGroup in _FunctionalGroupIndicesToEat)
             {

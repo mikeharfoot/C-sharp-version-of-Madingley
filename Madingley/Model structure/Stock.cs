@@ -52,8 +52,8 @@ namespace Madingley
             get { return _FractionalArea; }
             set { _FractionalArea = value; }
         }
-        
 
+        public double fHANPP;
 
         /// <summary>
         /// Constructor for stock class. Assigns stock starting properties
@@ -67,6 +67,7 @@ namespace Madingley
             _IndividualBodyMass = individualMass;
             _TotalBiomass = initialTotalBiomass;
             _FractionalArea = initialFractionArea;
+            fHANPP = 0.0;
         }
 
 

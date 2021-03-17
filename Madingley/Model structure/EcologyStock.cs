@@ -29,7 +29,7 @@ namespace Madingley
         HumanAutotrophMatterAppropriation HANPP;
 
         
-        public StreamWriter TransitionsWriter;
+        //public StreamWriter TransitionsWriter;
         
         public void InitializeEcology()
         {
@@ -42,18 +42,18 @@ namespace Madingley
             // Initialise the human NPP appropriation class
             HANPP = new HumanAutotrophMatterAppropriation();
 
-            if (!File.Exists("Transitions.csv"))
-            {
-                TransitionsWriter = new StreamWriter("Transitions.csv", true);
-                TransitionsWriter.WriteLine("Latitude" + "," + "Longitude" + "," +
-                        "currentTimeStep" + "," + "ScenarioYear" + "," + "actingStock" + "," +
-                        "loss" + "," + "gain" + "," + "FractionalArea" + "," + "TotalBiomass" + "," +
-                        "WetMatterNPP" + "," + "fhanpp");
-            }
-            else
-            {
-                TransitionsWriter = new StreamWriter("Transitions.csv", true);
-            }
+            //if (!File.Exists("Transitions.csv"))
+            //{
+            //    TransitionsWriter = new StreamWriter("Transitions.csv", true);
+            //    TransitionsWriter.WriteLine("Latitude" + "," + "Longitude" + "," +
+            //            "currentTimeStep" + "," + "ScenarioYear" + "," + "actingStock" + "," +
+            //            "loss" + "," + "gain" + "," + "FractionalArea" + "," + "TotalBiomass" + "," +
+            //            "WetMatterNPP" + "," + "fhanpp");
+            //}
+            //else
+            //{
+            //    TransitionsWriter = new StreamWriter("Transitions.csv", true);
+            //}
         }
 
 
@@ -170,10 +170,12 @@ namespace Madingley
                 currentTimeStep, ScenarioYear, burninSteps, impactSteps, recoverySteps, instantStep, numInstantSteps, impactCell, globalModelTimeStepUnit, madingleyStockDefinitions,
                 DynamicPlantModel.CalculateFracEvergreen(cellEnvironment["Fraction Year Frost"][currentTimeStep]));
 
-            TransitionsWriter.WriteLine(cellEnvironment["Latitude"][0] + "," + cellEnvironment["Longitude"][0] + "," +
-                        currentTimeStep + "," + ScenarioYear + "," + actingStock[0] + "," +
-                        loss + "," + gain + "," + gridCellStocks[actingStock].FractionalArea + "," + gridCellStocks[actingStock].TotalBiomass + "," +
-                        WetMatterNPP + "," + fhanpp);
+            //TransitionsWriter.WriteLine(cellEnvironment["Latitude"][0] + "," + cellEnvironment["Longitude"][0] + "," +
+            //            currentTimeStep + "," + ScenarioYear + "," + actingStock[0] + "," +
+            //            loss + "," + gain + "," + gridCellStocks[actingStock].FractionalArea + "," + gridCellStocks[actingStock].TotalBiomass + "," +
+            //            WetMatterNPP + "," + fhanpp);
+
+            gridCellStocks[actingStock].fHANPP = fhanpp;
 
             // Apply human appropriation of NPP
             gridCellStocks[actingStock].TotalBiomass += WetMatterNPP * (1.0 - fhanpp);

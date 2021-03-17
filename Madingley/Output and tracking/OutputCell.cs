@@ -701,6 +701,16 @@ namespace Madingley
                 {
                     DataConverter.AddVariable(BasicOutputMemory, TraitValue + " biomass density", "Kg / km^2", 1, TimeDimension, ecosystemModelGrid.GlobalMissingValue, TimeSteps);
                 }
+
+                foreach (string TraitValue in new string[]{"primary","secondary","impacted"} )
+                {
+                    DataConverter.AddVariable(BasicOutputMemory, TraitValue + " deciduous fHANPP", "", 1, TimeDimension, ecosystemModelGrid.GlobalMissingValue, TimeSteps);
+                    DataConverter.AddVariable(BasicOutputMemory, TraitValue + " evergreen fHANPP", "", 1, TimeDimension, ecosystemModelGrid.GlobalMissingValue, TimeSteps);
+                    DataConverter.AddVariable(BasicOutputMemory, TraitValue + " fArea", "", 1, TimeDimension, ecosystemModelGrid.GlobalMissingValue, TimeSteps);
+                }
+                
+
+
             }
         }
 
@@ -1137,7 +1147,7 @@ namespace Madingley
                 InitialLiveOutputs(ecosystemModelGrid, marineCell);
             }
             // Generate the intial file outputs
-            InitialFileOutputs(ecosystemModelGrid, cohortFunctionalGroupDefinitions, marineCell,cellIndices,cellNumber, initialisation);
+            InitialFileOutputs(ecosystemModelGrid, cohortFunctionalGroupDefinitions,stockFunctionalGroupDefinitions, marineCell,cellIndices,cellNumber, initialisation);
 
         }
 
@@ -1207,6 +1217,7 @@ namespace Madingley
                         DataConverter.AddVariable(DataSetToViewLive, TraitValue + " biomass", "Kg / km^2", 1, TimeDimension, ecosystemModelGrid.GlobalMissingValue, TimeSteps);
                         // Add in the initial value
                         DataConverter.ValueToSDS1D(TotalBiomassDensitiesOut[TraitValue], TraitValue + " biomass", "Time step", ecosystemModelGrid.GlobalMissingValue, DataSetToViewLive, 0);
+
                     }
                 }
 
@@ -1226,6 +1237,7 @@ namespace Madingley
         /// <param name="cellIndices">The list of all cells to run the model for</param>
         /// <param name="cellIndex">The index of the current cell in the list of all cells to run the model for</param>
         private void InitialFileOutputs(ModelGrid ecosystemModelGrid, FunctionalGroupDefinitions cohortFunctionalGroupDefinitions,
+            FunctionalGroupDefinitions stockFunctionalGroupDefinitions,
             Boolean MarineCell, List<uint[]> cellIndices, int cellIndex, MadingleyModelInitialisation initialisation)
         {
             Console.WriteLine("Writing initial grid cell outputs to memory...");
@@ -1282,6 +1294,21 @@ namespace Madingley
                     foreach (string TraitValue in StockTraitIndices.Keys)
                     {
                         DataConverter.ValueToSDS1D(TotalBiomassDensitiesOut[TraitValue], TraitValue + " biomass density", "Time step",
+                           ecosystemModelGrid.GlobalMissingValue,
+                        BasicOutputMemory, 0);
+
+                    }
+
+                    foreach (string TraitValue in new string[] { "primary", "secondary", "impacted" })
+                    {
+                        int[] Indices = stockFunctionalGroupDefinitions.GetFunctionalGroupIndex("Impact state", TraitValue, false);
+                        DataConverter.ValueToSDS1D(ecosystemModelGrid.GetGridCellStocks(cellIndices[cellIndex][0],cellIndices[cellIndex][1])[Indices[0]][0].fHANPP, TraitValue + " deciduous fHANPP", "Time step",
+                           ecosystemModelGrid.GlobalMissingValue,
+                        BasicOutputMemory, 0);
+                        DataConverter.ValueToSDS1D(ecosystemModelGrid.GetGridCellStocks(cellIndices[cellIndex][0], cellIndices[cellIndex][1])[Indices[1]][0].fHANPP, TraitValue + " evergreen fHANPP", "Time step",
+                           ecosystemModelGrid.GlobalMissingValue,
+                        BasicOutputMemory, 0);
+                        DataConverter.ValueToSDS1D(ecosystemModelGrid.GetGridCellStocks(cellIndices[cellIndex][0], cellIndices[cellIndex][1])[Indices[0]][0].FractionalArea, TraitValue + " fArea", "Time step",
                            ecosystemModelGrid.GlobalMissingValue,
                         BasicOutputMemory, 0);
                     }
@@ -1434,7 +1461,7 @@ namespace Madingley
             TimeStepConsoleOutputs(currentTimestep, timeStepTimer);
 
             // Generate the file outputs for the current time step
-            TimeStepFileOutputs(ecosystemModelGrid, cohortFunctionalGroupDefinitions, currentTimestep, marineCell, cellIndices, cellNumber, initialisation);
+            TimeStepFileOutputs(ecosystemModelGrid, cohortFunctionalGroupDefinitions, stockFunctionalGroupDefinitions, currentTimestep, marineCell, cellIndices, cellNumber, initialisation);
 
         }
 
@@ -1542,6 +1569,7 @@ namespace Madingley
         /// <param name="cellIndices">The list of all cells to run the model for</param>
         /// <param name="cellIndex">The index of the current cell in the list of all cells to run the model for</param>
         private void TimeStepFileOutputs(ModelGrid ecosystemModelGrid, FunctionalGroupDefinitions cohortFunctionalGroupDefinitions,
+            FunctionalGroupDefinitions stockFunctionalGroupDefinitions,
             uint currentTimeStep, Boolean MarineCell, List<uint[]> cellIndices, int cellIndex, MadingleyModelInitialisation initialisation)
         {
             Console.WriteLine("Writing grid cell ouputs to file...\n");
@@ -1588,6 +1616,21 @@ namespace Madingley
                     {
                         DataConverter.ValueToSDS1D(TotalBiomassDensitiesOut[TraitValue], TraitValue + " biomass density", "Time step",
                             ecosystemModelGrid.GlobalMissingValue, BasicOutputMemory, (int)currentTimeStep + 1);
+                    }
+
+
+                    foreach (string TraitValue in new string[] { "primary", "secondary", "impacted" })
+                    {
+                        int[] Indices = stockFunctionalGroupDefinitions.GetFunctionalGroupIndex("Impact state", TraitValue, false);
+                        DataConverter.ValueToSDS1D(ecosystemModelGrid.GetGridCellStocks(cellIndices[cellIndex][0], cellIndices[cellIndex][1])[Indices[0]][0].fHANPP, TraitValue + " deciduous fHANPP", "Time step",
+                           ecosystemModelGrid.GlobalMissingValue,
+                        BasicOutputMemory, (int)currentTimeStep + 1);
+                        DataConverter.ValueToSDS1D(ecosystemModelGrid.GetGridCellStocks(cellIndices[cellIndex][0], cellIndices[cellIndex][1])[Indices[1]][0].fHANPP, TraitValue + " evergreen fHANPP", "Time step",
+                           ecosystemModelGrid.GlobalMissingValue,
+                        BasicOutputMemory, (int)currentTimeStep + 1);
+                        DataConverter.ValueToSDS1D(ecosystemModelGrid.GetGridCellStocks(cellIndices[cellIndex][0], cellIndices[cellIndex][1])[Indices[0]][0].FractionalArea, TraitValue + " fArea", "Time step",
+                           ecosystemModelGrid.GlobalMissingValue,
+                        BasicOutputMemory, (int)currentTimeStep + 1);
                     }
                 }
 

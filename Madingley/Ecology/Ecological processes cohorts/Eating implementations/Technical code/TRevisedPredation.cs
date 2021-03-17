@@ -312,7 +312,7 @@ namespace Madingley
         /// <param name="madingleyStockDefinitions">The functional group definitions for stocks  in the model</param>
         public void GetEatingPotentialMarine(GridCellCohortHandler gridCellCohorts, GridCellStockHandler gridCellStocks, int[] actingCohort, 
             SortedList<string, double[]> cellEnvironment, FunctionalGroupDefinitions madingleyCohortDefinitions, FunctionalGroupDefinitions 
-            madingleyStockDefinitions,uint currentMonth)
+            madingleyStockDefinitions,uint currentMonth, MadingleyModelInitialisation initialisation)
         {
 
             BinnedPreyDensities = new double[gridCellCohorts.Count, NumberOfBins];
@@ -534,7 +534,7 @@ namespace Madingley
         /// <param name="madingleyStockDefinitions">The functional group definitions for stocks  in the model</param>
         public void GetEatingPotentialTerrestrial(GridCellCohortHandler gridCellCohorts, GridCellStockHandler gridCellStocks, int[] actingCohort,
             SortedList<string, double[]> cellEnvironment, FunctionalGroupDefinitions madingleyCohortDefinitions, FunctionalGroupDefinitions
-            madingleyStockDefinitions, uint currentMonth)
+            madingleyStockDefinitions, uint currentMonth, MadingleyModelInitialisation initialisation)
         {
 
             //double DensityScaling = Math.Max(0.01,1.0 - cellEnvironment["RelativeHANPP"][0]);

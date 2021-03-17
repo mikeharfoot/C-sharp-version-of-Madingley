@@ -524,6 +524,8 @@ namespace Madingley
 
         private List<uint> _ImpactCellIndices = new List<uint>();
 
+
+
         public List<uint> ImpactCellIndices
         {
             get { return _ImpactCellIndices; }
@@ -536,6 +538,14 @@ namespace Madingley
         {
             get { return _ImpactAll; }
             set { _ImpactAll = value; }
+        }
+
+        private Boolean _ImpactAccessibility = false;
+
+        public Boolean ImpactAccessibility
+        {
+            get { return _ImpactAccessibility; }
+            set { _ImpactAccessibility = value; }
         }
 
 
@@ -798,6 +808,11 @@ namespace Madingley
                                 }
                             }
                         }
+                        break;
+                    case "impact accessibility":
+                        if (VarValues.GetValue(row).ToString() == "yes")
+                            _ImpactAccessibility = true;
+                        else _ImpactAccessibility = false;
                         break;
                     case "dispersal only":
                         if (VarValues.GetValue(row).ToString() == "yes")
